@@ -1,0 +1,81 @@
+Name: Corrupted Heavy Gunner
+Armor Type: Ferrite
+Health Type: Cloned Flesh
+Shield Type: a
+Base Armor: 500
+Base Health: 700
+Base Level: 8
+Base Shield: 0
+Eidolon: 0
+Name: Corrupted Bombard
+Armor Type: Alloy
+Health Type: Cloned Flesh
+Shield Type: a
+Base Armor: 500
+Base Health: 300
+Base Level: 4
+Base Shield: 0
+Eidolon: 0
+Name: Heavy Gunner
+Armor Type: Ferrite
+Health Type: Cloned Flesh
+Shield Type: a
+Base Armor: 500
+Base Health: 300
+Base Level: 8
+Base Shield: 0
+Eidolon: 0
+Name: Teralyst
+Armor Type: Alloy
+Health Type: Robotic
+Shield Type: a
+Base Armor: 200
+Base Health: 15000
+Base Level: 1
+Base Shield: 0
+Eidolon: 1
+Name: Gantulyst
+Armor Type: Alloy
+Health Type: Robotic
+Shield Type: a
+Base Armor: 200
+Base Health: 15000
+Base Level: 1
+Base Shield: 0
+Eidolon: 1
+Name: Hydrolyst
+Armor Type: Alloy
+Health Type: Robotic
+Shield Type: a
+Base Armor: 200
+Base Health: 15000
+Base Level: 1
+Base Shield: 0
+Eidolon: 1
+Name: Eidolon Shield
+Armor Type: Alloy
+Health Type: Robotic
+Shield Type: Sentient
+Base Armor: 0
+Base Health: 1
+Base Level: 1
+Base Shield: 2500
+Eidolon: 1
+Name: Eidolon Limb
+Armor Type: Alloy
+Health Type: Robotic
+Shield Type: a
+Base Armor: 200
+Base Health: 15000
+Base Level: 1
+Base Shield: 0
+Eidolon: 1
+Name: Eidolon Shield Phase Two
+Armor Type: Alloy
+Health Type: Robotic
+Shield Type: Sentient
+Base Armor: 0
+Base Health: 1
+Base Level: 1
+Base Shield: 2500
+Eidolon: 1
