@@ -5,3 +5,4 @@ Todo:
 -Get weapon info directly from mobile export
 -Clean up JSON stuff
 -Make some functionality to display individual damage numbers
+-Get build information from Warframe's API
