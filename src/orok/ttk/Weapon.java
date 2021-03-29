@@ -140,7 +140,7 @@ public class Weapon {
 		}
 		public void increment() {
 			index ++;
-			if(index > magazine - 1) {
+			if(index > size - 1) {
 				current_time = fire_offset[index-1];
 				index = 0;
 				for(int i = 0; i<size; i++) {
@@ -156,7 +156,7 @@ public class Weapon {
 		public void reset() {
 			index = 0;
 			current_time = 0;
-			size = magazine;
+			size = (int)(magazine/ammoCost);
 			fire_offset = new double[size];
 			
 

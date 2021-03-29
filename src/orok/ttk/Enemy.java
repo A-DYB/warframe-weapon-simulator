@@ -399,6 +399,7 @@ public class Enemy {
 			Enemy.heat_offset += 1000;
 			
 			damage_enemy(heatDot.getDamage(), 1, true);
+			System.out.println(heatDot.getDamage()[3]);
 			
 			// REMOVE ARMOR
 			amalgam_armor_removal();
