@@ -73,6 +73,8 @@ public class Weapon {
 	public double base_void1;
 	public double base_void2;
 	
+	public double[] damage_array = new double[15];
+	
 	//chances
 	public double slashChance;
 	public double corrosiveChance;
@@ -100,8 +102,6 @@ public class Weapon {
 	private double multiplier=1;
 	public double melee_multiplier=1;
 	public double primed_chamber_multiplier=1;
-	private double realFR;
-	private boolean doubleDmgInst;
 	public boolean toxicLash;
 	public double toxicLashPercent;
 	public double statusDurationPercent;
@@ -122,6 +122,52 @@ public class Weapon {
 	public double quanta = 1;
 	double fire_rate_non_melee = 1;
 	String shot_type;
+	
+	public Firing_offsets fo;
+	
+	public class Firing_offsets{
+		int index;
+		double fire_offset[];
+		int size;
+		double current_time;
+		public Firing_offsets() {
+			size = (int)(magazine/ammoCost);
+			fire_offset = new double[size];
+			
+			for(int i = 0; i<size; i++) {
+				fire_offset[i] = (1/fireRate)*i;
+
+			}
+		}
+		public void increment() {
+			index ++;
+			if(index > magazine - 1) {
+				current_time = fire_offset[index-1];
+				index = 0;
+				for(int i = 0; i<size; i++) {
+					fire_offset[i] = current_time + reload + (1/fireRate)*i;
+
+				}
+				
+			}
+		}
+		public double get_event_time() {
+			return fire_offset[index];
+		}
+		public void reset() {
+			index = 0;
+			current_time = 0;
+			size = magazine;
+			fire_offset = new double[size];
+			
+
+			for(int i = 0; i<size; i++) {
+				fire_offset[i] = (1/fireRate)*i;
+
+			}
+		}
+		
+	}
 
 	public Weapon(String name) {
 				
@@ -146,7 +192,7 @@ public class Weapon {
 	        MainGUI.move_combo.select(move_index);
 	        
 			MainGUI.setupCustomBuild(this.name, this);
-			//System.out.println(this.puncture);
+
 		}else {
 			//go look for name in build 
 			this.name = name;
@@ -169,11 +215,10 @@ public class Weapon {
 		}
 		//MainGUI.populate_stance_combo(this);
 		
-
-						
-
-
-
+		
+		fo = new Firing_offsets();
+		
+		setup_base_array();
 	}
 	@SuppressWarnings("unchecked")
 	public ArrayList<String> parseStanceList() throws FileNotFoundException, IOException, ParseException{
@@ -187,7 +232,7 @@ public class Weapon {
         Map<String,Object> stances = (Map<String,Object>)data.get("Stances");
         
         for (Map.Entry<String, Object> entry : stances.entrySet()) {
-            //System.out.println(entry.getKey() + "/" + entry.getValue());
+
             Map<String,Object> cur_stance = (Map<String,Object>)stances.get(entry.getKey());
             String cl = (String)cur_stance.get("Class");
             if(cl.equals(this.weapon_class) ) {
@@ -339,7 +384,7 @@ public class Weapon {
 		}else
 			base_fireRate = ((Number)attackMode.getOrDefault("FireRate", ((Number)normalAttack.getOrDefault("FireRate", 1.0)).doubleValue() )).doubleValue();
 		ammoCost = ((Number)attackMode.getOrDefault("AmmoCost", ((Number)normalAttack.getOrDefault("AmmoCost", 1.0)).doubleValue() )).doubleValue();
-		//System.out.printf("FETCHED FIRERATE: %f \n",(double)base_fireRate);
+
 		
 		double burstCount = ((Number)attackMode.getOrDefault("BurstCount", 1.0)).doubleValue();
 		
@@ -347,7 +392,7 @@ public class Weapon {
 		//status = 1-Math.pow(1 - status, 1/pellet);
 		base_reload = ((Number)selectedWep.getOrDefault("Reload", ((Number)normalAttack.getOrDefault("Reload", 0.0)).doubleValue()) ).doubleValue();
 		base_ammo = ((Number)selectedWep.getOrDefault("MaxAmmo", ((Number)normalAttack.getOrDefault("MaxAmmo", 100000.0)).intValue()) ).intValue();
-		base_magazine = (int)((Number)selectedWep.getOrDefault("Magazine", ((Number)normalAttack.getOrDefault("Magazine", 100000.0)).doubleValue())).doubleValue();
+		base_magazine = (int)((Number)selectedWep.getOrDefault("Magazine", ((Number)normalAttack.getOrDefault("Magazine", 100.0)).doubleValue())).doubleValue();
 		shot_type = (String)normalAttack.getOrDefault("ShotType", "Hit-Scan");
 
 	}
@@ -468,17 +513,6 @@ public class Weapon {
 		return multiplier;
 	}
 	
-	public void setRealFR(double realFR) {//
-		this.realFR = realFR;
-	}
-	public double getRealFR() {
-		return realFR;
-	}
-	
-	public boolean getDoubleDmgInst() {
-		return doubleDmgInst;
-	}
-	
 	public int getMsPerShot() {
 		return msPerShot;
 	}
@@ -518,11 +552,45 @@ public class Weapon {
 	public void setMultiShotChance(double multiShotChance) {
 		this.multiShotChance = multiShotChance;
 	}
-	public double[] getStatArray() {
-		String damageNames[] = {"Impact","Puncture","Slash","Cold","Electricity","Heat","Toxin","Blast","Corrosive","Gas","Magnetic","Radiation","Viral"};
-		double damageValues[]= {impact,puncture,slash,cold,electricity,heat,toxin,blast,corrosive,gas,magnetic,radiation,viral};
-
-		return damageValues;
+	public void setup_base_array() {
+	    /*
+	    0 impact 
+	    1 puncture
+	    2 Slash
+	    3 Heat
+	    4 Cold
+	    5 Electric
+	    6 Toxin
+	    7 Blast
+	    8 Radiation
+	    9 Gas
+	    10 Magnetic
+	    11 Viral
+	    12 Corrosive
+	    13 
+	    14 
+	    15 
+	    16
+	    17
+	    18
+	    19
+	    */
+		
+		damage_array[0] = impact;
+		damage_array[1] = puncture;
+		damage_array[2] = slash;
+		damage_array[3] = heat;
+		damage_array[4] = cold;
+		damage_array[5] = electricity;
+		damage_array[6] = toxin;
+		damage_array[7] = blast;
+		damage_array[8] =  radiation;
+		damage_array[9] = gas;
+		damage_array[10] = magnetic;
+		damage_array[11] =  viral;
+		damage_array[12] = corrosive;
+		damage_array[13] =  void1;
+		damage_array[14] =  0;
 		
 	}
 

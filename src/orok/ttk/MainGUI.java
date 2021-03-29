@@ -11,7 +11,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Deque;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Random;
 
@@ -37,6 +39,8 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.sun.corba.se.spi.legacy.connection.GetEndPointInfoAgainException;
+
+import orok.ttk.Enemy.Dot;
 
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -260,7 +264,7 @@ public class MainGUI {
 	protected void createContents() {
 		shell = new Shell();
 		shell.setSize(1250, 950);
-		shell.setText("Pocket Simulacrum v0.2.1");
+		shell.setText("Pocket Simulacrum v0.3");
 		shell.setLayout(null);
 		
 		try {
@@ -2410,89 +2414,7 @@ public class MainGUI {
 		gui_setup = true;
 		combo_is_populated = true;
 	}
-	/*
-	@SuppressWarnings("unchecked")
-	private void populateCombo(Weapon weapon, Combo enemy_combo,Combo weaponListCombo, Combo weaponCombo) {
-		combo_is_populated = true;
-		
-		ArrayList<String> init_e = Enemy.getEnemyNames();
-		ArrayList<String> init_wL = new ArrayList<String>();
-		ArrayList<String> init_build = new ArrayList<String>(); 
-		ArrayList<String> init_stance = new ArrayList<String>(); 
-
-		
-		try {
-			init_stance = weapon.parseStanceList();
-		} catch (IOException | ParseException e1) {
-			e1.printStackTrace();
-		}
-		try {
-			init_wL = Weapon.parseWeaponList();
-		} catch (IOException | ParseException e1) {
-			e1.printStackTrace();
-		}
-		try {
-			init_build = Weapon.parseBuildList();
-		} catch (IOException | ParseException e) {
-			e.printStackTrace();
-		}
-
-		for(int i =0; i< init_build.size(); i++) {
-			weaponCombo.add(init_build.get(i));
-		}
-		for(int i =0; i<init_e.size();i++) {
-			enemy_combo.add(init_e.get(i));
-		}
-		for(int i =0; i<init_wL.size();i++) {
-			weaponListCombo.add(init_wL.get(i));
-		}
-		stance_combo.add("None");
-		for(int i =0; i<init_stance.size();i++) {
-			stance_combo.add(init_stance.get(i));
-		}
-		
-		move_combo.removeAll();
-		move_combo.add("Still");
-		move_combo.add("Forward");
-		move_combo.add("ForwardBlock");
-		
-		
-		enemy_combo.select(0);
-		//weaponCombo.select(init_build.size()-1);
-		weaponCombo.select(0);
-		
-		weaponListCombo.select(0);
-		stance_combo.select(0);
-		move_combo.select(0);
-		
-		fireModeCombo.removeAll();
-		
-        // typecasting obj to JSONObject 
-        JSONObject jo = (JSONObject) obj; 
-          
-        // getting address 
-        Map<String,Object> data = (Map<String,Object>)jo.get("data"); 
-        Map<String,Object> weapons = (Map<String,Object>)data.get("Weapons");
-        Map<String,Object> selectedWep =(Map<String,Object>)weapons.get(weaponListCombo.getText());
-        
-        if(selectedWep != null) {
-	        ArrayList<String> attackModes = new ArrayList<>();
-	        Iterator<Map.Entry<String,Object>> itr1 = selectedWep.entrySet().iterator(); 
-	        while (itr1.hasNext()) { 
-
-	            Map.Entry<String,Object> pair = itr1.next(); 
-	            
-	            if(checkModes(pair))	
-	            	attackModes.add((String)pair.getKey());
-	        }
-	        
-	        for(int i =0;i<attackModes.size();i++) {
-	        	fireModeCombo.add(attackModes.get(i));
-	        }
-			fireModeCombo.select(0);
-        }
-	}
-	*/
+	
 	@SuppressWarnings("unchecked")
 	private void populate_weapon_combo(Combo weaponListCombo) {
 		//TODO weapon_combo_is_populated
@@ -2539,7 +2461,6 @@ public class MainGUI {
 			fireModeCombo.select(0);
         }
 	}
-	@SuppressWarnings("unchecked")
 	private void populate_build_combo(Combo weaponCombo) {
 		ArrayList<String> init_build = new ArrayList<String>(); 
 		
@@ -2555,7 +2476,6 @@ public class MainGUI {
 		weaponCombo.select(0);
 
 	}
-	@SuppressWarnings("unchecked")
 	private void populate_enemy_combo(Combo enemy_combo) {
 		
 		ArrayList<String> init_e = Enemy.getEnemyNames();
@@ -2566,7 +2486,6 @@ public class MainGUI {
 		
 		enemy_combo.select(0);
 	}
-	@SuppressWarnings("unchecked")
 	static void populate_stance_combo(Weapon weapon) {
 		stance_combo.add("None");
 		stance_combo.removeAll();
@@ -2660,7 +2579,7 @@ public class MainGUI {
 		parseSettings(weapon, enemy); //this is only called once
 		weapon.setSimulationStats();
 		
-		System.out.printf("Simulating Weapon: "+weapon.name+"\n");
+		//System.out.printf("Simulating Weapon: "+weapon.name+"\n");
 		
 		int count=0;
 		double std_shots =0;
@@ -2717,32 +2636,18 @@ public class MainGUI {
 			varTime = sum_t2/newCount - Math.pow(meanTime, 2);
 			varShots = sum_s2/newCount - Math.pow(meanShots, 2);
 			thresh = newCount;
-			System.out.printf("Number of iterations: "+newCount+"\n");
+			//System.out.printf("Number of iterations: "+newCount+"\n");
 
 		}
 		else {
 			thresh = numSim;
-			System.out.printf("Number of iterations: "+numSim+"\n");
+			//System.out.printf("Number of iterations: "+numSim+"\n");
 			
 		}
 		tox_proc_dmg = tox_proc_dmg/thresh;
 		sl_proc_dmg = sl_proc_dmg/thresh;
 		heat_proc_dmg = heat_proc_dmg/thresh;
-		
-		
-		
-		
-		//////////////
-		
-		/*
-		meanTime = sum_t/numSim;
-		meanShots = sum_s/numSim;
-		varTime = sum_t2/numSim - Math.pow(meanTime, 2);
-		varShots = sum_s2/numSim - Math.pow(meanShots, 2);
-		tox_proc_dmg = tox_proc_dmg/numSim;
-		sl_proc_dmg = sl_proc_dmg/numSim;
-		heat_proc_dmg = heat_proc_dmg/numSim;
-		*/
+
 		enemy.reset(0);
 		tableItem24.setText(new String[] {"Avg Ammo Eff",String.format("%,.1f", meanShots*weapon.ammoCost*100/(double)weapon.base_ammo)+"% of max ammo"});
 		tableItem25.setText(new String[] {"Avg Hp/s",String.format("%,.0f", enemy.getHealthRemaining()/meanTime)});
@@ -2754,31 +2659,15 @@ public class MainGUI {
 		double results[] = {meanTime,meanShots,varTime,varShots};
 		return results;
 	}
-	
 	private double[] simulate_once(Enemy enemy, Weapon weapon) {
 		double result[] = new double[2];
-
 		int vigilanteCritLevel = 0;
-		boolean appliedLine = false;
-		
-		int fireOffset = 0;
-		
-		enemy.reset(armorReduct);
-		
 		int millis = 0;
 		int shots= 0;
-		double baseDmg;
-		double totalDamage = 0;
 		double critMultiplier;
-		double mag = weapon.magazine;
-		int reload;
 		
-		if(weapon.magazine == 1) {
-			reload = weapon.getReload_ms();
-		}
-		else {
-			reload = weapon.getReload_ms()+weapon.getMsPerShot();
-		}
+		enemy.reset(armorReduct);
+		weapon.fo.reset();
 		
 		int prevHP = (int)(enemy.getHealthRemaining()+enemy.getShieldRemaining());
 		int curHP = prevHP;
@@ -2791,166 +2680,230 @@ public class MainGUI {
 		int combo_count=0;
 		boolean force_slash = false;
 		
+		//weapon.damage_array = enemy.array_scale(weapon.damage_array,weapon.getMultiplier());
+		
 		if(graph) {
 			//series.add(millis/1000.0, ehp);
 			series.add(millis/1000.0, curHP);
 			armor_series.add(millis/1000.0, enemy.getArmorRemaining());
 			//System.out.println(millis*1000);
 		}
+		double next_event = 0;
 		
 		while(enemy.getHealthRemaining() > 0){ 
 			
+			int[] event_index = new int[] {1000000,1000000,1000000,1000000, 1000000};
 			
-			if(weapon.get_primed_chamber() && mag == weapon.magazine) {
-				weapon.primed_chamber_multiplier=2;
+			event_index[0] = (int)(next_event*1000);
+		
+			Dot next_dot = enemy.slQ.peekFirst();
+			
+			if(enemy.toxQ.peekFirst() != null && enemy.toxQ.peekFirst().getOffset() < get_safe_offset(next_dot)) {
+				next_dot = enemy.toxQ.peekFirst();
+			}
+			if(enemy.elecQ.peekFirst() != null && enemy.elecQ.peekFirst().getOffset() < get_safe_offset(next_dot)) {
+				next_dot = enemy.elecQ.peekFirst();
+			}
+			if(enemy.viralQ.peekFirst() != null && enemy.viralQ.peekFirst().getOffset() < get_safe_offset(next_dot)) {
+				next_dot = enemy.viralQ.peekFirst();
+			}
+			if(enemy.corrosiveQ.peekFirst() != null && enemy.corrosiveQ.peekFirst().getOffset() < get_safe_offset(next_dot)) {
+				next_dot = enemy.corrosiveQ.peekFirst();
+			}
+			if(enemy.magneticQ.peekFirst() != null && enemy.magneticQ.peekFirst().getOffset() < get_safe_offset(next_dot)) {
+				next_dot = enemy.magneticQ.peekFirst();
+			}
+			if(enemy.gasQ.peekFirst() != null && enemy.gasQ.peekFirst().getOffset() < get_safe_offset(next_dot)) {
+				next_dot = enemy.gasQ.peekFirst();
+			}
+			if(enemy.heatDot.getOffset() < get_safe_offset(next_dot)) {
+				next_dot = enemy.heatDot;
+			}
+			if(enemy.heat_dot_armor_reduction.getOffset() < get_safe_offset(next_dot)) {
+				next_dot = enemy.heat_dot_armor_reduction;
+			}
+			if(enemy.heat_dot_armor_regeneration.getOffset() < get_safe_offset(next_dot)) {
+				next_dot = enemy.heat_dot_armor_regeneration;
 			}
 			
-			if(mag > 0){
+			if(next_dot != null) {
+				event_index[1] = (int)next_dot.getOffset();
+			}
+			else {
+				event_index[1] = 1000000;
+			}
+			
+			event_index[2] = Enemy.electricity_offset;
+			event_index[3] = Enemy.gas_offset;
+			event_index[4] = Enemy.heat_offset;
+			
+			/*
+			if(Enemy.electricity_offset < get_safe_offset(next_dot) && Enemy.electricity_offset < Enemy.gas_offset ) {
+				event_index[2] = Enemy.electricity_offset;
+			}
+			if(Enemy.gas_offset < get_safe_offset(next_dot) && Enemy.gas_offset < Enemy.electricity_offset) {
+				event_index[3] = Enemy.gas_offset;
+			}
+			if(Enemy.heat_offset < get_safe_offset(next_dot) && Enemy.heat_offset < Enemy.electricity_offset) {
+				event_index[4] = Enemy.heat_offset;
+			}
+			*/
+			
+			int mindex = get_min_index(event_index);
+			//System.out.println(mindex);
+			
+			if(mindex == 0) {
 				
-				if(millis == fireOffset){ //Check if projectile needs to be shot
-					
-					////////////
-					if(combo_count < num_combo_attacks) {
-						weapon.melee_multiplier = stance_multipliers.get(combo_count);
-					}else {
-						combo_count =0;
-						weapon.melee_multiplier = stance_multipliers.get(combo_count);
-					}
-					if(stance_procs.get(combo_count) == 1) {
-						force_slash =true;
-					}else {
-						force_slash = false;
-					}
-					combo_count++;
-					///////////
-					
-					fireOffset = millis + weapon.getMsPerShot();
-							
-					int numPellets;
-					
-					if(rMulti.nextDouble() <= weapon.getMultiShotChance()){
-						numPellets = (int)(weapon.pellet)+1;								
+				//System.out.println(next_event);
+				
+				millis = (int)(next_event*1000);
+				
+				if(combo_count < num_combo_attacks) {
+					weapon.melee_multiplier = stance_multipliers.get(combo_count);
+				}else {
+					combo_count =0;
+					weapon.melee_multiplier = stance_multipliers.get(combo_count);
+				}
+				if(stance_procs.get(combo_count) == 1) {
+					force_slash =true;
+				}else {
+					force_slash = false;
+				}
+				combo_count++;
+				///////////
+						
+				int numPellets;
+				
+				if(rMulti.nextDouble() <= weapon.getMultiShotChance()){
+					numPellets = (int)(weapon.pellet)+1;								
+				}else{
+					numPellets = (int)(weapon.pellet);								
+				}
+				if(weapon.shot_type.equals("Discharge")) {
+					if(rMulti.nextDouble() <= weapon.beam_multishot_chance){
+						weapon.beam_multishot_multiplier = (int)(weapon.beam_multishot) + 1;								
 					}else{
-						numPellets = (int)(weapon.pellet);								
+						weapon.beam_multishot_multiplier = (int)(weapon.beam_multishot);								
 					}
-					if(weapon.shot_type.equals("Discharge")) {
-						if(rMulti.nextDouble() <= weapon.beam_multishot_chance){
-							weapon.beam_multishot_multiplier = (int)(weapon.beam_multishot) + 1;								
-						}else{
-							weapon.beam_multishot_multiplier = (int)(weapon.beam_multishot);								
-						}
-					}
+				}
+				
+				for(int i = 0; i < numPellets; i++){
 					
-					for(int i = 0; i < numPellets; i++){
+					
+					if(rVig.nextDouble() <= vigilante)
+						vigilanteCritLevel = 1;
+					
+					if(rCrit.nextDouble() <= weapon.getHighCC()){ //highcrit?
+
+						if(weapon.headshot) {
+							critMultiplier = weapon.additive_crit_damage + ((2*weapon.critMultiplier-1)*(weapon.getCritTier()+vigilanteCritLevel)+1);								
+							enemy.damage_enemy(enemy.array_scale(weapon.damage_array, weapon.getMultiplier()) , critMultiplier, false);	//have to pass crit mul for toxin shield bypass
+							enemy.applyProc(weapon, critMultiplier, millis, rStatus.nextDouble(),force_slash);		
+																													
+						//no headshot
+						}else {
+							critMultiplier = weapon.additive_crit_damage + (weapon.critMultiplier-1)*(weapon.getCritTier()+vigilanteCritLevel)+1;																					
+							enemy.damage_enemy(enemy.array_scale(weapon.damage_array, weapon.getMultiplier()),critMultiplier, false);																					
+							enemy.applyProc(weapon, critMultiplier, millis, rStatus.nextDouble(),force_slash);	
+																											
+						}
 						
+					}else{
 						
-						if(rVig.nextDouble() <= vigilante)
-							vigilanteCritLevel = 1;
-						
-						if(rCrit.nextDouble() <= weapon.getHighCC()){ //highcrit?
-	
+						//no crit
+						if(weapon.getCritTier() == 0){
+							
+							critMultiplier = 1 + weapon.additive_crit_damage;
+							//headshot
 							if(weapon.headshot) {
-								critMultiplier = weapon.additive_crit_damage + ((2*weapon.critMultiplier-1)*(weapon.getCritTier()+vigilanteCritLevel)+1);								
-								enemy.applyDamage(weapon, critMultiplier);	//have to pass crit mul for toxin shield bypass
-								enemy.applyProc(weapon, critMultiplier, millis, rStatus.nextDouble(),force_slash);		
-																														
+								critMultiplier = 1 + weapon.additive_crit_damage;
+								enemy.damage_enemy(enemy.array_scale(weapon.damage_array, weapon.getMultiplier()), critMultiplier, false);
+								enemy.applyProc(weapon, critMultiplier, millis, rStatus.nextDouble(),force_slash);
+																					
 							//no headshot
 							}else {
-								critMultiplier = weapon.additive_crit_damage + (weapon.critMultiplier-1)*(weapon.getCritTier()+vigilanteCritLevel)+1;																					
-								enemy.applyDamage(weapon,critMultiplier);																					
-								enemy.applyProc(weapon, critMultiplier, millis, rStatus.nextDouble(),force_slash);	
-																												
+								enemy.damage_enemy(enemy.array_scale(weapon.damage_array, weapon.getMultiplier()), critMultiplier,false);										
+								enemy.applyProc(weapon, critMultiplier, millis, rStatus.nextDouble(),force_slash);														
 							}
-							
+
+						//lower tier crit	
 						}else{
-							
-							//no crit
-							if(weapon.getCritTier() == 0){
-								
-								critMultiplier = 1 + weapon.additive_crit_damage;
-								//headshot
-								if(weapon.headshot) {
-									critMultiplier = 1 + weapon.additive_crit_damage;
-									enemy.applyDamage(weapon, critMultiplier);
-									enemy.applyProc(weapon, critMultiplier, millis, rStatus.nextDouble(),force_slash);
-																						
-								//no headshot
-								}else {
-									enemy.applyDamage(weapon, critMultiplier);										
-									enemy.applyProc(weapon, critMultiplier, millis, rStatus.nextDouble(),force_slash);														
-								}
-
-							//lower tier crit	
-							}else{
-								//ex if crit chance is 130%, this is the 70% chance to do a yellow crit
-								//headshot
-								if(weapon.headshot) {
-									critMultiplier = weapon.additive_crit_damage + ((2*weapon.critMultiplier-1)*(weapon.getCritTier()+vigilanteCritLevel-1)+1);
-									enemy.applyDamage(weapon, critMultiplier);
-									enemy.applyProc(weapon, critMultiplier, millis, rStatus.nextDouble(),force_slash);		
-																				
-								//not headshot
-								}else {
-									critMultiplier = weapon.additive_crit_damage + ((weapon.critMultiplier-1)*(weapon.getCritTier()+vigilanteCritLevel-1)+1);
-									enemy.applyDamage(weapon, critMultiplier);
-									enemy.applyProc(weapon, critMultiplier, millis, rStatus.nextDouble(),force_slash);
-
-								}
-							} 
-						}
-						//clean up
-						vigilanteCritLevel = 0;
-						if(enemy.shattering_impact) {
-							if(enemy.modifiedBaseArmor<=0) {
-								enemy.modifiedBaseArmor=0;
-								enemy.setArmor(0);
+							//ex if crit chance is 130%, this is the 70% chance to do a yellow crit
+							//headshot
+							if(weapon.headshot) {
+								critMultiplier = weapon.additive_crit_damage + ((2*weapon.critMultiplier-1)*(weapon.getCritTier()+vigilanteCritLevel-1)+1);
+								enemy.damage_enemy(enemy.array_scale(weapon.damage_array, weapon.getMultiplier()), critMultiplier,false);
+								enemy.applyProc(weapon, critMultiplier, millis, rStatus.nextDouble(),force_slash);		
+																			
+							//not headshot
 							}else {
-								enemy.modifiedBaseArmor-=6;
-								enemy.setArmor(enemy.armorScale(enemy.modifiedBaseArmor, enemy.level, enemy.baseLevel)*enemy.armorReduct*enemy.getCorrosiveReduction());
+								critMultiplier = weapon.additive_crit_damage + ((weapon.critMultiplier-1)*(weapon.getCritTier()+vigilanteCritLevel-1)+1);
+								enemy.damage_enemy(enemy.array_scale(weapon.damage_array, weapon.getMultiplier()), critMultiplier, false);
+								enemy.applyProc(weapon, critMultiplier, millis, rStatus.nextDouble(),force_slash);
+
 							}
-							
+						} 
+					}
+					//clean up
+					vigilanteCritLevel = 0;
+					if(enemy.shattering_impact) {
+						if(enemy.modifiedBaseArmor<=0) {
+							enemy.modifiedBaseArmor=0;
+							enemy.setArmor(0);
+						}else {
+							enemy.modifiedBaseArmor-=6;
+							enemy.setArmor(enemy.armorScale(enemy.modifiedBaseArmor, enemy.level, enemy.baseLevel)*enemy.armorReduct*enemy.getCorrosiveReduction()*enemy.getHeatArmorReduction());
 						}
-						if(enemy.amalgam_shattering_impact) {
-							if(enemy.modifiedBaseArmor <= 0) {
-								enemy.modifiedBaseArmor = 0;
-								enemy.setArmor(0);
-							}else {
-								enemy.modifiedBaseArmor-=6;
-								enemy.setArmor(enemy.armorScale(enemy.modifiedBaseArmor, enemy.level, enemy.baseLevel)*enemy.armorReduct*enemy.getCorrosiveReduction());
-							}
+						
+					}
+					if(enemy.amalgam_shattering_impact) {
+						if(enemy.modifiedBaseArmor <= 0) {
+							enemy.modifiedBaseArmor = 0;
+							enemy.setArmor(0);
+						}else {
+							enemy.modifiedBaseArmor-=6;
+							enemy.setArmor(enemy.armorScale(enemy.modifiedBaseArmor, enemy.level, enemy.baseLevel)*enemy.armorReduct*enemy.getCorrosiveReduction()*enemy.getHeatArmorReduction());
 						}
-					}	
-					
-					totalDamage = 0;
-					shots++;
-					mag -= weapon.ammoCost;
-					weapon.primed_chamber_multiplier=1;
-				}
+					}
+				}	
 				
-			//Magazine empty
-			}else{
-				//Reload 
-				if(reload-- <= 0) {
-					
-					fireOffset = millis +1;	
-					
-					mag = weapon.magazine; 
-					
-					if(weapon.magazine == 1) {
-						reload = weapon.getReload_ms();
-					}
-					else {
-						reload = weapon.getReload_ms()+weapon.getMsPerShot();
-					}
-				}
+				
+				shots++;
+				weapon.primed_chamber_multiplier=1;
+				
+				weapon.fo.increment();
+				next_event = weapon.fo.get_event_time();
+				
+			}
+			else if(mindex == 1) {
+				millis = (int)next_dot.getOffset();
+				
+				next_dot.execute();
+			}
+			else if(mindex == 2) {
+				millis = (int)Enemy.electricity_offset;
+				
+				enemy.elecQ.peekFirst().electric_trigger();
+			}
+			else if(mindex == 3) {
+				millis = (int)Enemy.gas_offset;
+				
+				enemy.gasQ.peekFirst().gas_trigger();
+			}
+			else if(mindex == 4) {
+				millis = (int)Enemy.heat_offset;
+				
+				enemy.heatDot.heat_trigger();
 			}
 			
-			enemy.scanProcs(weapon, millis);
+			
 			
 			curHP = (int)(enemy.getHealthRemaining()+enemy.getShieldRemaining());
 			cur_armor = (int)(enemy.getArmorRemaining());
 			
-			millis++;
+			//System.out.printf("Time: %d, Prev: %d, Cur: %d\n",millis, prevHP, curHP);
+			//System.out.printf("Millis: %d, Dmg: %d\n", millis, prevHP-curHP);
+			
 			if(graph) {
 				if(prevHP != curHP) {
 					//series.add(millis/1000.0, ehp);
@@ -2968,16 +2921,40 @@ public class MainGUI {
 			}
 			
 			//taking longer than 20s
-			if (millis > 20000){
+			if (millis > 20000 || shots > 1000){
 				break;
 			}
-		}																	
+		}
+		
 		result[0] = millis/1000.0;
 		result[1] = (double)shots;
-
+		
 		return result;
+	}
+	public int get_min_index(int[] a1) {
+		int sz = a1.length;
+		int min = a1[0];
+		int mindex = 0;
+		for(int i =0;i<sz;i++) {
+			if(a1[i]< min) {
+				min = a1[i];
+				mindex = i;
+			}
+		}
+		return mindex;
+	}
+	public double get_safe_offset(Dot d) {
+		double o = 0;
+		if(d == null) {
+			o =100000000;
+		}
+		else {
+			o = d.getOffset();
+		}
+		return o;
 		
 	}
+
 	private void parseSettings(Weapon weapon, Enemy enemy) {
 		if(btnFullViral.getSelection())
 			enemy.setViralMult(4.25);
@@ -3012,188 +2989,187 @@ public class MainGUI {
 	
 	public static void setupCustomBuild(String name, Weapon weapon) {
 		//weapon.set_primed_chamber(btnPrimedchamber.getSelection());
-		//gui_setup
-		if(true) {
 		
-			String s = damage_mod_text.getText();
-			double damage_mods = percent_to_double( parse_double_textbox(s), 1);
+		
+		//gui_setup
+		
+		String s = damage_mod_text.getText();
+		double damage_mods = percent_to_double( parse_double_textbox(s), 1);
+		
+		s = bane_mod_text.getText();
+		double bane_dmg = percent_to_double( parse_double_textbox(s), 1);
+		
+		s = general_multiplier_mod_text.getText();
+		double general_mult = parse_double_multiply_textbox(s);
+		
+		double combined_multipliers = bane_dmg * general_mult;
+		
+		//setup base damages
+        weapon.slash = weapon.base_slash * damage_mods * combined_multipliers;
+        weapon.puncture = weapon.base_puncture*damage_mods * combined_multipliers;
+        weapon.impact = weapon.base_impact*damage_mods * combined_multipliers;
+        weapon.cold = weapon.base_cold*damage_mods * combined_multipliers;
+        weapon.electricity = weapon.base_electricity*damage_mods * combined_multipliers;
+        weapon.heat = weapon.base_heat*damage_mods * combined_multipliers;
+        weapon.toxin = weapon.base_toxin*damage_mods * combined_multipliers;
+        weapon.corrosive = weapon.base_corrosive*damage_mods * combined_multipliers;
+        weapon.magnetic = weapon.base_magnetic*damage_mods * combined_multipliers;
+        weapon.blast = weapon.base_blast*damage_mods * combined_multipliers;
+        weapon.viral = weapon.base_viral*damage_mods * combined_multipliers;
+        weapon.radiation = weapon.base_radiation*damage_mods * combined_multipliers;
+        weapon.gas = weapon.base_gas*damage_mods * combined_multipliers;
+        weapon.void1 = weapon.base_void1*damage_mods * combined_multipliers;
+        weapon.void2 = weapon.base_void2*damage_mods * combined_multipliers;
+        
+        weapon.totBaseDMG = (weapon.base_slash + weapon.base_puncture + weapon.base_impact + 
+        					weapon.base_cold+ weapon.base_electricity+ weapon.base_heat + 
+        					weapon.base_toxin + weapon.base_corrosive + weapon.base_magnetic + 
+        					weapon.base_blast + weapon.base_viral + weapon.base_radiation+ weapon.base_gas) * damage_mods * combined_multipliers;
+        
+        weapon.quanta = (weapon.base_slash + weapon.base_puncture + weapon.base_impact + 
+						weapon.base_cold+ weapon.base_electricity+ weapon.base_heat + 
+						weapon.base_toxin + weapon.base_corrosive + weapon.base_magnetic + 
+						weapon.base_blast + weapon.base_viral + weapon.base_radiation+ weapon.base_gas) * damage_mods * combined_multipliers/ 16;
+        
+        //set up modded physical
+        s = slash_mod_text.getText();
+        weapon.slash = weapon.base_slash * damage_mods * combined_multipliers * percent_to_double( parse_double_textbox(s), 1);
+        weapon.slashDOT = 0.35 * weapon.totBaseDMG * bane_dmg ;
+		
+        s = puncture_mod_text.getText();
+        weapon.puncture = weapon.base_puncture* damage_mods * combined_multipliers * percent_to_double( parse_double_textbox(s), 1);
+        
+        s = impact_mod_text.getText(); 
+        weapon.impact = weapon.base_impact * damage_mods * combined_multipliers * percent_to_double( parse_double_textbox(s), 1);
+        
+        //set up modded elemental
+        s = cold_mod_text.getText();
+        weapon.cold += weapon.totBaseDMG*percent_to_double( parse_double_textbox(s), 0);
+        
+        s = electricity_mod_text.getText();
+        weapon.electricity += weapon.totBaseDMG * percent_to_double( parse_double_textbox(s), 0);
+        weapon.electricityDOT = weapon.totBaseDMG * ( percent_to_double( parse_double_textbox(s), 1)/2.0 ) * bane_dmg;
+        
+        s = heat_mod_text.getText();
+        weapon.heat += weapon.totBaseDMG * percent_to_double( parse_double_textbox(s), 0);
+        weapon.heatDOT = weapon.totBaseDMG * ( percent_to_double( parse_double_textbox(s), 1)/2.0 ) * bane_dmg;
+        
+        s = toxin_mod_text.getText();
+        weapon.toxin += weapon.totBaseDMG*percent_to_double( parse_double_textbox(s), 0);
+        weapon.toxinDOT = weapon.totBaseDMG * ( percent_to_double( parse_double_textbox(s), 1)/2.0 ) * bane_dmg;
+                        
+        weapon.gasDOT = 0.5 * weapon.totBaseDMG * bane_dmg;
+        
+        if(btnCorrosive.getSelection()) {
+        	weapon.corrosive += weapon.electricity+weapon.toxin;
+        	weapon.electricity = 0;
+        	weapon.toxin = 0;
+        }
+        if(btnGas.getSelection()) {
+        	weapon.gas += weapon.heat+weapon.toxin;
+        	weapon.heat =0;
+        	weapon.toxin = 0;
+        }
+        if(btnRadiation.getSelection()) {
+        	weapon.radiation += weapon.electricity+weapon.heat;
+        	weapon.electricity = 0;
+        	weapon.heat = 0;
+        }
+        if(btnViral.getSelection()) {
+        	weapon.viral += weapon.cold+weapon.toxin;
+        	weapon.toxin = 0;
+        	weapon.cold = 0;
+        	
+        }
+        if(btnBlast.getSelection()) {
+        	weapon.blast += weapon.heat+weapon.cold;
+        	weapon.heat = 0;
+        	weapon.cold = 0;
+        }
+        if(btnMagnetic.getSelection()) {
+        	weapon.magnetic += weapon.electricity+weapon.cold;
+        	weapon.cold = 0;
+        	weapon.electricity =0;
+        }
+		
+        weapon.totProportionalDMG = (weapon.slash+weapon.puncture+weapon.impact) + weapon.cold+ weapon.electricity+ weapon.heat + weapon.toxin 
+        		+ weapon.blast + weapon.corrosive + weapon.gas + weapon.magnetic + weapon.radiation+ weapon.viral + weapon.void1 + weapon.void2;
+        
+        //aux stats
+		s = crit_chance_mod_text.getText();
+		weapon.critChance = weapon.base_crit_chance * percent_to_double( parse_double_textbox(s), 1);
+		
+		s = crit_damage_mod_text.getText();
+		weapon.critMultiplier = weapon.base_crit_multiplier *percent_to_double( parse_double_textbox(s), 1);
+		
+		if(!stance_combo.getText().equals("None") && melee_time!=0) {
+			s = fire_rate_mod_text.getText();
+			weapon.fireRate = weapon.base_fireRate * percent_to_double( parse_double_textbox(s), 1)/melee_time;
+			weapon.fire_rate_non_melee = weapon.base_fireRate *percent_to_double( parse_double_textbox(s), 1);
+			//System.out.println(weapon.fireRate);
 			
-			s = bane_mod_text.getText();
-			double bane_dmg = percent_to_double( parse_double_textbox(s), 1);
-			
-			s = general_multiplier_mod_text.getText();
-			double general_mult = parse_double_multiply_textbox(s);
-			
-			double combined_multipliers = bane_dmg * general_mult;
-			
-			//setup base damages
-	        weapon.slash = weapon.base_slash * damage_mods * combined_multipliers;
-	        weapon.puncture = weapon.base_puncture*damage_mods * combined_multipliers;
-	        weapon.impact = weapon.base_impact*damage_mods * combined_multipliers;
-	        weapon.cold = weapon.base_cold*damage_mods * combined_multipliers;
-	        weapon.electricity = weapon.base_electricity*damage_mods * combined_multipliers;
-	        weapon.heat = weapon.base_heat*damage_mods * combined_multipliers;
-	        weapon.toxin = weapon.base_toxin*damage_mods * combined_multipliers;
-	        weapon.corrosive = weapon.base_corrosive*damage_mods * combined_multipliers;
-	        weapon.magnetic = weapon.base_magnetic*damage_mods * combined_multipliers;
-	        weapon.blast = weapon.base_blast*damage_mods * combined_multipliers;
-	        weapon.viral = weapon.base_viral*damage_mods * combined_multipliers;
-	        weapon.radiation = weapon.base_radiation*damage_mods * combined_multipliers;
-	        weapon.gas = weapon.base_gas*damage_mods * combined_multipliers;
-	        weapon.void1 = weapon.base_void1*damage_mods * combined_multipliers;
-	        weapon.void2 = weapon.base_void2*damage_mods * combined_multipliers;
-	        
-	        weapon.totBaseDMG = (weapon.base_slash + weapon.base_puncture + weapon.base_impact + 
-	        					weapon.base_cold+ weapon.base_electricity+ weapon.base_heat + 
-	        					weapon.base_toxin + weapon.base_corrosive + weapon.base_magnetic + 
-	        					weapon.base_blast + weapon.base_viral + weapon.base_radiation+ weapon.base_gas) * damage_mods * combined_multipliers;
-	        
-	        weapon.quanta = (weapon.base_slash + weapon.base_puncture + weapon.base_impact + 
-							weapon.base_cold+ weapon.base_electricity+ weapon.base_heat + 
-							weapon.base_toxin + weapon.base_corrosive + weapon.base_magnetic + 
-							weapon.base_blast + weapon.base_viral + weapon.base_radiation+ weapon.base_gas) * damage_mods * combined_multipliers/ 16;
-	        
-	        //set up modded physical
-	        s = slash_mod_text.getText();
-	        weapon.slash = weapon.base_slash * damage_mods * combined_multipliers * percent_to_double( parse_double_textbox(s), 1);
-	        weapon.slashDOT = 0.35 * weapon.totBaseDMG * bane_dmg ;
-			
-	        s = puncture_mod_text.getText();
-	        weapon.puncture = weapon.base_puncture* damage_mods * combined_multipliers * percent_to_double( parse_double_textbox(s), 1);
-	        
-	        s = impact_mod_text.getText(); 
-	        weapon.impact = weapon.base_impact * damage_mods * combined_multipliers * percent_to_double( parse_double_textbox(s), 1);
-	        
-	        //set up modded elemental
-	        s = cold_mod_text.getText();
-	        weapon.cold += weapon.totBaseDMG*percent_to_double( parse_double_textbox(s), 0);
-	        
-	        s = electricity_mod_text.getText();
-	        weapon.electricity += weapon.totBaseDMG * percent_to_double( parse_double_textbox(s), 0);
-	        weapon.electricityDOT = weapon.totBaseDMG * ( percent_to_double( parse_double_textbox(s), 1)/2.0 ) * bane_dmg;
-	        
-	        s = heat_mod_text.getText();
-	        weapon.heat += weapon.totBaseDMG * percent_to_double( parse_double_textbox(s), 0);
-	        weapon.heatDOT = weapon.totBaseDMG * ( percent_to_double( parse_double_textbox(s), 1)/2.0 ) * bane_dmg;
-	        
-	        s = toxin_mod_text.getText();
-	        weapon.toxin += weapon.totBaseDMG*percent_to_double( parse_double_textbox(s), 0);
-	        weapon.toxinDOT = weapon.totBaseDMG * ( percent_to_double( parse_double_textbox(s), 1)/2.0 ) * bane_dmg;
-	                        
-	        weapon.gasDOT = 0.5 * weapon.totBaseDMG * bane_dmg;
-	        
-	        if(btnCorrosive.getSelection()) {
-	        	weapon.corrosive += weapon.electricity+weapon.toxin;
-	        	weapon.electricity = 0;
-	        	weapon.toxin = 0;
-	        }
-	        if(btnGas.getSelection()) {
-	        	weapon.gas += weapon.heat+weapon.toxin;
-	        	weapon.heat =0;
-	        	weapon.toxin = 0;
-	        }
-	        if(btnRadiation.getSelection()) {
-	        	weapon.radiation += weapon.electricity+weapon.heat;
-	        	weapon.electricity = 0;
-	        	weapon.heat = 0;
-	        }
-	        if(btnViral.getSelection()) {
-	        	weapon.viral += weapon.cold+weapon.toxin;
-	        	weapon.toxin = 0;
-	        	weapon.cold = 0;
-	        	
-	        }
-	        if(btnBlast.getSelection()) {
-	        	weapon.blast += weapon.heat+weapon.cold;
-	        	weapon.heat = 0;
-	        	weapon.cold = 0;
-	        }
-	        if(btnMagnetic.getSelection()) {
-	        	weapon.magnetic += weapon.electricity+weapon.cold;
-	        	weapon.cold = 0;
-	        	weapon.electricity =0;
-	        }
-			
-	        weapon.totProportionalDMG = (weapon.slash+weapon.puncture+weapon.impact) + weapon.cold+ weapon.electricity+ weapon.heat + weapon.toxin 
-	        		+ weapon.blast + weapon.corrosive + weapon.gas + weapon.magnetic + weapon.radiation+ weapon.viral + weapon.void1 + weapon.void2;
-	        
-	        //aux stats
-			s = crit_chance_mod_text.getText();
-			weapon.critChance = weapon.base_crit_chance * percent_to_double( parse_double_textbox(s), 1);
-			
-			s = crit_damage_mod_text.getText();
-			weapon.critMultiplier = weapon.base_crit_multiplier *percent_to_double( parse_double_textbox(s), 1);
-			
-			if(!stance_combo.getText().equals("None") && melee_time!=0) {
-				s = fire_rate_mod_text.getText();
-				weapon.fireRate = weapon.base_fireRate * percent_to_double( parse_double_textbox(s), 1)/melee_time;
-				weapon.fire_rate_non_melee = weapon.base_fireRate *percent_to_double( parse_double_textbox(s), 1);
-				//System.out.println(weapon.fireRate);
-				
-			}
-			else {
-				s = fire_rate_mod_text.getText();
-				//TODO
-				//Find more elegant way to handle melee fire rate
-				weapon.fireRate = weapon.base_fireRate * percent_to_double( parse_double_textbox(s), 1);
-				weapon.fire_rate_non_melee = weapon.base_fireRate *percent_to_double( parse_double_textbox(s), 1);
-				//System.out.println(weapon.fireRate);
-				
-			}
-			
-			s = status_chance_mod_text.getText();
-			weapon.status = weapon.base_status *percent_to_double( parse_double_textbox(s), 1);
-			
-			s = multishot_mod_text.getText();
-			if(weapon.shot_type.equals("Discharge")) {
-				weapon.beam_multishot = weapon.base_pellet * percent_to_double( parse_double_textbox(s), 1);
-				
-				weapon.pellet = 1;
-				weapon.status = weapon.beam_multishot * weapon.status;
-			}
-			else {
-				weapon.pellet = weapon.base_pellet *percent_to_double( parse_double_textbox(s), 1);
-			}
-			
-			weapon.multishot_mods = percent_to_double( parse_double_textbox(s), 1);
-			
-			
-			s = reload_mod_text.getText();
-			weapon.reload = weapon.base_reload /percent_to_double( parse_double_textbox(s), 1);
-			
-			s = magazine_mod_text.getText();
-			weapon.magazine = (int) (weapon.base_magazine *percent_to_double( parse_double_textbox(s), 1));
-			
-			s = status_duration_mod_text.getText();
-			weapon.statusDurationPercent = percent_to_double( parse_double_textbox(s), 1);	
-			
-			s = additive_crit_damage_text.getText();
-			weapon.additive_crit_damage = parse_double_textbox(s);	
-			
-			//setup status
-			//weapon.setStatus();
-			weapon.slashChance = weapon.slash/ weapon.totProportionalDMG;
-			weapon.corrosiveChance = weapon.corrosive/ weapon.totProportionalDMG;
-			weapon.viralChance = weapon.viral/ weapon.totProportionalDMG;
-			weapon.toxinChance = weapon.toxin/ weapon.totProportionalDMG;
-			weapon.heatChance = weapon.heat/ weapon.totProportionalDMG;
-			weapon.gasChance = weapon.gas/ weapon.totProportionalDMG;
-			weapon.magneticChance = weapon.magnetic/ weapon.totProportionalDMG;
-			weapon.coldChance = weapon.cold/ weapon.totProportionalDMG;
-			weapon.electricityChance = weapon.electricity/ weapon.totProportionalDMG;
-			
-			weapon.quantize();
-			
-			weapon.reload_ms = (int) (weapon.reload * 1000 + 1);
-			weapon.critTier = (int)weapon.critChance + 1;
-			weapon.highCC = weapon.critChance % 1;
-			if (weapon.highCC == 0 && weapon.critChance != 0) // corrects modulo if cc is whole num, but realcritchance will stay 0 if cc is 0
-				weapon.highCC = 1;
-			
-			weapon.msPerShot = (int) Math.round(1000 / weapon.fireRate);
-			weapon.multiShotChance = weapon.pellet % 1;
-			weapon.beam_multishot_chance = weapon.beam_multishot % 1;
 		}
+		else {
+			s = fire_rate_mod_text.getText();
+			//TODO
+			//Find more elegant way to handle melee fire rate
+			weapon.fireRate = weapon.base_fireRate * percent_to_double( parse_double_textbox(s), 1);
+			weapon.fire_rate_non_melee = weapon.base_fireRate *percent_to_double( parse_double_textbox(s), 1);		
+		}
+		
+		s = status_chance_mod_text.getText();
+		weapon.status = weapon.base_status *percent_to_double( parse_double_textbox(s), 1);
+		
+		s = multishot_mod_text.getText();
+		if(weapon.shot_type.equals("Discharge")) {
+			weapon.beam_multishot = weapon.base_pellet * percent_to_double( parse_double_textbox(s), 1);
+			
+			weapon.pellet = 1;
+			weapon.status = weapon.beam_multishot * weapon.status;
+		}
+		else {
+			weapon.pellet = weapon.base_pellet *percent_to_double( parse_double_textbox(s), 1);
+		}
+		
+		weapon.multishot_mods = percent_to_double( parse_double_textbox(s), 1);
+		
+		
+		s = reload_mod_text.getText();
+		weapon.reload = weapon.base_reload /percent_to_double( parse_double_textbox(s), 1);
+		
+		s = magazine_mod_text.getText();
+		weapon.magazine = (int) (weapon.base_magazine *percent_to_double( parse_double_textbox(s), 1));
+		
+		s = status_duration_mod_text.getText();
+		weapon.statusDurationPercent = percent_to_double( parse_double_textbox(s), 1);	
+		
+		s = additive_crit_damage_text.getText();
+		weapon.additive_crit_damage = parse_double_textbox(s);	
+		
+		//setup status
+		//weapon.setStatus();
+		weapon.slashChance = weapon.slash/ weapon.totProportionalDMG;
+		weapon.corrosiveChance = weapon.corrosive/ weapon.totProportionalDMG;
+		weapon.viralChance = weapon.viral/ weapon.totProportionalDMG;
+		weapon.toxinChance = weapon.toxin/ weapon.totProportionalDMG;
+		weapon.heatChance = weapon.heat/ weapon.totProportionalDMG;
+		weapon.gasChance = weapon.gas/ weapon.totProportionalDMG;
+		weapon.magneticChance = weapon.magnetic/ weapon.totProportionalDMG;
+		weapon.coldChance = weapon.cold/ weapon.totProportionalDMG;
+		weapon.electricityChance = weapon.electricity/ weapon.totProportionalDMG;
+		
+		weapon.quantize();
+		
+		weapon.reload_ms = (int) (weapon.reload * 1000 + 1);
+		weapon.critTier = (int)weapon.critChance + 1;
+		weapon.highCC = weapon.critChance % 1;
+		if (weapon.highCC == 0 && weapon.critChance != 0) // corrects modulo if cc is whole num, but realcritchance will stay 0 if cc is 0
+			weapon.highCC = 1;
+		
+		weapon.msPerShot = (int) Math.round(1000 / weapon.fireRate);
+		weapon.multiShotChance = weapon.pellet % 1;
+		weapon.beam_multishot_chance = weapon.beam_multishot % 1;
+	
 		
 	}
 	

@@ -1,1 +1,394 @@
-{"data":{"Kronen Toxin 07 29 2020":{"Mods":{"Impact":"0.0","AmalgamShatteringImpact":false,"PrimedChamber":false,"StatusDuration":"0.0","Cold":"0.0","HunterMunitions":false,"StatusChance":"440","GeneralMultiplier":"1.0","Bane":"55","FireRate":"180","ShatteringImpact":true,"CriticalDamage":"90","Toxin":"150","Heat":"0.0","CriticalChance":"660 330","Electricity":"0.0","Reload":"0.0","Slash":"0.0","Puncture":"0.0","Damage":"840 180","Multishot":"0.0","Magazine":"0.0"},"WeaponConfig":{"FireMode":"NormalAttack","WeaponName":"Kronen Prime"},"ElementalCombo":{"Magnetic":false,"Corrosive":false,"Radiation":false,"Viral":false,"Gas":false,"Blast":false}},"Quanta Vandal tst":{"Mods":{"Impact":"0.0","AmalgamShatteringImpact":false,"PrimedChamber":false,"StatusDuration":"0.0","Cold":"60","HunterMunitions":false,"StatusChance":"60 15","GeneralMultiplier":"1.0","Bane":"45","FireRate":"90 ","ShatteringImpact":false,"CriticalDamage":"120","Toxin":"15","Heat":"0.0","CriticalChance":"150","Electricity":"90","Reload":"0.0","Slash":"0.0","Puncture":"0.0","Damage":"-15","Multishot":"90","Magazine":"0.0"},"WeaponConfig":{"Stance":"None","FireMode":"NormalAttack","MoveSet":"Still","WeaponName":"Quanta Vandal"},"ElementalCombo":{"Magnetic":false,"Corrosive":false,"Radiation":false,"Viral":true,"Gas":false,"Blast":false}},"Arquebex Orphix":{"Mods":{"Impact":"0.0","AmalgamShatteringImpact":false,"PrimedChamber":false,"StatusDuration":"0.0","Cold":"0.0","HunterMunitions":false,"StatusChance":"0.0","GeneralMultiplier":"1.0","Bane":"0.0","FireRate":"60","ShatteringImpact":false,"CriticalDamage":"80","Toxin":"120","Heat":"0.0","CriticalChance":"100","Electricity":"120 60","Reload":"0.0","Slash":"0.0","Puncture":"0.0","Damage":"187","Multishot":"60","Magazine":"0.0"},"WeaponConfig":{"FireMode":"NormalAttack","WeaponName":"Arquebex"},"ElementalCombo":{"Magnetic":false,"Corrosive":true,"Radiation":false,"Viral":false,"Gas":false,"Blast":false}},"Spectra Vandal VH":{"Mods":{"Impact":"0.0","AmalgamShatteringImpact":false,"PrimedChamber":false,"StatusDuration":"0.0","Cold":"30","HunterMunitions":false,"StatusChance":"90","GeneralMultiplier":"1.0","Bane":"55","FireRate":"60 120","ShatteringImpact":false,"CriticalDamage":"110","Toxin":"60","Heat":"165 128","CriticalChance":"187 209.7","Electricity":"0.0","Reload":"0.0","Slash":"0.0","Puncture":"0.0","Damage":"300","Multishot":"60 165.4","Magazine":"0.0"},"WeaponConfig":{"FireMode":"NormalAttack","WeaponName":"Spectra Vandal"},"ElementalCombo":{"Magnetic":false,"Corrosive":false,"Radiation":false,"Viral":true,"Gas":false,"Blast":false}},"Quanta Vandal":{"Mods":{"Impact":"0.0","AmalgamShatteringImpact":false,"PrimedChamber":false,"StatusDuration":"0.0","Cold":"60","HunterMunitions":false,"StatusChance":"60 30 ","GeneralMultiplier":"1.0","Bane":"55","FireRate":"90 90","ShatteringImpact":false,"CriticalDamage":"120","Toxin":"30","Heat":"0.0","CriticalChance":"150","Electricity":"90","Reload":"0.0","Slash":"0.0","Puncture":"0.0","Damage":"180","Multishot":"90","Magazine":"0.0"},"WeaponConfig":{"Stance":"None","FireMode":"NormalAttack","MoveSet":"Still","WeaponName":"Quanta Vandal"},"ElementalCombo":{"Magnetic":false,"Corrosive":false,"Radiation":false,"Viral":true,"Gas":false,"Blast":false}},"Kronen Prime Toxin":{"Mods":{"Impact":"0.0","AmalgamShatteringImpact":false,"PrimedChamber":false,"StatusDuration":"0.0","Cold":"0.0","HunterMunitions":false,"StatusChance":"440","GeneralMultiplier":"1.0","Bane":"55","FireRate":"180","ShatteringImpact":true,"CriticalDamage":"90","Toxin":"165","Heat":"0.0","CriticalChance":"660","Electricity":"0.0","Reload":"0.0","Slash":"0.0","Puncture":"0.0","Damage":"960 180","Multishot":"0.0","Magazine":"0.0"},"WeaponConfig":{"FireMode":"NormalAttack","WeaponName":"Kronen Prime"},"ElementalCombo":{"Magnetic":false,"Corrosive":false,"Radiation":false,"Viral":false,"Gas":false,"Blast":false}},"Braton Toxin":{"Mods":{"Impact":"0.0","AmalgamShatteringImpact":false,"PrimedChamber":false,"StatusDuration":"0.0","Cold":"0.0","HunterMunitions":false,"StatusChance":"0.0","GeneralMultiplier":"1.0","Bane":"0.0","FireRate":"60","ShatteringImpact":false,"CriticalDamage":"0.0","Toxin":"90","Heat":"0.0","CriticalChance":"0.0","Electricity":"0.0","Reload":"0.0","Slash":"0.0","Puncture":"0.0","Damage":"330","Multishot":"150","Magazine":"0.0"},"WeaponConfig":{"FireMode":"NormalAttack","WeaponName":"Braton Prime"},"ElementalCombo":{"Magnetic":false,"Corrosive":false,"Radiation":false,"Viral":false,"Gas":false,"Blast":false}},"Kronen Sov":{"Mods":{"Impact":"0.0","AmalgamShatteringImpact":false,"PrimedChamber":false,"StatusDuration":"0.0","Cold":"0.0","HunterMunitions":false,"StatusChance":"440","GeneralMultiplier":"1.0","Bane":"55","FireRate":"180","ShatteringImpact":true,"CriticalDamage":"90","Toxin":"165","Heat":"0.0","CriticalChance":"660","Electricity":"0.0","Reload":"0.0","Slash":"0.0","Puncture":"0.0","Damage":"960 180","Multishot":"0.0","Magazine":"0.0"},"WeaponConfig":{"Stance":"SovereignOutcast","FireMode":"NormalAttack","MoveSet":"Still","WeaponName":"Kronen Prime"},"ElementalCombo":{"Magnetic":false,"Corrosive":false,"Radiation":false,"Viral":false,"Gas":false,"Blast":false}},"Phage no riven":{"Mods":{"Impact":"0.0","AmalgamShatteringImpact":false,"PrimedChamber":false,"StatusDuration":"0.0","Cold":"0.0","HunterMunitions":false,"StatusChance":"60","GeneralMultiplier":"1.0","Bane":"55","FireRate":"90","ShatteringImpact":false,"CriticalDamage":"110","Toxin":"0.0","Heat":"90 60","CriticalChance":"90","Electricity":"0.0","Reload":"0.0","Slash":"0.0","Puncture":"0.0","Damage":"165 180","Multishot":"120 60","Magazine":"0.0"},"WeaponConfig":{"Stance":"None","FireMode":"NormalAttack","MoveSet":"Still","WeaponName":"Phage"},"ElementalCombo":{"Magnetic":false,"Corrosive":false,"Radiation":false,"Viral":false,"Gas":false,"Blast":false}},"hek":{"Mods":{"Impact":"0.0","AmalgamShatteringImpact":false,"PrimedChamber":false,"StatusDuration":"0.0","Cold":"0.0","HunterMunitions":false,"StatusChance":"0.0","GeneralMultiplier":"1.0","Bane":"0.0","FireRate":"0","ShatteringImpact":false,"CriticalDamage":"0.0","Toxin":"90","Heat":"0.0","CriticalChance":"0.0","Electricity":"90","Reload":"0.0","Slash":"0.0","Puncture":"0.0","Damage":"165","Multishot":"0.0","Magazine":"0.0"},"WeaponConfig":{"Stance":"None","FireMode":"NormalAttack","MoveSet":"Still","WeaponName":"Hek"},"ElementalCombo":{"Magnetic":false,"Corrosive":true,"Radiation":false,"Viral":false,"Gas":false,"Blast":false}}}}
+{
+	"data": {
+		"Kronen Toxin 07 29 2020": {
+			"Mods": {
+				"Impact": "0.0",
+				"AmalgamShatteringImpact": false,
+				"PrimedChamber": false,
+				"StatusDuration": "0.0",
+				"Cold": "0.0",
+				"HunterMunitions": false,
+				"StatusChance": "440",
+				"GeneralMultiplier": "1.0",
+				"Bane": "55",
+				"FireRate": "180",
+				"ShatteringImpact": true,
+				"CriticalDamage": "90",
+				"Toxin": "150",
+				"Heat": "0.0",
+				"CriticalChance": "660 330",
+				"Electricity": "0.0",
+				"Reload": "0.0",
+				"Slash": "0.0",
+				"Puncture": "0.0",
+				"Damage": "840 180",
+				"Multishot": "0.0",
+				"Magazine": "0.0"
+			},
+			"WeaponConfig": {
+				"FireMode": "NormalAttack",
+				"WeaponName": "Kronen Prime"
+			},
+			"ElementalCombo": {
+				"Magnetic": false,
+				"Corrosive": false,
+				"Radiation": false,
+				"Viral": false,
+				"Gas": false,
+				"Blast": false
+			}
+		},
+		"Quanta Vandal tst": {
+			"Mods": {
+				"Impact": "0.0",
+				"AmalgamShatteringImpact": false,
+				"PrimedChamber": false,
+				"StatusDuration": "0.0",
+				"Cold": "60",
+				"HunterMunitions": false,
+				"StatusChance": "60 15",
+				"GeneralMultiplier": "1.0",
+				"Bane": "45",
+				"FireRate": "90 ",
+				"ShatteringImpact": false,
+				"CriticalDamage": "120",
+				"Toxin": "15",
+				"Heat": "0.0",
+				"CriticalChance": "150",
+				"Electricity": "90",
+				"Reload": "0.0",
+				"Slash": "0.0",
+				"Puncture": "0.0",
+				"Damage": "-15",
+				"Multishot": "90",
+				"Magazine": "0.0"
+			},
+			"WeaponConfig": {
+				"Stance": "None",
+				"FireMode": "NormalAttack",
+				"MoveSet": "Still",
+				"WeaponName": "Quanta Vandal"
+			},
+			"ElementalCombo": {
+				"Magnetic": false,
+				"Corrosive": false,
+				"Radiation": false,
+				"Viral": true,
+				"Gas": false,
+				"Blast": false
+			}
+		},
+		"Arquebex Orphix": {
+			"Mods": {
+				"Impact": "0.0",
+				"AmalgamShatteringImpact": false,
+				"PrimedChamber": false,
+				"StatusDuration": "0.0",
+				"Cold": "0.0",
+				"HunterMunitions": false,
+				"StatusChance": "0.0",
+				"GeneralMultiplier": "1.0",
+				"Bane": "0.0",
+				"FireRate": "60",
+				"ShatteringImpact": false,
+				"CriticalDamage": "80",
+				"Toxin": "120",
+				"Heat": "0.0",
+				"CriticalChance": "100",
+				"Electricity": "120 60",
+				"Reload": "0.0",
+				"Slash": "0.0",
+				"Puncture": "0.0",
+				"Damage": "187",
+				"Multishot": "60",
+				"Magazine": "0.0"
+			},
+			"WeaponConfig": {
+				"FireMode": "NormalAttack",
+				"WeaponName": "Arquebex"
+			},
+			"ElementalCombo": {
+				"Magnetic": false,
+				"Corrosive": true,
+				"Radiation": false,
+				"Viral": false,
+				"Gas": false,
+				"Blast": false
+			}
+		},
+		"Spectra Vandal VH": {
+			"Mods": {
+				"Impact": "0.0",
+				"AmalgamShatteringImpact": false,
+				"PrimedChamber": false,
+				"StatusDuration": "0.0",
+				"Cold": "30",
+				"HunterMunitions": false,
+				"StatusChance": "90",
+				"GeneralMultiplier": "1.0",
+				"Bane": "55",
+				"FireRate": "60 120",
+				"ShatteringImpact": false,
+				"CriticalDamage": "110",
+				"Toxin": "60",
+				"Heat": "165 128",
+				"CriticalChance": "187 209.7",
+				"Electricity": "0.0",
+				"Reload": "0.0",
+				"Slash": "0.0",
+				"Puncture": "0.0",
+				"Damage": "300",
+				"Multishot": "60 165.4",
+				"Magazine": "0.0"
+			},
+			"WeaponConfig": {
+				"FireMode": "NormalAttack",
+				"WeaponName": "Spectra Vandal"
+			},
+			"ElementalCombo": {
+				"Magnetic": false,
+				"Corrosive": false,
+				"Radiation": false,
+				"Viral": true,
+				"Gas": false,
+				"Blast": false
+			}
+		},
+		"Quanta Vandal": {
+			"Mods": {
+				"Impact": "0.0",
+				"AmalgamShatteringImpact": false,
+				"PrimedChamber": false,
+				"StatusDuration": "0.0",
+				"Cold": "60",
+				"HunterMunitions": false,
+				"StatusChance": "60 30 ",
+				"GeneralMultiplier": "1.0",
+				"Bane": "55",
+				"FireRate": "90 90",
+				"ShatteringImpact": false,
+				"CriticalDamage": "120",
+				"Toxin": "30",
+				"Heat": "0.0",
+				"CriticalChance": "150",
+				"Electricity": "90",
+				"Reload": "0.0",
+				"Slash": "0.0",
+				"Puncture": "0.0",
+				"Damage": "180",
+				"Multishot": "90",
+				"Magazine": "0.0"
+			},
+			"WeaponConfig": {
+				"Stance": "None",
+				"FireMode": "NormalAttack",
+				"MoveSet": "Still",
+				"WeaponName": "Quanta Vandal"
+			},
+			"ElementalCombo": {
+				"Magnetic": false,
+				"Corrosive": false,
+				"Radiation": false,
+				"Viral": true,
+				"Gas": false,
+				"Blast": false
+			}
+		},
+		"Kronen Prime Toxin": {
+			"Mods": {
+				"Impact": "0.0",
+				"AmalgamShatteringImpact": false,
+				"PrimedChamber": false,
+				"StatusDuration": "0.0",
+				"Cold": "0.0",
+				"HunterMunitions": false,
+				"StatusChance": "440",
+				"GeneralMultiplier": "1.0",
+				"Bane": "55",
+				"FireRate": "180",
+				"ShatteringImpact": true,
+				"CriticalDamage": "90",
+				"Toxin": "165",
+				"Heat": "0.0",
+				"CriticalChance": "660",
+				"Electricity": "0.0",
+				"Reload": "0.0",
+				"Slash": "0.0",
+				"Puncture": "0.0",
+				"Damage": "960 180",
+				"Multishot": "0.0",
+				"Magazine": "0.0"
+			},
+			"WeaponConfig": {
+				"FireMode": "NormalAttack",
+				"WeaponName": "Kronen Prime"
+			},
+			"ElementalCombo": {
+				"Magnetic": false,
+				"Corrosive": false,
+				"Radiation": false,
+				"Viral": false,
+				"Gas": false,
+				"Blast": false
+			}
+		},
+		"Braton Toxin": {
+			"Mods": {
+				"Impact": "0.0",
+				"AmalgamShatteringImpact": false,
+				"PrimedChamber": false,
+				"StatusDuration": "0.0",
+				"Cold": "0.0",
+				"HunterMunitions": false,
+				"StatusChance": "0.0",
+				"GeneralMultiplier": "1.0",
+				"Bane": "0.0",
+				"FireRate": "60",
+				"ShatteringImpact": false,
+				"CriticalDamage": "0.0",
+				"Toxin": "90",
+				"Heat": "0.0",
+				"CriticalChance": "0.0",
+				"Electricity": "0.0",
+				"Reload": "0.0",
+				"Slash": "0.0",
+				"Puncture": "0.0",
+				"Damage": "330",
+				"Multishot": "150",
+				"Magazine": "0.0"
+			},
+			"WeaponConfig": {
+				"FireMode": "NormalAttack",
+				"WeaponName": "Braton Prime"
+			},
+			"ElementalCombo": {
+				"Magnetic": false,
+				"Corrosive": false,
+				"Radiation": false,
+				"Viral": false,
+				"Gas": false,
+				"Blast": false
+			}
+		},
+		"Kronen Sov": {
+			"Mods": {
+				"Impact": "0.0",
+				"AmalgamShatteringImpact": false,
+				"PrimedChamber": false,
+				"StatusDuration": "0.0",
+				"Cold": "0.0",
+				"HunterMunitions": false,
+				"StatusChance": "440",
+				"GeneralMultiplier": "1.0",
+				"Bane": "55",
+				"FireRate": "180",
+				"ShatteringImpact": true,
+				"CriticalDamage": "90",
+				"Toxin": "165",
+				"Heat": "0.0",
+				"CriticalChance": "660",
+				"Electricity": "0.0",
+				"Reload": "0.0",
+				"Slash": "0.0",
+				"Puncture": "0.0",
+				"Damage": "960 180",
+				"Multishot": "0.0",
+				"Magazine": "0.0"
+			},
+			"WeaponConfig": {
+				"Stance": "SovereignOutcast",
+				"FireMode": "NormalAttack",
+				"MoveSet": "Still",
+				"WeaponName": "Kronen Prime"
+			},
+			"ElementalCombo": {
+				"Magnetic": false,
+				"Corrosive": false,
+				"Radiation": false,
+				"Viral": false,
+				"Gas": false,
+				"Blast": false
+			}
+		},
+		"Phage no riven": {
+			"Mods": {
+				"Impact": "0.0",
+				"AmalgamShatteringImpact": false,
+				"PrimedChamber": false,
+				"StatusDuration": "0.0",
+				"Cold": "0.0",
+				"HunterMunitions": false,
+				"StatusChance": "60",
+				"GeneralMultiplier": "1.0",
+				"Bane": "55",
+				"FireRate": "90",
+				"ShatteringImpact": false,
+				"CriticalDamage": "110",
+				"Toxin": "0.0",
+				"Heat": "90 60",
+				"CriticalChance": "90",
+				"Electricity": "0.0",
+				"Reload": "0.0",
+				"Slash": "0.0",
+				"Puncture": "0.0",
+				"Damage": "165 180",
+				"Multishot": "120 60",
+				"Magazine": "0.0"
+			},
+			"WeaponConfig": {
+				"Stance": "None",
+				"FireMode": "NormalAttack",
+				"MoveSet": "Still",
+				"WeaponName": "Phage"
+			},
+			"ElementalCombo": {
+				"Magnetic": false,
+				"Corrosive": false,
+				"Radiation": false,
+				"Viral": false,
+				"Gas": false,
+				"Blast": false
+			}
+		},
+		"hek": {
+			"Mods": {
+				"Impact": "0.0",
+				"AmalgamShatteringImpact": false,
+				"PrimedChamber": false,
+				"StatusDuration": "0.0",
+				"Cold": "0.0",
+				"HunterMunitions": false,
+				"StatusChance": "0.0",
+				"GeneralMultiplier": "1.0",
+				"Bane": "0.0",
+				"FireRate": "0",
+				"ShatteringImpact": false,
+				"CriticalDamage": "0.0",
+				"Toxin": "90",
+				"Heat": "0.0",
+				"CriticalChance": "0.0",
+				"Electricity": "90",
+				"Reload": "0.0",
+				"Slash": "0.0",
+				"Puncture": "0.0",
+				"Damage": "165",
+				"Multishot": "0.0",
+				"Magazine": "0.0"
+			},
+			"WeaponConfig": {
+				"Stance": "None",
+				"FireMode": "NormalAttack",
+				"MoveSet": "Still",
+				"WeaponName": "Hek"
+			},
+			"ElementalCombo": {
+				"Magnetic": false,
+				"Corrosive": true,
+				"Radiation": false,
+				"Viral": false,
+				"Gas": false,
+				"Blast": false
+			}
+		}
+	}
+}
