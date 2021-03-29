@@ -9,7 +9,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Random;
 
-import org.jfree.chart.plot.ValueMarker;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -566,6 +565,7 @@ public class Enemy {
 	    return fData;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static ArrayList<String> getEnemyNames() {
 		ArrayList<String> enemyList = new ArrayList<String>();
         
@@ -631,7 +631,6 @@ public class Enemy {
 	public void procAssign(Weapon weapon, double critM, int millis) {
 		//NOTE : VIRAL SHOULD ONLY BE APPLIED WHEN APPLYING DAMAGE
 		double random = rProc.nextDouble();
-		double dmg = 0;
 		double []proc_damage = new double[15];
 		if( (random -= weapon.slashChance) < 0) {
 			proc_damage[14] = weapon.slashDOT * weapon.getMultiplier() * critM;
@@ -836,7 +835,7 @@ public class Enemy {
 	}
 	
 	private double subtract_resistance(double modifier, double resist_val) {
-		modifier-=resist_val;
+		modifier -= resist_val;
 		if(modifier < 0)
 			modifier=0;
 		

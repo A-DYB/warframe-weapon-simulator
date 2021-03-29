@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Map;
 
 import org.json.simple.JSONObject;
@@ -299,7 +298,7 @@ public class Weapon {
         JSONObject jo = (JSONObject) obj; 
           
         // getting address 
-        Map<String,Object> data = (Map<String,Object>)jo.get("data"); //TODO figure out struct
+        Map<String,Object> data = (Map<String,Object>)jo.get("data"); 
         Iterator<Map.Entry<String,Object>> itr1 = data.entrySet().iterator(); 
         
         while (itr1.hasNext()) { 

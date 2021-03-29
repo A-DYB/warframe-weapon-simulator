@@ -1,19 +1,14 @@
 package orok.ttk;
 
-import java.awt.Color;
 import java.awt.Desktop;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
+
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Deque;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Random;
 
@@ -22,26 +17,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
-
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartFrame;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.ValueMarker;
-import org.jfree.chart.plot.XYPlot;
-import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
-import com.sun.corba.se.spi.legacy.connection.GetEndPointInfoAgainException;
-
-import orok.ttk.Enemy.Dot;
-
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -52,13 +29,24 @@ import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.swt.events.FocusAdapter;
-import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.ui.forms.widgets.FormToolkit;
+
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartFrame;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+import orok.ttk.Enemy.Dot;
 
 public class MainGUI {
 
@@ -96,19 +84,14 @@ public class MainGUI {
 	public static Combo stance_combo;
 	public static Combo move_combo;
 	
-	private boolean headshot;
 	private boolean graph = false;
 	private boolean combo_is_populated = false;
 	private boolean ui_set_up = false;
 	private static boolean gui_setup = false;
-	
-	private double voidStrike = 1;
+
 	private double armorReduct = 1;
 	private double vigilante;
-	private double realFR;
-	
-	private int voidStrikeCount;
-	private int numPierce;
+
 	private int numSeries = 0;
 	
 	public static Object obj = null;
@@ -305,7 +288,6 @@ public class MainGUI {
 		formToolkit.paintBordersFor(composite);
 		composite.setLayout(new GridLayout(7, false));
 		
-		@SuppressWarnings("unused")
 		Label lblEnemy = formToolkit.createLabel(composite, "Enemy", SWT.NONE);
 		lblEnemy.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		
@@ -899,7 +881,6 @@ public class MainGUI {
 		
 		weaponListCombo = new Combo(composite_3, SWT.NONE);
 		weaponListCombo.addSelectionListener(new SelectionAdapter() {
-			@SuppressWarnings("unchecked")
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				String name = "Custom Build Tab";
@@ -957,10 +938,7 @@ public class MainGUI {
 		stance_combo.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				//TODO
-				//defaultWeapon = new Weapon("Custom Build Tab");
 				if(stance_combo.getText().equals("None")) {
-					//Weapon tableweapon = new Weapon("Custom Build Tab");
 					setupCustomBuild(defaultWeapon.name,defaultWeapon);
 					update_weapon_table(defaultWeapon);
 					stance_procs.clear();
@@ -970,8 +948,6 @@ public class MainGUI {
 				}else {
 					parse_stance(stance_combo.getText());
 					setupCustomBuild(defaultWeapon.name,defaultWeapon);
-					
-					//tableItem8.setText(new String[] {"s/ attack", Double.toString(melee_time)});
 					update_weapon_table(defaultWeapon);
 				}
 			}
@@ -997,7 +973,6 @@ public class MainGUI {
 					stance_multipliers.add(1.0);
 				}else {
 					parse_stance(stance_combo.getText());
-					// TODO ????
 					update_weapon_table(defaultWeapon);
 				}
 				
@@ -2113,7 +2088,6 @@ public class MainGUI {
 		general_multiplier_mod_text = new Text(composite_3, SWT.BORDER);
 		general_multiplier_mod_text.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent arg0) {
-				//TODO
 				if(combo_is_populated && gui_setup) {
 					//Weapon weapon = new Weapon(weaponCombo.getText());
 					setupCustomBuild(defaultWeapon.name,defaultWeapon);
@@ -2417,7 +2391,6 @@ public class MainGUI {
 	
 	@SuppressWarnings("unchecked")
 	private void populate_weapon_combo(Combo weaponListCombo) {
-		//TODO weapon_combo_is_populated
 		weaponListCombo.removeAll();
 		
 		ArrayList<String> init_wL = new ArrayList<String>();
@@ -3111,7 +3084,6 @@ public class MainGUI {
 		}
 		else {
 			s = fire_rate_mod_text.getText();
-			//TODO
 			//Find more elegant way to handle melee fire rate
 			weapon.fireRate = weapon.base_fireRate * percent_to_double( parse_double_textbox(s), 1);
 			weapon.fire_rate_non_melee = weapon.base_fireRate *percent_to_double( parse_double_textbox(s), 1);		
