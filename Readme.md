@@ -1,7 +1,7 @@
 # Pocket Simulacrum
 This uses the Monte Carlo method. That means using random sampling, many simulations are averaged to get the result. 
 
-Most things are implemented with the exception of some weapon specific functionality (see below: Things that may not be added, unless largely requested). Melee attack spacing uses the time to complete the moveset divided by the number of hits.
+Most things are implemented with the exception of some weapon specific functionality (see below: Things that may not be added). Melee attack spacing uses the time to complete the moveset divided by the number of hits.
 
 ![](images/simulation.png)
 
@@ -27,7 +27,7 @@ Most things are implemented with the exception of some weapon specific functiona
 
 -DR for toxin damage against shielded demolyst (inconsistent in-game anyways)
 
-## Things that may not be added, unless largely requested
+## Things that may not be added
 -Spool up weapon functionality
 
 -Beam weapon damage ramp up
