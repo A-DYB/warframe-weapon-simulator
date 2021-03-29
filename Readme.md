@@ -1,5 +1,7 @@
 # Pocket Simulacrum
-This is a Monte Carlo simulator. That means using probability, many simulations are averaged to get the result. This aims to be REASONABLY close to perfect simulation, up to my discretion.
+This uses Monte Carlo methods. That means using random sampling, many simulations are averaged to get the result. 
+
+Most things are implemented with the exception of some weapon specific functionality (see below: Things that may not be added, unless largely requested). Melee attack spacing uses the time to complete the moveset divided by the number of hits.
 
 ![](images/simulation.png)
 
@@ -29,6 +31,10 @@ This is a Monte Carlo simulator. That means using probability, many simulations 
 -Spool up weapon functionality
 
 -Beam weapon damage ramp up
+
+## Download
+
+https://github.com/A-DYB/warframe-simulator/releases/
 
 ## Imports
 JfreeChart download: https://www.jfree.org/jfreechart/download.html
