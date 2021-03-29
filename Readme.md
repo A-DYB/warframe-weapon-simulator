@@ -13,3 +13,6 @@ This is a Monte Carlo simulator. That means using probability, many simulations 
 -Get build information from Warframe's API
 
 -Release JAR for easy execution (I have to figure out licensing)
+
+## Imports
+JfreeChart download: https://www.jfree.org/jfreechart/download.html
