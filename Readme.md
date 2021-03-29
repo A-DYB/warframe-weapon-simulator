@@ -22,6 +22,8 @@ Most things are implemented with the exception of some weapon specific functiona
 
 ~~Release JAR for easy execution (I have to figure out licensing)~~
 
+-Add enemy specific DR to JSON
+
 ## Known issues
 -Status duration not fully set up
 
