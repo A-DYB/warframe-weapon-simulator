@@ -1,5 +1,5 @@
 # Pocket Simulacrum
-This uses Monte Carlo methods. That means using random sampling, many simulations are averaged to get the result. 
+This uses the Monte Carlo method. That means using random sampling, many simulations are averaged to get the result. 
 
 Most things are implemented with the exception of some weapon specific functionality (see below: Things that may not be added, unless largely requested). Melee attack spacing uses the time to complete the moveset divided by the number of hits.
 
