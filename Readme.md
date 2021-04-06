@@ -1,7 +1,7 @@
 # Pocket Simulacrum
-This uses the Monte Carlo method. That means using random sampling, many simulations are averaged to get the result. 
+Using random sampling, many simulations are averaged to get the result. 
 
-Most things are implemented with the exception of some weapon specific functionality (see below: Things that may not be added). Melee attack spacing uses the time to complete the moveset divided by the number of hits.
+Simulations are only allowed to run until 20 seconds for performance reasons.
 
 ![](images/simulation.png)
 
@@ -12,27 +12,27 @@ Most things are implemented with the exception of some weapon specific functiona
 ## Todo
 ~~Major optimizations~~ ~2x faster
 
--Get weapon info directly from mobile export
+~~-Get weapon info directly from mobile export~~
 
--Clean up JSON 
-
--Make some functionality to display individual damage numbers (for easier bug finding)
+~~-Make some functionality to display individual damage numbers (for easier bug finding)~~
 
 -Get build information from Warframe's API
 
 ~~Release JAR for easy execution (I have to figure out licensing)~~
 
--Add enemy specific DR to JSON
+-Add enemy specific DR functionality
 
 ## Known issues
--Status duration not fully set up
+~~-Status duration not fully set up~~
 
 -DR for toxin damage against shielded demolyst (inconsistent in-game anyways)
 
-## Things that may not be added
+-Heat armor regeneration not working correctly
+
+## Things that may not be added (too weapon specific)
 -Spool up weapon functionality
 
--Beam weapon damage ramp up
+~~-Beam weapon damage ramp up~~
 
 ## Download
 
@@ -40,3 +40,5 @@ https://github.com/A-DYB/warframe-simulator/releases/
 
 ## Imports
 JfreeChart download: https://www.jfree.org/jfreechart/download.html
+
+(you don't have to download this, it is just a license requirement to have a link included if you want to replace the jar with a different version)
