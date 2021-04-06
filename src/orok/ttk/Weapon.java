@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -26,9 +27,11 @@ public class Weapon {
 	public int ammo;
 	double additive_crit_damage;
 	String weapon_class;
+	String sub_class;
 	String stance = "None";
-	String move_set = "Still";
+	String move_set = "Neutral";
 
+	/*
 	public double impact;
 	public double slash;
 	public double puncture;
@@ -45,6 +48,7 @@ public class Weapon {
 	public double viral;
 	public double void1;
 	public double void2;
+	*/
 	
 	//base stats
 	public double base_crit_chance;
@@ -56,6 +60,7 @@ public class Weapon {
 	public int base_magazine;
 	public int base_ammo;
 
+	/*
 	public double base_impact;
 	public double base_slash;
 	public double base_puncture;
@@ -71,8 +76,10 @@ public class Weapon {
 	public double base_viral;
 	public double base_void1;
 	public double base_void2;
+	*/
 	
-	public double[] damage_array = new double[15];
+	public double[] damage_array = new double[20];
+	public double[] base_damage_array = new double[20];
 	
 	//chances
 	public double slashChance;
@@ -116,6 +123,8 @@ public class Weapon {
 	double beam_multishot = 1;
 	double beam_multishot_chance;
 	double beam_multishot_multiplier = 1;
+	double beam_ramp_base = 1;
+	double beam_ramp_multiplier = 1;
 	double headshot_multiplier = 1;
 	boolean headshot = false;
 	public double quanta = 1;
@@ -140,6 +149,12 @@ public class Weapon {
 		}
 		public void increment() {
 			index ++;
+			
+			//System.out.println(beam_ramp_multiplier);
+			//beam ramp
+			beam_ramp_multiplier = Math.min( beam_ramp_base + ((1-beam_ramp_base)/0.6)*index/fireRate , 1 );
+			
+			//reload
 			if(index > size - 1) {
 				current_time = fire_offset[index-1];
 				index = 0;
@@ -148,7 +163,18 @@ public class Weapon {
 
 				}
 				
+				//set beam ramp multiplier
+				//change beam ramp base from when reload ends
+				if(reload > 0.8) {
+					//decay over 2 s
+					double decay_time = (reload - 0.8);
+					beam_ramp_base = beam_ramp_multiplier - decay_time * (beam_ramp_multiplier - beam_ramp_base)/2;
+				}
+				beam_ramp_multiplier = beam_ramp_base;
+				
 			}
+			
+			
 		}
 		public double get_event_time() {
 			return fire_offset[index];
@@ -190,7 +216,7 @@ public class Weapon {
 	        MainGUI.stance_combo.select(stance_index);
 	        MainGUI.move_combo.select(move_index);
 	        
-			MainGUI.setupCustomBuild(this.name, this);
+			//setupCustomBuild();
 
 		}else {
 			//go look for name in build 
@@ -208,7 +234,7 @@ public class Weapon {
 	        MainGUI.stance_combo.select(stance_index);
 	        MainGUI.move_combo.select(move_index);
 	        
-			MainGUI.setupCustomBuild(this.name, this);
+			//setupCustomBuild();
 			//this.name = MainGUI.weaponListCombo.getText();
 			
 		}
@@ -216,40 +242,30 @@ public class Weapon {
 		
 		
 		fo = new Firing_offsets();
+		setupCustomBuild();
 		
-		setup_base_array();
+		//setup_base_array();
 	}
 	@SuppressWarnings("unchecked")
 	public ArrayList<String> parseStanceList() throws FileNotFoundException, IOException, ParseException{
 		ArrayList<String> stanceList = new ArrayList<String>();
           
         // typecasting obj to JSONObject 
-        JSONObject jo = (JSONObject) MainGUI.obj; 
+		Object s_obj = new JSONParser().parse(new FileReader("stances.json"));
+        JSONObject jo = (JSONObject) s_obj; 
           
         // getting address 
-        Map<String,Object> data = (Map<String,Object>)jo.get("data"); 
-        Map<String,Object> stances = (Map<String,Object>)data.get("Stances");
+        Map<String,Object> stances = (Map<String,Object>)jo;
         
         for (Map.Entry<String, Object> entry : stances.entrySet()) {
 
             Map<String,Object> cur_stance = (Map<String,Object>)stances.get(entry.getKey());
             String cl = (String)cur_stance.get("Class");
-            if(cl.equals(this.weapon_class) ) {
+            if(cl.equals(this.sub_class) ) {
             	stanceList.add((String)entry.getKey());
             }
         }
-        /*
-        Iterator<Map.Entry<String,Object>> itr1 = stances.entrySet().iterator(); 
-        while (itr1.hasNext()) { 
 
-            Map.Entry<String,Object> pair = itr1.next(); 
-            Map<String,Object> elem = (Map<String,Object>)pair;
-            
-            if(elem.get("Class").equals(this.weapon_class) ) {
-            	stanceList.add((String)pair.getKey());
-            }
-        } 
-        */
         Collections.sort(stanceList);
 		
 		return stanceList;
@@ -258,13 +274,12 @@ public class Weapon {
 	@SuppressWarnings("unchecked")
 	public static ArrayList<String> parseWeaponList() throws FileNotFoundException, IOException, ParseException{
 		ArrayList<String> weaponList = new ArrayList<String>();
-          
+		Object obj = new JSONParser().parse(new FileReader("weapons.json"));
         // typecasting obj to JSONObject 
-        JSONObject jo = (JSONObject) MainGUI.obj; 
+        JSONObject jo = (JSONObject) obj; 
           
         // getting address 
-        Map<String,Object> data = (Map<String,Object>)jo.get("data"); 
-        Map<String,Object> weapons = (Map<String,Object>)data.get("Weapons");
+        Map<String,Object> weapons = (Map<String,Object>)jo;
         Map<String,Object> selectedWep;
         Iterator<Map.Entry<String,Object>> itr1 = weapons.entrySet().iterator(); 
         while (itr1.hasNext()) { 
@@ -298,7 +313,7 @@ public class Weapon {
         JSONObject jo = (JSONObject) obj; 
           
         // getting address 
-        Map<String,Object> data = (Map<String,Object>)jo.get("data"); 
+        Map<String,Object> data = (Map<String,Object>)jo; 
         Iterator<Map.Entry<String,Object>> itr1 = data.entrySet().iterator(); 
         
         while (itr1.hasNext()) { 
@@ -309,31 +324,17 @@ public class Weapon {
 		
 		return buildList;
 	}
-	public void clearHeat() {
-		heat = 0;
-	}
-	public void clearToxin() {
-		toxin = 0;
-	}
-	public void clearCold() {
-		cold = 0;
-	}
-	public void clearElectricity() {
-		electricity = 0;
-	}
 
 	@SuppressWarnings("unchecked")
 	private void getStats(String name) throws FileNotFoundException, IOException, ParseException {
-		Map<String,Object> normalAttack;
         // parsing file 
-        Object obj = new JSONParser().parse(new FileReader("weapons-wiki.json")); 
+        Object obj = new JSONParser().parse(new FileReader("weapons.json")); 
           
         // typecasting obj to JSONObject 
         JSONObject jo = (JSONObject) obj; 
           
         // getting address 
-        Map<String,Object> data = (Map<String,Object>)jo.get("data"); 
-        Map<String,Object> weapons = (Map<String,Object>)data.get("Weapons");
+        Map<String,Object> weapons = (Map<String,Object>)jo;
         Map<String,Object> selectedWep;
         if(weapons.get(name) != null) {
             selectedWep =(Map<String,Object>)weapons.get(name);
@@ -341,58 +342,76 @@ public class Weapon {
         	selectedWep =(Map<String,Object>)weapons.get(MainGUI.weaponListCombo.getItem(0));
         	MainGUI.weaponListCombo.select(0);
         }
-        weapon_class = (String)selectedWep.get("Class");
-
-        normalAttack =((Map<String,Object>)selectedWep.get("NormalAttack"));
-        if(normalAttack == null) {
-        	normalAttack =((Map<String,Object>)selectedWep.get("ChargeAttack"));
-        }
+        weapon_class = (String)selectedWep.get("productCategory");
+        sub_class = (String)selectedWep.get("type");
         
-		//Map<String,Object> attackMode = ((Map<String,Object>)selectedWep.getOrDefault(MainGUI.fireModeCombo.getText(),(Map<String,Object>)selectedWep.get("NormalAttack")));
-        Map<String,Object> attackMode = (Map<String, Object>) (selectedWep.getOrDefault(MainGUI.fireModeCombo.getText(),normalAttack));
-        
-        Map<String,Object> dmg =((Map<String,Object>)attackMode.get("Damage"));  
-        
-		base_pellet = ((Number)attackMode.getOrDefault("PelletCount", 1.0)).doubleValue();
+        //first get stats of the primary fire
+        base_pellet = ((Number)selectedWep.getOrDefault("multishot", 1.0)).doubleValue();
 		if(base_pellet > 1 ) {
 			multishot_scalar = base_pellet/2;
 		}
-        
-		base_slash = ((Number)dmg.getOrDefault("Slash", 0.0)).doubleValue()/base_pellet;
-		base_puncture =((Number)dmg.getOrDefault("Puncture", 0.0)).doubleValue()/base_pellet;
-		base_impact =((Number)dmg.getOrDefault("Impact", 0.0)).doubleValue()/base_pellet;
-		base_cold = ((Number)dmg.getOrDefault("Cold", 0.0)).doubleValue()/base_pellet;
-		base_electricity = ((Number)dmg.getOrDefault("Electricity", 0.0)).doubleValue()/base_pellet;
-		base_heat = ((Number)dmg.getOrDefault("Heat", 0.0)).doubleValue()/base_pellet;
-		base_toxin = ((Number)dmg.getOrDefault("Toxin", 0.0)).doubleValue()/base_pellet;
-		base_blast = ((Number)dmg.getOrDefault("Blast", 0.0)).doubleValue()/base_pellet;
-		base_corrosive = ((Number)dmg.getOrDefault("Corrosive", 0.0)).doubleValue()/base_pellet;
-		base_gas = ((Number)dmg.getOrDefault("Gas", 0.0)).doubleValue()/base_pellet;
-		base_magnetic = ((Number)dmg.getOrDefault("Magnetic", 0.0)).doubleValue()/base_pellet;
-		base_radiation = ((Number)dmg.getOrDefault("Radiation", 0.0)).doubleValue()/base_pellet;
-		base_viral = ((Number)dmg.getOrDefault("Viral", 0.0)).doubleValue()/base_pellet;
-		base_void1 = ((Number)dmg.getOrDefault("Void1", 0.0)).doubleValue()/base_pellet;
-		base_void2 = ((Number)dmg.getOrDefault("Void2", 0.0)).doubleValue()/base_pellet;
+		JSONArray jsonArray = (JSONArray)selectedWep.get("damagePerShot"); 
 
-		totBaseDMG =  impact + puncture + slash + cold+ electricity+ heat + toxin + blast + corrosive + gas + magnetic + radiation+ viral;
+		damage_array = fillData(jsonArray);
+		base_damage_array = damage_array;
 		
-		base_crit_chance = ((Number)attackMode.getOrDefault("CritChance", ((Number)normalAttack.getOrDefault("CritChance", 0.0)).doubleValue() )).doubleValue();
-		base_crit_multiplier = ((Number)attackMode.getOrDefault("CritMultiplier", ((Number)normalAttack.getOrDefault("CritMultiplier", 0.0)).doubleValue() )).doubleValue();
-		if(attackMode.get("ChargeTime") != null) {
-			base_fireRate = 1/((Number)attackMode.getOrDefault("ChargeTime", 1.0)).doubleValue();
+		totBaseDMG =  array_sum(damage_array);
+		
+		base_crit_chance = ((Number)selectedWep.get("criticalChance")).doubleValue();
+		base_crit_multiplier = ((Number)selectedWep.get("criticalMultiplier")).doubleValue();
+		
+		if(selectedWep.get("chargeTime") != null) {
+			base_fireRate = 1/((Number)selectedWep.get("chargeTime")).doubleValue();
 		}else
-			base_fireRate = ((Number)attackMode.getOrDefault("FireRate", ((Number)normalAttack.getOrDefault("FireRate", 1.0)).doubleValue() )).doubleValue();
-		ammoCost = ((Number)attackMode.getOrDefault("AmmoCost", ((Number)normalAttack.getOrDefault("AmmoCost", 1.0)).doubleValue() )).doubleValue();
+			base_fireRate = ((Number)selectedWep.get("fireRate")).doubleValue();
+		
+		ammoCost = ((Number)selectedWep.getOrDefault("ammoCost", 1 )).doubleValue();
+		base_status = ((Number)selectedWep.getOrDefault("procChance", 0)).doubleValue();
+		base_reload = ((Number)selectedWep.getOrDefault("reloadTime", 0 )).doubleValue();
+		base_ammo = ((Number)selectedWep.getOrDefault("maxAmmo", 540 )).intValue();
+		base_magazine = ((Number)selectedWep.getOrDefault("magazineSize", 100)).intValue();
+		shot_type = (String)selectedWep.getOrDefault("trigger", "AUTO");
+        
+        //swap in stats of selected firemode
+        if(!MainGUI.fireModeCombo.getText().contentEquals("Primary") && !MainGUI.fireModeCombo.getText().contentEquals("")) {
+        	selectedWep = (Map<String, Object>) selectedWep.get("OtherFireModes");
+        	selectedWep = (Map<String, Object>) selectedWep.get(MainGUI.fireModeCombo.getText());
+        	
+        	base_pellet = ((Number)selectedWep.getOrDefault("multishot", base_pellet)).doubleValue();
+    		if(base_pellet > 1 ) {
+    			multishot_scalar = base_pellet/2;
+    		}
+    		JSONArray jsonArray2 = (JSONArray)selectedWep.get("damagePerShot"); 
+
+    		// Extract numbers from JSON array.
+    		damage_array = fillData(jsonArray2);
+
+    		totBaseDMG =  array_sum(damage_array);
+    		
+    		base_crit_chance = ((Number)selectedWep.getOrDefault("criticalChance", base_crit_chance)).doubleValue();
+    		base_crit_multiplier = ((Number)selectedWep.getOrDefault("criticalMultiplier", base_crit_multiplier)).doubleValue();
+    		
+    		if(selectedWep.get("chargeTime") != null) {
+    			base_fireRate = 1/((Number)selectedWep.get("chargeTime")).doubleValue();
+    		}else
+    			base_fireRate = ((Number)selectedWep.getOrDefault("fireRate", base_fireRate)).doubleValue();
+    		
+    		ammoCost = ((Number)selectedWep.getOrDefault("ammoCost", ammoCost)).doubleValue();
+    		base_status = ((Number)selectedWep.getOrDefault("procChance", base_status)).doubleValue();
+    		base_reload = ((Number)selectedWep.getOrDefault("reloadTime", base_reload)).doubleValue();
+    		base_ammo = ((Number)selectedWep.getOrDefault("maxAmmo", base_ammo )).intValue();
+    		base_magazine = ((Number)selectedWep.getOrDefault("magazineSize", base_magazine)).intValue();
+    		shot_type = (String)selectedWep.getOrDefault("trigger", shot_type);
+        }
+        
+        if(shot_type.equals("HELD")) {
+        	Map<String,Object> bm = (Map<String, Object>) selectedWep.get("damageRamp");
+        	beam_ramp_base = ((Number)bm.getOrDefault("min", 1)).doubleValue();
+        	beam_ramp_multiplier = beam_ramp_base;
+        }
+        
 
 		
-		double burstCount = ((Number)attackMode.getOrDefault("BurstCount", 1.0)).doubleValue();
-		
-		base_status = ((Number)attackMode.getOrDefault("StatusChance", ((Number)normalAttack.getOrDefault("StatusChance", 0.0)).doubleValue())).doubleValue();
-		//status = 1-Math.pow(1 - status, 1/pellet);
-		base_reload = ((Number)selectedWep.getOrDefault("Reload", ((Number)normalAttack.getOrDefault("Reload", 0.0)).doubleValue()) ).doubleValue();
-		base_ammo = ((Number)selectedWep.getOrDefault("MaxAmmo", ((Number)normalAttack.getOrDefault("MaxAmmo", 100000.0)).intValue()) ).intValue();
-		base_magazine = (int)((Number)selectedWep.getOrDefault("Magazine", ((Number)normalAttack.getOrDefault("Magazine", 100.0)).doubleValue())).doubleValue();
-		shot_type = (String)normalAttack.getOrDefault("ShotType", "Hit-Scan");
 
 	}
 	@SuppressWarnings("unchecked")
@@ -405,8 +424,7 @@ public class Weapon {
         JSONObject jo = (JSONObject) obj; 
           
         // getting address 
-        Map<String,Object> data = (Map<String,Object>)jo.get("data"); 
-        Map<String,Object> selectedWep =(Map<String,Object>)data.get(name);
+        Map<String,Object> selectedWep =(Map<String,Object>)jo.get(name);
         Map<String,Object> mods = (Map<String,Object>)selectedWep.get("Mods");
         Map<String,Object> elem_comb = (Map<String,Object>)selectedWep.get("ElementalCombo");
         Map<String,Object> weap_conf = (Map<String,Object>)selectedWep.get("WeaponConfig");
@@ -446,43 +464,185 @@ public class Weapon {
         MainGUI.weaponListCombo.select(index);
         
         stance = (String)weap_conf.getOrDefault("Stance", "None");
-        move_set = (String)weap_conf.getOrDefault("MoveSet", "Still");
-        //index = MainGUI.fireModeCombo.indexOf( (String)weap_conf.getOrDefault("FireMode", "NormalAttack") );
-        //MainGUI.fireModeCombo.select(index);
-        
-        
-        
+        move_set = (String)weap_conf.getOrDefault("MoveSet", "Neutral");
+ 
         MainGUI.set_up_fire_mode_combo();
-        
-        Weapon tableWeapon = new Weapon("Custom Build Tab");
-        MainGUI.update_weapon_table(tableWeapon);
         
         this.name = wep_name;
         
 	}
-
-	public void quantize() {
-		slash = Math.round(slash/quanta)*quanta;
-		impact = Math.round(impact/quanta)*quanta;
-		puncture = Math.round(puncture/quanta)*quanta;
-		cold = Math.round(cold/quanta)*quanta;
-		electricity = Math.round(electricity/quanta)*quanta;
-		toxin = Math.round(toxin/quanta)*quanta;
-		heat = Math.round(heat/quanta)*quanta;
-		blast = Math.round(blast/quanta)*quanta;
-		corrosive = Math.round(corrosive/quanta)*quanta;
-		radiation = Math.round(radiation/quanta)*quanta;
-		viral = Math.round(viral/quanta)*quanta;
-		gas = Math.round(gas/quanta)*quanta;
-		magnetic = Math.round(magnetic/quanta)*quanta;
+	
+	public void setupCustomBuild() {
+		
+		String s = MainGUI.damage_mod_text.getText();
+		double damage_mods = MainGUI.percent_to_double( MainGUI.parse_double_textbox(s), 1);
+		
+		s = MainGUI.bane_mod_text.getText();
+		double bane_dmg = MainGUI.percent_to_double( MainGUI.parse_double_textbox(s), 1);
+		
+		s = MainGUI.general_multiplier_mod_text.getText();
+		double general_mult = MainGUI.parse_double_multiply_textbox(s);
+		
+		double combined_multipliers = bane_dmg * general_mult;
+		//TODO
+		//setup base damages
+		damage_array = array_scale(base_damage_array, damage_mods * combined_multipliers);
+        
+        totBaseDMG = array_sum(damage_array);
+        
+        quanta = totBaseDMG / 16;
+        
+        //set up modded physical
+        s = MainGUI.slash_mod_text.getText();
+        damage_array[index("slash")] = damage_array[index("slash")] * MainGUI.percent_to_double( MainGUI.parse_double_textbox(s), 1);
+        slashDOT = 0.35 * totBaseDMG * bane_dmg ;
+		
+        s = MainGUI.puncture_mod_text.getText();
+        damage_array[index("puncture")] = damage_array[index("puncture")] * MainGUI.percent_to_double( MainGUI.parse_double_textbox(s), 1);
+        
+        s = MainGUI.impact_mod_text.getText(); 
+        damage_array[index("impact")] = damage_array[index("impact")] * MainGUI.percent_to_double( MainGUI.parse_double_textbox(s), 1);
+        
+        //set up modded elemental
+        s = MainGUI.cold_mod_text.getText();
+        damage_array[index("cold")] += totBaseDMG*MainGUI.percent_to_double( MainGUI.parse_double_textbox(s), 0);
+        
+        s = MainGUI.electricity_mod_text.getText();
+        damage_array[index("electricity")] += totBaseDMG * MainGUI.percent_to_double( MainGUI.parse_double_textbox(s), 0);
+        electricityDOT = totBaseDMG * ( MainGUI.percent_to_double( MainGUI.parse_double_textbox(s), 1)/2.0 ) * bane_dmg;
+        
+        s = MainGUI.heat_mod_text.getText();
+        damage_array[index("heat")] += totBaseDMG * MainGUI.percent_to_double( MainGUI.parse_double_textbox(s), 0);
+        heatDOT = totBaseDMG * ( MainGUI.percent_to_double( MainGUI.parse_double_textbox(s), 1)/2.0 ) * bane_dmg;
+        
+        s = MainGUI.toxin_mod_text.getText();
+        damage_array[index("toxin")] += totBaseDMG*MainGUI.percent_to_double( MainGUI.parse_double_textbox(s), 0);
+        toxinDOT = totBaseDMG * ( MainGUI.percent_to_double( MainGUI.parse_double_textbox(s), 1)/2.0 ) * bane_dmg;
+                        
+        gasDOT = 0.5 * totBaseDMG * bane_dmg;
+        
+        if(MainGUI.btnCorrosive.getSelection()) {
+        	damage_array[index("corrosive")] += damage_array[index("electricity")] + damage_array[index("toxin")];
+        	damage_array[index("electricity")] = 0;
+        	damage_array[index("toxin")] = 0;
+        }
+        if(MainGUI.btnGas.getSelection()) {
+        	damage_array[index("gas")] += damage_array[index("heat")] + damage_array[index("toxin")];
+        	damage_array[index("heat")] =0;
+        	damage_array[index("toxin")] = 0;
+        }
+        if(MainGUI.btnRadiation.getSelection()) {
+        	damage_array[index("radiation")] += damage_array[index("electricity")] + damage_array[index("heat")];
+        	damage_array[index("electricity")] = 0;
+        	damage_array[index("heat")] = 0;
+        }
+        if(MainGUI.btnViral.getSelection()) {
+        	damage_array[index("viral")] += damage_array[index("cold")] + damage_array[index("toxin")];
+        	damage_array[index("toxin")] = 0;
+        	damage_array[index("cold")] = 0;
+        	
+        }
+        if(MainGUI.btnBlast.getSelection()) {
+        	damage_array[index("blast")] += damage_array[index("heat")] + damage_array[index("cold")];
+        	damage_array[index("heat")] = 0;
+        	damage_array[index("cold")] = 0;
+        }
+        if(MainGUI.btnMagnetic.getSelection()) {
+        	damage_array[index("magnetic")] += damage_array[index("electricity")] + damage_array[index("cold")];
+        	damage_array[index("cold")] = 0;
+        	damage_array[index("electricity")] =0;
+        }
+		
+        totProportionalDMG = array_sum(damage_array);
+        
+        //aux stats
+		s = MainGUI.crit_chance_mod_text.getText();
+		critChance = base_crit_chance * MainGUI.percent_to_double( MainGUI.parse_double_textbox(s), 1);
+		
+		s = MainGUI.crit_damage_mod_text.getText();
+		critMultiplier = base_crit_multiplier *MainGUI.percent_to_double( MainGUI.parse_double_textbox(s), 1);
+		
+		if(!MainGUI.stance_combo.getText().equals("None") && MainGUI.melee_time!=0) {
+			s = MainGUI.fire_rate_mod_text.getText();
+			fireRate = base_fireRate * MainGUI.percent_to_double( MainGUI.parse_double_textbox(s), 1)/MainGUI.melee_time;
+			fire_rate_non_melee = base_fireRate *MainGUI.percent_to_double( MainGUI.parse_double_textbox(s), 1);
+			//System.out.println(fireRate);
+			
+		}
+		else {
+			s = MainGUI.fire_rate_mod_text.getText();
+			//Find more elegant way to handle melee fire rate
+			fireRate = base_fireRate * MainGUI.percent_to_double( MainGUI.parse_double_textbox(s), 1);
+			fire_rate_non_melee = base_fireRate *MainGUI.percent_to_double( MainGUI.parse_double_textbox(s), 1);		
+		}
+		
+		s = MainGUI.status_chance_mod_text.getText();
+		status = base_status *MainGUI.percent_to_double( MainGUI.parse_double_textbox(s), 1);
+		
+		s = MainGUI.multishot_mod_text.getText();
+		if(shot_type.equals("HELD")) {
+			beam_multishot = base_pellet * MainGUI.percent_to_double( MainGUI.parse_double_textbox(s), 1);
+			
+			pellet = 1;
+			status = beam_multishot * status;
+		}
+		else {
+			pellet = base_pellet *MainGUI.percent_to_double( MainGUI.parse_double_textbox(s), 1);
+		}
+		
+		multishot_mods = MainGUI.percent_to_double( MainGUI.parse_double_textbox(s), 1);
+		
+		
+		s = MainGUI.reload_mod_text.getText();
+		reload = base_reload /MainGUI.percent_to_double( MainGUI.parse_double_textbox(s), 1);
+		
+		s = MainGUI.magazine_mod_text.getText();
+		magazine = (int) (base_magazine *MainGUI.percent_to_double( MainGUI.parse_double_textbox(s), 1));
+		
+		s = MainGUI.status_duration_mod_text.getText();
+		statusDurationPercent =MainGUI.percent_to_double( MainGUI.parse_double_textbox(s), 1);	
+		
+		s = MainGUI.additive_crit_damage_text.getText();
+		additive_crit_damage = MainGUI.parse_double_textbox(s);	
+		
+		//setup status
+		//setStatus();
+		slashChance = damage_array[index("slash")]/ totProportionalDMG;
+		corrosiveChance = damage_array[index("corrosive")]/ totProportionalDMG;
+		viralChance = damage_array[index("viral")]/ totProportionalDMG;
+		toxinChance = damage_array[index("toxin")]/ totProportionalDMG;
+		heatChance = damage_array[index("heat")]/ totProportionalDMG;
+		gasChance = damage_array[index("gas")]/ totProportionalDMG;
+		magneticChance = damage_array[index("magnetic")]/ totProportionalDMG;
+		coldChance = damage_array[index("cold")]/ totProportionalDMG;
+		electricityChance = damage_array[index("electricity")]/ totProportionalDMG;
+		
+		quantize();
+		
+		reload_ms = (int) (reload * 1000 + 1);
+		critTier = (int)critChance + 1;
+		highCC = critChance % 1;
+		if (highCC == 0 && critChance != 0) // corrects modulo if cc is whole num, but realcritchance will stay 0 if cc is 0
+			highCC = 1;
+		
+		msPerShot = (int) Math.round(1000 / fireRate);
+		multiShotChance = pellet % 1;
+		beam_multishot_chance = beam_multishot % 1;
 		
 	}
-	public double getTotalDamage() {
-		return impact+puncture+slash+cold+heat+toxin+electricity+corrosive+radiation+magnetic+gas+blast+viral+void1+void2;
-	}
-	public void setSimulationStats() {
 
+	public void quantize() {
+		int l = damage_array.length;
+		for(int i=0;i<l;i++) {
+			damage_array[i] = Math.round(damage_array[i]/quanta)*quanta;
+		}
+		
 	}
+	
+	public double getTotalDamage() {
+		return array_sum(damage_array);
+	}
+	
 
 	public void setHunter(boolean hunter) {//
 		this.hunter = hunter;
@@ -508,7 +668,7 @@ public class Weapon {
 		this.multiplier = multiplier;
 	}
 	public double getMultiplier() {
-		multiplier = melee_multiplier * primed_chamber_multiplier * beam_multishot_multiplier * headshot_multiplier;
+		multiplier = melee_multiplier * primed_chamber_multiplier * beam_multishot_multiplier * headshot_multiplier * beam_ramp_multiplier;
 		return multiplier;
 	}
 	
@@ -551,46 +711,74 @@ public class Weapon {
 	public void setMultiShotChance(double multiShotChance) {
 		this.multiShotChance = multiShotChance;
 	}
-	public void setup_base_array() {
-	    /*
-	    0 impact 
-	    1 puncture
-	    2 Slash
-	    3 Heat
-	    4 Cold
-	    5 Electric
-	    6 Toxin
-	    7 Blast
-	    8 Radiation
-	    9 Gas
-	    10 Magnetic
-	    11 Viral
-	    12 Corrosive
-	    13 
-	    14 
-	    15 
-	    16
-	    17
-	    18
-	    19
-	    */
+
+	public double array_sum(double[] a1) {
+		int l1 = a1.length;
+		double result = 0;
+		for(int i = 0; i < l1; i++) {
+			result += a1[i];
+		}
+
+		return result;
 		
-		damage_array[0] = impact;
-		damage_array[1] = puncture;
-		damage_array[2] = slash;
-		damage_array[3] = heat;
-		damage_array[4] = cold;
-		damage_array[5] = electricity;
-		damage_array[6] = toxin;
-		damage_array[7] = blast;
-		damage_array[8] =  radiation;
-		damage_array[9] = gas;
-		damage_array[10] = magnetic;
-		damage_array[11] =  viral;
-		damage_array[12] = corrosive;
-		damage_array[13] =  void1;
-		damage_array[14] =  0;
+	}
+	public double[] array_scale(double[] a1, double d) {
+		int l1 = a1.length;
+		double[] res = new double[20];
 		
+		for(int i =0;i<l1;i++) {
+			res[i] = a1[i] * d;
+		}
+
+		return res;
+		
+	}
+	private double[] fillData(JSONArray jsonArray){
+
+		double[] fData = new double[jsonArray.size()];
+
+	    for (int i = 0; i < jsonArray.size(); i++) {
+	    	double d = 0.0;
+	    	if (jsonArray.get(i) instanceof Number) {
+	    	    d = ((Number) jsonArray.get(i)).doubleValue();
+	    	}
+	    	fData[i] = d;
+	    }
+	    return fData;
+	}
+	public static int index(String s) {
+	    if (s.equals("impact"))
+	        return 0;
+	    else if (s.equals("puncture"))
+	        return 1;
+	    else if (s.equals("slash"))
+	        return 2;
+	    else if (s.equals("heat"))
+	        return 3;
+	    else if (s.equals("cold"))
+	        return 4;
+	    else if (s.equals("electricity"))
+	        return 5;
+	    else if (s.equals("toxin"))
+	        return 6;
+	    else if (s.equals("blast"))
+	        return 7;
+	    else if (s.equals("radiation"))
+	        return 8;
+	    else if (s.equals("gas"))
+	        return 9;
+	    else if (s.equals("magnetic"))
+	        return 10;
+	    else if (s.equals("viral"))
+	        return 11;
+	    else if (s.equals("corrosive"))
+	        return 12;
+	    else if (s.equals("void"))
+	        return 13;
+	    else if (s.equals("true"))
+	        return 14;
+	    System.out.printf("Invalid damage type name," );
+	    return 0;
 	}
 
 }

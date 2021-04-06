@@ -94,7 +94,7 @@ public class MainGUI {
 
 	private int numSeries = 0;
 	
-	public static Object obj = null;
+	public static Object wep_obj = null;
 	private Button btnEidolon;
 	private Spinner bHealthSpinner;
 	private Spinner bShieldSpinner;
@@ -158,6 +158,7 @@ public class MainGUI {
 	private static TableItem tableItem26 ;
 	private static TableItem tableItem27 ;
 	private static TableItem tableItem28 ;
+	private static TableItem tableItem29 ;
 	
 	private static TableItem tableItem_1;
 	private static TableItem tableItem_2;
@@ -171,7 +172,7 @@ public class MainGUI {
 	
 	public ArrayList<Double> stance_multipliers = new ArrayList<Double>();
 	public ArrayList<Integer> stance_procs = new ArrayList<Integer>();
-	private static double melee_time=1;
+	static double melee_time=1;
 	private Button btnDemolyst;
 	private Text txtSeriesName;
 	private Spinner health_scale_spinner;
@@ -209,9 +210,9 @@ public class MainGUI {
 	public static Text general_multiplier_mod_text;
 	private Label lblMiscMultipliers;
 	
-	private Weapon defaultWeapon;
+	private Weapon default_weapon;
 	private Enemy default_enemy;
-	private static Text additive_crit_damage_text;
+	static Text additive_crit_damage_text;
 
 	/**
 	 * Launch the application.
@@ -247,11 +248,11 @@ public class MainGUI {
 	protected void createContents() {
 		shell = new Shell();
 		shell.setSize(1250, 950);
-		shell.setText("Pocket Simulacrum v0.3");
+		shell.setText("Pocket Simulacrum v0.3.1");
 		shell.setLayout(null);
 		
 		try {
-			obj = new JSONParser().parse(new FileReader("weapons-wiki.json"));
+			wep_obj = new JSONParser().parse(new FileReader("weapons.json"));
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
 		} catch (IOException e1) {
@@ -260,21 +261,7 @@ public class MainGUI {
 			e1.printStackTrace();
 		} 
 		
-		CTabFolder tabFolder = new CTabFolder(shell, SWT.BORDER);/*
-		tabFolder.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				if(tabFolder.getSelectionIndex() == 3) {
-					shell.setSize(417, 704);
-					tabFolder.setBounds(0, 0, 984, 460);
-				}else {
-					shell.setSize(417, 704);
-					tabFolder.setBounds(0, 0, 401, 665);
-					
-				}
-
-			}
-		});*/
+		CTabFolder tabFolder = new CTabFolder(shell, SWT.BORDER);
 		tabFolder.setBounds(0, 0, 469, 901);
 		formToolkit.adapt(tabFolder);
 		formToolkit.paintBordersFor(tabFolder);
@@ -297,12 +284,13 @@ public class MainGUI {
 			public void widgetSelected(SelectionEvent e) {
 				if(combo_is_populated) {
 					String name = enemy_combo.getText();
-					//Weapon defaultWeapon = new Weapon(weaponCombo.getText());
-					//setupCustomBuild(defaultWeapon.name,defaultWeapon);
-					Enemy enemy = new Enemy(name,Double.parseDouble(lvl_spinner.getText()), (100-Double.valueOf(armor_strip_spinner.getText()))/100.0 , defaultWeapon);
-					parseSettings(defaultWeapon, enemy);
+					//Weapon default_weapon = new Weapon(weaponCombo.getText());
+					//default_weapon.setupCustomBuild();
+					default_enemy = new Enemy(name,Double.parseDouble(lvl_spinner.getText()), (100-Double.valueOf(armor_strip_spinner.getText()))/100.0 , default_weapon);
+					parseSettings(default_weapon, default_enemy);
 					
-					update_enemy_table(enemy);
+					update_enemy_table(default_enemy);
+					update_weapon_table(default_weapon);
 				}
 			}
 		});
@@ -333,9 +321,9 @@ public class MainGUI {
 					//name = weaponListCombo.getText();
 				}
 				//parse_stance(stance_combo.getText());
-				defaultWeapon = new Weapon(name);
+				default_weapon = new Weapon(name);
 
-				//update_weapon_table(defaultWeapon);
+				//update_weapon_table(default_weapon);
 				String stance_name = stance_combo.getText();
 				
 				if(stance_name != null && !stance_name.equals("None")) {
@@ -343,13 +331,13 @@ public class MainGUI {
 					parse_stance(stance_name);
 				}
 				
-				setupCustomBuild(defaultWeapon.name,defaultWeapon);
+				default_weapon.setupCustomBuild();
 				
 				//tableItem8.setText(new String[] {"s/ attack", Double.toString(melee_time)});
-				update_weapon_table(defaultWeapon);
+				update_weapon_table(default_weapon);
 				//Weapon tableWeapon = new Weapon(name);
 				//update_weapon_table(tableWeapon);
-				//populate_stance_combo(defaultWeapon);
+				//populate_stance_combo(default_weapon);
 				
 				
 			}
@@ -375,7 +363,7 @@ public class MainGUI {
 		        JSONObject jo = (JSONObject) obj;
 		        
 		        //Check if name already exists
-		        Map<String,Object> data = (Map<String,Object>)jo.get("data"); 
+		        Map<String,Object> data = (Map<String,Object>)jo; 
 		        if(data.get(weaponCombo.getText()) != null) {
 		        	data.remove(weaponCombo.getText());
 		        	weaponCombo.remove(weaponCombo.getSelectionIndex());
@@ -436,12 +424,13 @@ public class MainGUI {
 			public void modifyText(ModifyEvent arg0) {
 				if(combo_is_populated && gui_setup) {
 					String name = enemy_combo.getText();
-					//Weapon defaultWeapon = new Weapon(weaponCombo.getText());
-					setupCustomBuild(defaultWeapon.name,defaultWeapon);
-					Enemy enemy = new Enemy(name,Double.parseDouble(lvl_spinner.getText()), (100-Double.valueOf(armor_strip_spinner.getText()))/100.0 , defaultWeapon);
-					parseSettings(defaultWeapon, enemy);
+					//Weapon default_weapon = new Weapon(weaponCombo.getText());
+					default_weapon.setupCustomBuild();
+					default_enemy = new Enemy(name,Double.parseDouble(lvl_spinner.getText()), (100-Double.valueOf(armor_strip_spinner.getText()))/100.0 , default_weapon);
+					parseSettings(default_weapon, default_enemy);
 					
-					update_enemy_table(enemy);
+					update_enemy_table(default_enemy);
+					update_weapon_table(default_weapon);
 				}
 
 			}
@@ -469,12 +458,13 @@ public class MainGUI {
 			public void modifyText(ModifyEvent arg0) {
 				if(combo_is_populated && gui_setup) {
 					String name = enemy_combo.getText();
-					//Weapon defaultWeapon = new Weapon(weaponCombo.getText());
-					setupCustomBuild(defaultWeapon.name,defaultWeapon);
-					Enemy enemy = new Enemy(name,Double.parseDouble(lvl_spinner.getText()), (100-Double.valueOf(armor_strip_spinner.getText()))/100.0 , defaultWeapon);
-					parseSettings(defaultWeapon, enemy);
+					//Weapon default_weapon = new Weapon(weaponCombo.getText());
+					default_weapon.setupCustomBuild();
+					default_enemy = new Enemy(name,Double.parseDouble(lvl_spinner.getText()), (100-Double.valueOf(armor_strip_spinner.getText()))/100.0 , default_weapon);
+					parseSettings(default_weapon, default_enemy);
 					
-					update_enemy_table(enemy);
+					update_enemy_table(default_enemy);
+					update_weapon_table(default_weapon);
 				}
 			}
 		});
@@ -502,12 +492,13 @@ public class MainGUI {
 			public void modifyText(ModifyEvent arg0) {
 				if(combo_is_populated && gui_setup) {
 					String name = enemy_combo.getText();
-					//Weapon defaultWeapon = new Weapon(weaponCombo.getText());
-					setupCustomBuild(defaultWeapon.name,defaultWeapon);
-					Enemy enemy = new Enemy(name,Double.parseDouble(lvl_spinner.getText()), (100-Double.valueOf(armor_strip_spinner.getText()))/100.0 , defaultWeapon);
-					parseSettings(defaultWeapon, enemy);
+					//Weapon default_weapon = new Weapon(weaponCombo.getText());
+					default_weapon.setupCustomBuild();
+					default_enemy = new Enemy(name,Double.parseDouble(lvl_spinner.getText()), (100-Double.valueOf(armor_strip_spinner.getText()))/100.0 , default_weapon);
+					parseSettings(default_weapon, default_enemy);
 					
-					update_enemy_table(enemy);
+					update_enemy_table(default_enemy);
+					update_weapon_table(default_weapon);
 				}
 			}
 		});
@@ -541,6 +532,21 @@ public class MainGUI {
 		new Label(composite, SWT.NONE);
 		
 		btnDemolyst = new Button(composite, SWT.CHECK);
+		btnDemolyst.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if(combo_is_populated && gui_setup) {
+					String name = enemy_combo.getText();
+					//Weapon default_weapon = new Weapon(weaponCombo.getText());
+					default_weapon.setupCustomBuild();
+					default_enemy = new Enemy(name,Double.parseDouble(lvl_spinner.getText()), (100-Double.valueOf(armor_strip_spinner.getText()))/100.0 , default_weapon);
+					parseSettings(default_weapon, default_enemy);
+					
+					update_enemy_table(default_enemy);
+					update_weapon_table(default_weapon);
+				}
+			}
+		});
 		formToolkit.adapt(btnDemolyst, true, true);
 		btnDemolyst.setText("Demolyst");
 		new Label(composite, SWT.NONE);
@@ -560,6 +566,7 @@ public class MainGUI {
 		lblArmorRemoval.setText("Armor Removal %");
 		
 		armor_strip_spinner = new Spinner(composite, SWT.BORDER);
+		armor_strip_spinner.setIncrement(1000);
 		GridData gd_armor_strip_spinner = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
 		gd_armor_strip_spinner.widthHint = 28;
 		armor_strip_spinner.setLayoutData(gd_armor_strip_spinner);
@@ -567,16 +574,17 @@ public class MainGUI {
 			public void modifyText(ModifyEvent arg0) {
 				if(combo_is_populated && gui_setup) {
 					String name = enemy_combo.getText();
-					//Weapon defaultWeapon = new Weapon(weaponCombo.getText());
-					setupCustomBuild(defaultWeapon.name,defaultWeapon);
+					//Weapon default_weapon = new Weapon(weaponCombo.getText());
+					default_weapon.setupCustomBuild();
 					
 					int level = (int)(lvl_spinner.getSelection()/(Math.pow(10, lvl_spinner.getDigits())) );
 					double armorStrip = (100-armor_strip_spinner.getSelection()/(Math.pow(10, armor_strip_spinner.getDigits())))/100.0;
 					
-					Enemy enemy = new Enemy(name,level, armorStrip , defaultWeapon);
-					parseSettings(defaultWeapon, enemy);
+					default_enemy = new Enemy(name,level, armorStrip , default_weapon);
+					parseSettings(default_weapon, default_enemy);
 					
-					update_enemy_table(enemy);
+					update_enemy_table(default_enemy);
+					update_weapon_table(default_weapon);
 				}
 			}
 		});
@@ -667,10 +675,11 @@ public class MainGUI {
 			public void widgetSelected(SelectionEvent e) {	
 				
 				//Weapon weapon = new Weapon(weaponCombo.getText());
-				setupCustomBuild(defaultWeapon.name,defaultWeapon);
-				Enemy enemy = new Enemy((String)enemy_combo.getText(),lvl_spinner.getSelection(), armorReduct ,defaultWeapon);
+				//default_weapon = new Weapon(weaponCombo.getText());
+				default_weapon.setupCustomBuild();
+				default_enemy = new Enemy((String)enemy_combo.getText(),lvl_spinner.getSelection(), armorReduct ,default_weapon);
 
-				double results[] = simulate(enemy,defaultWeapon,20);
+				double results[] = simulate(default_enemy,default_weapon,20);
 				
 				time_label.setText(String.format("%.2f", results[0]) );
 				shots_label.setText(String.format("%.2f", results[1]) );
@@ -686,15 +695,16 @@ public class MainGUI {
 			public void modifyText(ModifyEvent arg0) {
 				if(combo_is_populated && gui_setup) {
 					String name = enemy_combo.getText();
-					//Weapon defaultWeapon = new Weapon(weaponCombo.getText());
-					setupCustomBuild(defaultWeapon.name,defaultWeapon);
+					//Weapon default_weapon = new Weapon(weaponCombo.getText());
+					default_weapon.setupCustomBuild();
 					int level = (int)(lvl_spinner.getSelection()/(Math.pow(10, lvl_spinner.getDigits())));
 					double armorStrip = (100-armor_strip_spinner.getSelection()/(Math.pow(10, armor_strip_spinner.getDigits())))/100.0;
 					
-					Enemy enemy = new Enemy(name,level, armorStrip , defaultWeapon);
-					parseSettings(defaultWeapon, enemy);
+					default_enemy = new Enemy(name,level, armorStrip , default_weapon);
+					parseSettings(default_weapon, default_enemy);
 					
-					update_enemy_table(enemy);
+					update_enemy_table(default_enemy);
+					update_weapon_table(default_weapon);
 				}
 			}
 		});
@@ -731,17 +741,18 @@ public class MainGUI {
 				armor_plot.clearDomainMarkers();
 				
 				//Weapon weapon = new Weapon(weaponCombo.getText());
-				setupCustomBuild(defaultWeapon.name,defaultWeapon);
-				Enemy enemy = new Enemy((String)enemy_combo.getText(),lvl_spinner.getSelection(), armorReduct, defaultWeapon);
+				//default_weapon = new Weapon(weaponCombo.getText());
+				default_weapon.setupCustomBuild();
+				default_enemy = new Enemy((String)enemy_combo.getText(),lvl_spinner.getSelection(), armorReduct, default_weapon);
 				
 				graph = true;
-				double results[] = simulate(enemy,defaultWeapon,1);
+				double results[] = simulate(default_enemy,default_weapon,1);
 				graph = false;
 				
 				frame.setVisible(true);
 				frame.setSize(1000, 450);
 				
-				if(enemy.baseArmor > 0) {
+				if(default_enemy.baseArmor > 0) {
 					armor_frame.setVisible(true);
 					armor_frame.setSize(1000, 450);
 				}
@@ -790,17 +801,18 @@ public class MainGUI {
 				int end_level = end_level_spinner.getSelection();
 				
 				//Weapon weapon = new Weapon(weaponCombo.getText());
-				setupCustomBuild(defaultWeapon.name,defaultWeapon);
-				Enemy enemy = new Enemy((String)enemy_combo.getText(),1, armorReduct, defaultWeapon);
+				//default_weapon = new Weapon(weaponCombo.getText());
+				default_weapon.setupCustomBuild();
+				default_enemy = new Enemy((String)enemy_combo.getText(),1, armorReduct, default_weapon);
 				
 				scaleSeries = new XYSeries(numSeries+": "+txtSeriesName.getText());
 				datasetB.addSeries(scaleSeries);
 				
 				for(int i = start_level; i <= end_level; i += 25) {	
 					//weapon = new Weapon(weaponCombo.getText());
-					setupCustomBuild(defaultWeapon.name,defaultWeapon);
-					enemy= new Enemy((String)enemy_combo.getText(),i, armorReduct,defaultWeapon);
-					double results[] = simulate(enemy,defaultWeapon,20);
+					default_weapon.setupCustomBuild();
+					default_enemy = new Enemy((String)enemy_combo.getText(),i, armorReduct,default_weapon);
+					double results[] = simulate(default_enemy,default_weapon,20);
 					scaleSeries.add(i, results[0]);
 					//weapon = new Weapon(weaponListCombo.getText());
 				}
@@ -888,13 +900,13 @@ public class MainGUI {
 				set_up_fire_mode_combo();
 				
 					//Weapon tableWeapon = new Weapon(name);
-				defaultWeapon = new Weapon(name);
-				//setupCustomBuild(defaultWeapon.name,defaultWeapon);
-				update_weapon_table(defaultWeapon);
+				default_weapon = new Weapon(name);
+				//default_weapon.setupCustomBuild();
+				update_weapon_table(default_weapon);
 
 		        txtBuildName.setText(weaponListCombo.getText());  	//new
 		        
-		        //populate_stance_combo(defaultWeapon);
+		        //populate_stance_combo(default_weapon);
 		        //weaponCombo
 		        weaponCombo.select(0);
 
@@ -918,9 +930,9 @@ public class MainGUI {
 				String name = "Custom Build Tab";
 		        
 				//Weapon tableWeapon = new Weapon(name);
-				defaultWeapon = new Weapon(name);
-				setupCustomBuild(defaultWeapon.name,defaultWeapon);
-				update_weapon_table(defaultWeapon);
+				default_weapon = new Weapon(name);
+				default_weapon.setupCustomBuild();
+				update_weapon_table(default_weapon);
 			}
 		});
 		fireModeCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
@@ -939,16 +951,18 @@ public class MainGUI {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if(stance_combo.getText().equals("None")) {
-					setupCustomBuild(defaultWeapon.name,defaultWeapon);
-					update_weapon_table(defaultWeapon);
+					move_combo.removeAll();
 					stance_procs.clear();
 					stance_procs.add(0);
 					stance_multipliers.clear();
 					stance_multipliers.add(1.0);
+					default_weapon.setupCustomBuild();
+					update_weapon_table(default_weapon);
 				}else {
+					setup_move_combo(stance_combo.getText());
 					parse_stance(stance_combo.getText());
-					setupCustomBuild(defaultWeapon.name,defaultWeapon);
-					update_weapon_table(defaultWeapon);
+					default_weapon.setupCustomBuild();
+					update_weapon_table(default_weapon);
 				}
 			}
 		});
@@ -965,15 +979,16 @@ public class MainGUI {
 			public void widgetSelected(SelectionEvent e) {
 				if(stance_combo.getText().equals("None")) {
 					//Weapon tableweapon = new Weapon("Custom Build Tab");
-					setupCustomBuild(defaultWeapon.name,defaultWeapon);
-					update_weapon_table(defaultWeapon);
+					default_weapon.setupCustomBuild();
+					update_weapon_table(default_weapon);
 					stance_procs.clear();
 					stance_procs.add(0);
 					stance_multipliers.clear();
 					stance_multipliers.add(1.0);
 				}else {
 					parse_stance(stance_combo.getText());
-					update_weapon_table(defaultWeapon);
+					default_weapon.setupCustomBuild();
+					update_weapon_table(default_weapon);
 				}
 				
 				//tableItem8.setText(new String[] {"s/ attack", Double.toString(melee_time)});
@@ -1001,8 +1016,8 @@ public class MainGUI {
 			public void modifyText(ModifyEvent arg0) {
 				if(combo_is_populated && gui_setup) {
 					//Weapon weapon = new Weapon(weaponCombo.getText());
-					setupCustomBuild(defaultWeapon.name, defaultWeapon);
-					update_weapon_table(defaultWeapon);
+					default_weapon.setupCustomBuild();
+					update_weapon_table(default_weapon);
 					
 				}
 			}
@@ -1024,8 +1039,8 @@ public class MainGUI {
 		bane_mod_text.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent arg0) {
 				if(combo_is_populated && gui_setup) {
-					setupCustomBuild(defaultWeapon.name,defaultWeapon);
-					update_weapon_table(defaultWeapon);
+					default_weapon.setupCustomBuild();
+					update_weapon_table(default_weapon);
 				}
 			}
 		});
@@ -1038,8 +1053,8 @@ public class MainGUI {
 		btnCorrosive.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				setupCustomBuild(defaultWeapon.name,defaultWeapon);
-				update_weapon_table(defaultWeapon);
+				default_weapon.setupCustomBuild();
+				update_weapon_table(default_weapon);
 			}
 		});
 		btnCorrosive.setText("Corrosive");
@@ -1053,8 +1068,8 @@ public class MainGUI {
 		crit_chance_mod_text.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent arg0) {
 				if(combo_is_populated && gui_setup) {
-					setupCustomBuild(defaultWeapon.name,defaultWeapon);
-					update_weapon_table(defaultWeapon);
+					default_weapon.setupCustomBuild();
+					update_weapon_table(default_weapon);
 				}
 			}
 		});
@@ -1067,8 +1082,8 @@ public class MainGUI {
 		btnViral.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				setupCustomBuild(defaultWeapon.name,defaultWeapon);
-				update_weapon_table(defaultWeapon);
+				default_weapon.setupCustomBuild();
+				update_weapon_table(default_weapon);
 			}
 		});
 		btnViral.setText("Viral");
@@ -1082,8 +1097,8 @@ public class MainGUI {
 		crit_damage_mod_text.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent arg0) {
 				if(combo_is_populated && gui_setup) {
-					setupCustomBuild(defaultWeapon.name,defaultWeapon);
-					update_weapon_table(defaultWeapon);
+					default_weapon.setupCustomBuild();
+					update_weapon_table(default_weapon);
 				}
 			}
 		});
@@ -1096,8 +1111,8 @@ public class MainGUI {
 		btnRadiation.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				setupCustomBuild(defaultWeapon.name,defaultWeapon);
-				update_weapon_table(defaultWeapon);
+				default_weapon.setupCustomBuild();
+				update_weapon_table(default_weapon);
 			}
 		});
 		btnRadiation.setText("Radiation");
@@ -1111,8 +1126,8 @@ public class MainGUI {
 		multishot_mod_text.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent arg0) {
 				if(combo_is_populated && gui_setup) {
-					setupCustomBuild(defaultWeapon.name,defaultWeapon);
-					update_weapon_table(defaultWeapon);
+					default_weapon.setupCustomBuild();
+					update_weapon_table(default_weapon);
 				}
 			}
 		});
@@ -1125,8 +1140,8 @@ public class MainGUI {
 		btnMagnetic.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				setupCustomBuild(defaultWeapon.name,defaultWeapon);
-				update_weapon_table(defaultWeapon);
+				default_weapon.setupCustomBuild();
+				update_weapon_table(default_weapon);
 			}
 		});
 		btnMagnetic.setText("Magnetic");
@@ -1140,8 +1155,8 @@ public class MainGUI {
 		status_chance_mod_text.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent arg0) {
 				if(combo_is_populated && gui_setup) {
-					setupCustomBuild(defaultWeapon.name,defaultWeapon);
-					update_weapon_table(defaultWeapon);
+					default_weapon.setupCustomBuild();
+					update_weapon_table(default_weapon);
 				}
 			}
 		});
@@ -1154,8 +1169,8 @@ public class MainGUI {
 		btnGas.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				setupCustomBuild(defaultWeapon.name,defaultWeapon);
-				update_weapon_table(defaultWeapon);
+				default_weapon.setupCustomBuild();
+				update_weapon_table(default_weapon);
 			}
 		});
 		btnGas.setText("Gas");
@@ -1170,8 +1185,8 @@ public class MainGUI {
 			public void modifyText(ModifyEvent arg0) {
 				if(combo_is_populated && gui_setup) {
 					//Weapon weapon = new Weapon(weaponCombo.getText());
-					setupCustomBuild(defaultWeapon.name,defaultWeapon);
-					update_weapon_table(defaultWeapon);
+					default_weapon.setupCustomBuild();
+					update_weapon_table(default_weapon);
 				}
 			}
 		});
@@ -1185,8 +1200,8 @@ public class MainGUI {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				//Weapon weapon = new Weapon(weaponCombo.getText());
-				setupCustomBuild(defaultWeapon.name,defaultWeapon);
-				update_weapon_table(defaultWeapon);
+				default_weapon.setupCustomBuild();
+				update_weapon_table(default_weapon);
 			}
 		});
 		btnBlast.setText("Blast");
@@ -1201,8 +1216,8 @@ public class MainGUI {
 			public void modifyText(ModifyEvent arg0) {
 				if(combo_is_populated && gui_setup) {
 					//Weapon weapon = new Weapon(weaponCombo.getText());
-					setupCustomBuild(defaultWeapon.name,defaultWeapon);
-					update_weapon_table(defaultWeapon);
+					default_weapon.setupCustomBuild();
+					update_weapon_table(default_weapon);
 				}
 			}
 		});
@@ -1221,8 +1236,8 @@ public class MainGUI {
 			public void modifyText(ModifyEvent arg0) {
 				if(combo_is_populated && gui_setup) {
 					//Weapon weapon = new Weapon(weaponCombo.getText());
-					setupCustomBuild(defaultWeapon.name,defaultWeapon);
-					update_weapon_table(defaultWeapon);
+					default_weapon.setupCustomBuild();
+					update_weapon_table(default_weapon);
 				}
 			}
 		});
@@ -1241,8 +1256,8 @@ public class MainGUI {
 			public void modifyText(ModifyEvent arg0) {
 				if(combo_is_populated && gui_setup) {
 					//Weapon weapon = new Weapon(weaponCombo.getText());
-					setupCustomBuild(defaultWeapon.name,defaultWeapon);
-					update_weapon_table(defaultWeapon);
+					default_weapon.setupCustomBuild();
+					update_weapon_table(default_weapon);
 				}
 			}
 		});
@@ -1261,8 +1276,8 @@ public class MainGUI {
 			public void modifyText(ModifyEvent arg0) {
 				if(combo_is_populated && gui_setup) {
 					//Weapon weapon = new Weapon(weaponCombo.getText());
-					setupCustomBuild(defaultWeapon.name,defaultWeapon);
-					update_weapon_table(defaultWeapon);
+					default_weapon.setupCustomBuild();
+					update_weapon_table(default_weapon);
 				}
 			}
 		});
@@ -1281,8 +1296,8 @@ public class MainGUI {
 			public void modifyText(ModifyEvent arg0) {
 				if(combo_is_populated && gui_setup) {
 					//Weapon weapon = new Weapon(weaponCombo.getText());
-					setupCustomBuild(defaultWeapon.name,defaultWeapon);
-					update_weapon_table(defaultWeapon);
+					default_weapon.setupCustomBuild();
+					update_weapon_table(default_weapon);
 				}
 			}
 		});
@@ -1301,8 +1316,8 @@ public class MainGUI {
 			public void modifyText(ModifyEvent arg0) {
 				if(combo_is_populated && gui_setup) {
 					//Weapon weapon = new Weapon(weaponCombo.getText());
-					setupCustomBuild(defaultWeapon.name,defaultWeapon);
-					update_weapon_table(defaultWeapon);
+					default_weapon.setupCustomBuild();
+					update_weapon_table(default_weapon);
 				}
 			}
 		});
@@ -1321,8 +1336,8 @@ public class MainGUI {
 			public void modifyText(ModifyEvent arg0) {
 				if(combo_is_populated && gui_setup) {
 					//Weapon weapon = new Weapon(weaponCombo.getText());
-					setupCustomBuild(defaultWeapon.name,defaultWeapon);
-					update_weapon_table(defaultWeapon);
+					default_weapon.setupCustomBuild();
+					update_weapon_table(default_weapon);
 				}
 			}
 		});
@@ -1341,8 +1356,8 @@ public class MainGUI {
 			public void modifyText(ModifyEvent arg0) {
 				if(combo_is_populated && gui_setup) {
 					//Weapon weapon = new Weapon(weaponCombo.getText());
-					setupCustomBuild(defaultWeapon.name,defaultWeapon);
-					update_weapon_table(defaultWeapon);
+					default_weapon.setupCustomBuild();
+					update_weapon_table(default_weapon);
 					
 				}
 
@@ -1363,8 +1378,8 @@ public class MainGUI {
 			public void modifyText(ModifyEvent arg0) {
 				if(combo_is_populated && gui_setup) {
 					//Weapon weapon = new Weapon(weaponCombo.getText());
-					setupCustomBuild(defaultWeapon.name,defaultWeapon);
-					update_weapon_table(defaultWeapon);
+					default_weapon.setupCustomBuild();
+					update_weapon_table(default_weapon);
 				}
 			}
 		});
@@ -1680,7 +1695,7 @@ public class MainGUI {
 		        // parsing file 
 		        Object obje = null;
 				try {
-					obje = new JSONParser().parse(new FileReader("weapons-wiki.json"));
+					obje = new JSONParser().parse(new FileReader("weapons.json"));
 				} catch (IOException | ParseException e1) {
 					e1.printStackTrace();
 				} 
@@ -1689,30 +1704,30 @@ public class MainGUI {
 		        JSONObject jo = (JSONObject) obje;
 		        
 		        //Check if name already exists
-		        Map<String,Object> data = (Map<String,Object>)jo.get("data"); 
-		        Map<String,Object> weapons = (Map<String,Object>)data.get("Weapons");
+		        Map<String,Object> weapons = (Map<String,Object>)jo;
 		        String name = txtName.getText();
 		        if(weapons.get(name) != null) {
 					name += "0"; // append character if name exists
 		        }
 		        
 				double pellet = Double.valueOf(pelletESpinner.getSelection());
+				JSONArray dmg = new JSONArray();
+				dmg.add((double)iESpinner.getSelection()/Math.pow(10, iESpinner.getDigits()));
+				dmg.add((double)pESpinner.getSelection()/Math.pow(10, pESpinner.getDigits()));
+				dmg.add((double)sESpinner.getSelection()/Math.pow(10, sESpinner.getDigits()));
 				
-				double impact = (double)iESpinner.getSelection()/Math.pow(10, iESpinner.getDigits());
-				double slash = (double)sESpinner.getSelection()/Math.pow(10, sESpinner.getDigits());
-				double puncture = (double)pESpinner.getSelection()/Math.pow(10, pESpinner.getDigits());
-				double cold = (double)cESpinner.getSelection()/Math.pow(10, cESpinner.getDigits());
-				double electricity = (double)eESpinner.getSelection()/Math.pow(10, eESpinner.getDigits());
-				double heat =	(double)hESpinner.getSelection()/Math.pow(10, hESpinner.getDigits());
-				double toxin = (double)tESpinner.getSelection()/Math.pow(10, tESpinner.getDigits());
-				double blast = (double)bESpinner.getSelection()/Math.pow(10, bESpinner.getDigits());
-				double corrosive = (double)corESpinner.getSelection()/Math.pow(10, corESpinner.getDigits());
-				double gas = (double)gESpinner.getSelection()/Math.pow(10, gESpinner.getDigits());
-				double magnetic = (double)mESpinner.getSelection()/Math.pow(10, mESpinner.getDigits());
-				double radiation = (double)rESpinner.getSelection()/Math.pow(10, rESpinner.getDigits());
-				double viral = (double)viralESpinner.getSelection()/Math.pow(10, viralESpinner.getDigits());
-				double void1 = (double)void1ESpinner.getSelection()/Math.pow(10, void1ESpinner.getDigits());
-				double void2 = (double)void2ESpinner.getSelection()/Math.pow(10, void2ESpinner.getDigits());
+				dmg.add((double)hESpinner.getSelection()/Math.pow(10, hESpinner.getDigits()));
+				dmg.add((double)cESpinner.getSelection()/Math.pow(10, cESpinner.getDigits()));
+				dmg.add((double)eESpinner.getSelection()/Math.pow(10, eESpinner.getDigits()));
+				dmg.add((double)tESpinner.getSelection()/Math.pow(10, tESpinner.getDigits()));
+				
+				dmg.add((double)bESpinner.getSelection()/Math.pow(10, bESpinner.getDigits()));
+				dmg.add((double)rESpinner.getSelection()/Math.pow(10, rESpinner.getDigits()));
+				dmg.add((double)gESpinner.getSelection()/Math.pow(10, gESpinner.getDigits()));
+				dmg.add((double)mESpinner.getSelection()/Math.pow(10, mESpinner.getDigits()));
+				dmg.add((double)viralESpinner.getSelection()/Math.pow(10, viralESpinner.getDigits()));
+				dmg.add((double)corESpinner.getSelection()/Math.pow(10, corESpinner.getDigits()));
+				
 				
 				double status = (double)scESpinner.getSelection()/Math.pow(10, 2+scESpinner.getDigits());
 				double critChance = (double)ccESpinner.getSelection()/Math.pow(10, 2+ccESpinner.getDigits()) ;
@@ -1721,40 +1736,20 @@ public class MainGUI {
 				double reload = (double)reloadESpinner.getSelection()/Math.pow(10, reloadESpinner.getDigits());
 				double magazine = (double)magESpinner.getSelection();
 				
-				JSONObject damage = new JSONObject();
-				damage.put("Slash", slash);
-				damage.put("Impact",impact);
-				damage.put("Puncture",puncture);
-				damage.put("Cold",cold);
-				damage.put("Heat",heat);
-				damage.put("Toxin",toxin);
-				damage.put("Electricity",electricity);
-				damage.put("Corrosive",corrosive);
-				damage.put("Radiation",radiation);
-				damage.put("Blast",blast);
-				damage.put("Magnetic",magnetic);
-				damage.put("Viral",viral);
-				damage.put("Gas",gas);
-				damage.put("Void1",void1);
-				damage.put("Void2",void2);
-				
 				JSONObject weapon = new JSONObject();
-				weapon.put("Damage", damage);
+				weapon.put("damagePerShot", dmg);
 				
-				weapon.put("CritChance",critChance);
-				weapon.put("CritMultiplier",critMultiplier);
-				weapon.put("PelletCount",pellet);
-				weapon.put("StatusChance",status);
-				weapon.put("Reload",reload);
-				weapon.put("Magazine",magazine);
-				weapon.put("FireRate",fireRate);
+				weapon.put("criticalChance",critChance);
+				weapon.put("criticalMultiplier",critMultiplier);
+				weapon.put("multishot",pellet);
+				weapon.put("procChance",status);
+				weapon.put("reloadTime",reload);
+				weapon.put("magazineSize",magazine);
+				weapon.put("fireRate",fireRate);
 				
-				JSONObject attackType = new JSONObject();
-				attackType.put("NormalAttack", weapon);
+				weapons.put(name, weapon);
 				
-				weapons.put(name, attackType);
-				
-		        try (FileWriter file = new FileWriter("weapons-wiki.json")) { 
+		        try (FileWriter file = new FileWriter("weapons.json")) { 
 		            file.write(jo.toJSONString());
 		        } catch (IOException ex) {
 		            ex.printStackTrace();
@@ -1762,7 +1757,7 @@ public class MainGUI {
 
 				weaponListCombo.add(txtName.getText());
 				try {
-					obj = new JSONParser().parse(new FileReader("weapons-wiki.json"));
+					wep_obj = new JSONParser().parse(new FileReader("weapons.json"));
 				} catch (IOException | ParseException e1) {
 					e1.printStackTrace();
 				} 
@@ -1777,7 +1772,7 @@ public class MainGUI {
 		btnOpenFile_weapon.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				File weapon_file = new File("weapons-wiki.json");
+				File weapon_file = new File("weapons.json");
 				try {
 					Desktop.getDesktop().open(weapon_file);
 				} catch (IOException e1) {
@@ -1895,20 +1890,30 @@ public class MainGUI {
 			@SuppressWarnings("unchecked")
 			@Override
 			public void widgetSelected(SelectionEvent e) {
+				//int dr_arr[] = {0,0,1,0};
+				//int [][]a = {dr_arr};
+				JSONArray list = new JSONArray();
+		        list.add(0);
+		        list.add(0);
+		        list.add(1);
+		        list.add(0);
+		        JSONArray listlist = new JSONArray();
+		        listlist.add(list);
+		        
 
 		        // parsing file 
-		        Object obj = null;
+		        Object eobj = null;
 				try {
-					obj = new JSONParser().parse(new FileReader("enemies.json"));
+					eobj = new JSONParser().parse(new FileReader("enemy.json"));
 				} catch (IOException | ParseException e1) {
 					e1.printStackTrace();
 				} 
 		          
 		        // typecasting obj to JSONObject 
-		        JSONObject jo = (JSONObject) obj; 
+		        JSONObject jo = (JSONObject) eobj; 
 		        
-		        //Check if name already exists
-		        Map<String,Object> data = (Map<String,Object>)jo.get("Enemy"); 
+		        //Check if name already exists .get("Enemy")
+		        Map<String,Object> data = (Map<String,Object>)jo; 
 		        String name = txtEnemyname.getText();
 		        
 		        if(data.get(name) != null) {
@@ -1924,9 +1929,12 @@ public class MainGUI {
 		        stats.put("BaseShield", bShieldSpinner.getSelection());
 		        stats.put("BaseLevel", bLevelSpinner.getSelection());
 		        stats.put("Eidolon", btnEidolon.getSelection());
+		        stats.put("Eidolon", btnEidolon.getSelection());
+		        stats.put("DamageReduction", listlist);
+		        stats.put("ProcReduction", listlist);
 		        data.put(name, stats);
 		        
-		        try (FileWriter file = new FileWriter("enemies.json")) { 
+		        try (FileWriter file = new FileWriter("enemy.json")) { 
 		            file.write(jo.toJSONString());
 		        } catch (IOException ex) {
 		            ex.printStackTrace();
@@ -1943,7 +1951,7 @@ public class MainGUI {
 		btnOpenFile_enemy.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				File enemy_file = new File("enemies.json");
+				File enemy_file = new File("enemy.json");
 				try {
 					Desktop.getDesktop().open(enemy_file);
 				} catch (IOException e1) {
@@ -2030,8 +2038,8 @@ public class MainGUI {
 			public void modifyText(ModifyEvent arg0) {
 				if(combo_is_populated && gui_setup) {
 					//Weapon weapon = new Weapon(weaponCombo.getText());
-					setupCustomBuild(defaultWeapon.name,defaultWeapon);
-					update_weapon_table(defaultWeapon);
+					default_weapon.setupCustomBuild();
+					update_weapon_table(default_weapon);
 				}
 			}
 		});
@@ -2090,8 +2098,8 @@ public class MainGUI {
 			public void modifyText(ModifyEvent arg0) {
 				if(combo_is_populated && gui_setup) {
 					//Weapon weapon = new Weapon(weaponCombo.getText());
-					setupCustomBuild(defaultWeapon.name,defaultWeapon);
-					update_weapon_table(defaultWeapon);
+					default_weapon.setupCustomBuild();
+					update_weapon_table(default_weapon);
 				}
 			}
 		});
@@ -2140,7 +2148,7 @@ public class MainGUI {
 		        JSONObject jo = (JSONObject) obj;
 		        
 		        //Check if name already exists
-		        Map<String,Object> data = (Map<String,Object>)jo.get("data"); 
+		        Map<String,Object> data = (Map<String,Object>)jo; 
 		        String name = txtBuildName.getText();
 		        if(data.get(name) != null) {
 					name += "0"; // append character if name exists
@@ -2218,8 +2226,8 @@ public class MainGUI {
 			public void widgetSelected(SelectionEvent e) {
 				clear_mod_setup();
 				weaponCombo.select(0);
-				setupCustomBuild(defaultWeapon.name,defaultWeapon);
-				update_weapon_table(defaultWeapon);
+				default_weapon.setupCustomBuild();
+				update_weapon_table(default_weapon);
 			}
 		});
 		formToolkit.adapt(btnClearConfig, true, true);
@@ -2249,12 +2257,13 @@ public class MainGUI {
 		
 		//System.out.println(weaponListCombo.getText());
 		
-		defaultWeapon = new Weapon(weaponCombo.getText());
-		default_enemy = new Enemy("Charger",165, 1, defaultWeapon);
+		default_weapon = new Weapon(weaponCombo.getText());
+		default_enemy = new Enemy(enemy_combo.getText(),165, 1, default_weapon);
 		populate_build_combo(weaponCombo);
-		//populate_stance_combo(defaultWeapon);
 		
-		//populateCombo(defaultWeapon, enemy_combo, weaponListCombo,weaponCombo);
+		//populate_stance_combo(default_weapon);
+		
+		//populateCombo(default_weapon, enemy_combo, weaponListCombo,weaponCombo);
 		
 		tableItemName = new TableItem(weapon_table, SWT.NONE);
 		tableItem = new TableItem(weapon_table, SWT.NONE);
@@ -2286,56 +2295,57 @@ public class MainGUI {
 		tableItem26 = new TableItem(weapon_table, SWT.NONE);
 		tableItem27 = new TableItem(weapon_table, SWT.NONE);
 		tableItem28 = new TableItem(weapon_table, SWT.NONE);
+		tableItem29 = new TableItem(weapon_table, SWT.NONE);
 		
 		tableItemName.setText(new String[] {"Weapon", weaponListCombo.getText()});
 		
-		tableItem.setText(new String[] {"Impact", Double.toString(defaultWeapon.impact)});
+		tableItem.setText(new String[] {"Impact", Double.toString(default_weapon.damage_array[index("impact")])});
 		
-		tableItem1.setText(new String[] {"Puncture", Double.toString(defaultWeapon.puncture)});
+		tableItem1.setText(new String[] {"Puncture", Double.toString(default_weapon.damage_array[index("puncture")])});
 		
-		tableItem2.setText(new String[] {"Slash", Double.toString(defaultWeapon.slash)});
+		tableItem2.setText(new String[] {"Slash", Double.toString(default_weapon.damage_array[index("slash")])});
 		
-		tableItem3.setText(new String[] {"Crit Chance", Double.toString(defaultWeapon.critChance)});
+		tableItem3.setText(new String[] {"Crit Chance", Double.toString(default_weapon.critChance)});
 		
-		tableItem4.setText(new String[] {"Crit Damage", Double.toString(defaultWeapon.critMultiplier)});
+		tableItem4.setText(new String[] {"Crit Damage", Double.toString(default_weapon.critMultiplier)});
 		
-		tableItem5.setText(new String[] {"Pellets", Double.toString(defaultWeapon.pellet)});
+		tableItem5.setText(new String[] {"Pellets", Double.toString(default_weapon.pellet)});
 		
-		tableItem6.setText(new String[] {"Status", Double.toString(defaultWeapon.status)});
+		tableItem6.setText(new String[] {"Status", Double.toString(default_weapon.status)});
 		
-		tableItem7.setText(new String[] {"Reload", Double.toString(defaultWeapon.reload)});
+		tableItem7.setText(new String[] {"Reload", Double.toString(default_weapon.reload)});
 		
-		tableItem8.setText(new String[] {"Fire Rate", Double.toString(defaultWeapon.fireRate)});
+		tableItem8.setText(new String[] {"Fire Rate", Double.toString(default_weapon.fireRate)});
 		
-		tableItem9.setText(new String[] {"Magazine", Double.toString(defaultWeapon.magazine)});
+		tableItem9.setText(new String[] {"Magazine", Double.toString(default_weapon.magazine)});
 		
-		tableItem10.setText(new String[] {"Cold", Double.toString(defaultWeapon.cold)});
+		tableItem10.setText(new String[] {"Cold", Double.toString(default_weapon.damage_array[index("cold")])});
 		
-		tableItem11.setText(new String[] {"Electricity", Double.toString(defaultWeapon.electricity)});
+		tableItem11.setText(new String[] {"Electricity", Double.toString(default_weapon.damage_array[index("electricity")])});
 		
-		tableItem12.setText(new String[] {"Heat", Double.toString(defaultWeapon.heat)});
+		tableItem12.setText(new String[] {"Heat", Double.toString(default_weapon.damage_array[index("heat")])});
 		
-		tableItem13.setText(new String[] {"Toxin", Double.toString(defaultWeapon.toxin)});
+		tableItem13.setText(new String[] {"Toxin", Double.toString(default_weapon.damage_array[index("toxin")])});
 		
-		tableItem14.setText(new String[] {"Blast", Double.toString(defaultWeapon.blast)});
+		tableItem14.setText(new String[] {"Blast", Double.toString(default_weapon.damage_array[index("blast")])});
 		
-		tableItem15.setText(new String[] {"Corrosive", Double.toString(defaultWeapon.corrosive)});
+		tableItem15.setText(new String[] {"Corrosive", Double.toString(default_weapon.damage_array[index("corrosive")])});
 		
-		tableItem16.setText(new String[] {"Gas", Double.toString(defaultWeapon.gas)});
+		tableItem16.setText(new String[] {"Gas", Double.toString(default_weapon.damage_array[index("gas")])});
 		
-		tableItem17.setText(new String[] {"Magnetic", Double.toString(defaultWeapon.magnetic)});
+		tableItem17.setText(new String[] {"Magnetic", Double.toString(default_weapon.damage_array[index("magnetic")])});
 		
-		tableItem18.setText(new String[] {"Radiation", Double.toString(defaultWeapon.radiation)});
+		tableItem18.setText(new String[] {"Radiation", Double.toString(default_weapon.damage_array[index("radiation")])});
 		
-		tableItem19.setText(new String[] {"Viral", Double.toString(defaultWeapon.viral)});
+		tableItem19.setText(new String[] {"Viral", Double.toString(default_weapon.damage_array[index("viral")])});
 		
-		tableItem20.setText(new String[] {"Void 1", Double.toString(defaultWeapon.void1)});
+		//tableItem20.setText(new String[] {"Void 1", Double.toString(default_weapon.damage_array[index("void1")])});
 		
-		tableItem21.setText(new String[] {"Void 2", Double.toString(defaultWeapon.void2)});
+		//tableItem21.setText(new String[] {"Void 2", Double.toString(default_weapon.damage_array[index("void2")])});
 		
-		tableItem22.setText(new String[] {"Ammo Max", Double.toString(defaultWeapon.ammo)});
+		tableItem22.setText(new String[] {"Ammo Max", Double.toString(default_weapon.ammo)});
 		
-		tableItem23.setText(new String[] {"Ammo Cost", Double.toString(defaultWeapon.ammoCost)});
+		tableItem23.setText(new String[] {"Ammo Cost", Double.toString(default_weapon.ammoCost)});
 		
 		tableItem24.setText(new String[] {"Avg Hp/s", "Run Simulation"});
 		
@@ -2346,6 +2356,8 @@ public class MainGUI {
 		tableItem27.setText(new String[] {"Avg Toxin Dot Dmg", "Run Simulation"});
 		
 		tableItem28.setText(new String[] {"Avg Heat Dot Dmg", "Run Simulation"});
+		
+		tableItem29.setText(new String[] {"Damage", "Run Simulation"});
 		//default_enemy.getEnemy(default_enemy.name);
 		//default_enemy.reset(Double.valueOf(armor_strip_spinner.getText()));
 		
@@ -2387,6 +2399,7 @@ public class MainGUI {
 		ui_set_up = true;
 		gui_setup = true;
 		combo_is_populated = true;
+		update_weapon_table(default_weapon);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -2408,25 +2421,38 @@ public class MainGUI {
 		weaponListCombo.select(0);
 		
 		fireModeCombo.removeAll();
+		fireModeCombo.add("Primary");
 		
         // typecasting obj to JSONObject 
-        JSONObject jo = (JSONObject) obj; 
+		Object nobj = null;
+		try {
+			nobj = new JSONParser().parse(new FileReader("weapons.json"));
+		} catch (IOException | ParseException e1) {
+			e1.printStackTrace();
+		}
+        JSONObject jo = (JSONObject) nobj; 
           
         // getting address 
-        Map<String,Object> data = (Map<String,Object>)jo.get("data"); 
-        Map<String,Object> weapons = (Map<String,Object>)data.get("Weapons");
+        Map<String,Object> weapons = (Map<String,Object>)jo;
         Map<String,Object> selectedWep =(Map<String,Object>)weapons.get(weaponListCombo.getText());
+        Map<String,Object> otherFireModes =(Map<String,Object>)selectedWep.get("OtherFireModes");
         
         if(selectedWep != null) {
 	        ArrayList<String> attackModes = new ArrayList<>();
-	        Iterator<Map.Entry<String,Object>> itr1 = selectedWep.entrySet().iterator(); 
-	        while (itr1.hasNext()) { 
-
-	            Map.Entry<String,Object> pair = itr1.next(); 
-	            
-	            if(checkModes(pair))	
+	        try {
+		        Iterator<Map.Entry<String,Object>> itr1 = otherFireModes.entrySet().iterator(); 
+		        while (itr1.hasNext()) { 
+	
+		            Map.Entry<String,Object> pair = itr1.next(); 
+		            //TODO
+		            
 	            	attackModes.add((String)pair.getKey());
-	        }
+		        }
+        	}
+        	catch(Exception e) {
+        	  //  Block of code to handle errors
+        	}
+
 	        
 	        for(int i =0;i<attackModes.size();i++) {
 	        	fireModeCombo.add(attackModes.get(i));
@@ -2470,23 +2496,22 @@ public class MainGUI {
 		} catch (IOException | ParseException e1) {
 			e1.printStackTrace();
 		}
-		move_combo.removeAll();
-		move_combo.add("Still");
-		move_combo.add("Forward");
-		move_combo.add("ForwardBlock");
-		move_combo.select(0);
+		
 		
 		stance_combo.add("None");
 		for(int i =0; i<init_stance.size();i++) {
 			stance_combo.add(init_stance.get(i));
 		}
 		//Setup initial selection
+		/*
 		if(init_stance.size() >= 1) {
 			stance_combo.select(init_stance.size());
 		}
 		else {
 			stance_combo.select(0);
 		}
+		*/
+		stance_combo.select(0);
 		
 		
 	}
@@ -2499,13 +2524,43 @@ public class MainGUI {
 		return false;		
 		
 	}
+	private void setup_move_combo(String stance_name) {
+		ArrayList<String> moveList = new ArrayList<String>();
+		move_combo.removeAll();
+		Object s_obj = null;
+		try {
+			s_obj = new JSONParser().parse(new FileReader("stances.json"));
+		} catch (IOException | ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        JSONObject jo = (JSONObject) s_obj; 
+        // getting address 
+        Map<String,Object> stances = (Map<String,Object>)jo.get(stance_name);
+        Map<String,Object> moveset = (Map<String,Object>)stances.get("ComboName");
+		for (Map.Entry<String, Object> entry : moveset.entrySet()) {
+
+        	moveList.add((String)entry.getKey());
+
+        }
+		
+		for(int i =0; i<moveList.size();i++) {
+			move_combo.add(moveList.get(i));
+		}
+
+		move_combo.select(0);
+	}
 	
 	private void parse_stance(String stance_name) {
-
-        JSONObject jo = (JSONObject) obj; 
-        JSONObject data = (JSONObject)jo.get("data"); 
-        JSONObject stances = (JSONObject)data.get("Stances");	
-        JSONObject selected_stance = (JSONObject)stances.get(stance_name);	
+		Object s_obj = null;
+		try {
+			s_obj = new JSONParser().parse(new FileReader("stances.json"));
+		} catch (IOException | ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        JSONObject jo = (JSONObject) s_obj; 	
+        JSONObject selected_stance = (JSONObject)jo.get(stance_name);	
         JSONObject combos = (JSONObject)selected_stance.get("ComboName");
         JSONObject selected_combo = (JSONObject)combos.get(move_combo.getText());
         
@@ -2550,7 +2605,6 @@ public class MainGUI {
 		double oneSim[] = new double[2];
 			
 		parseSettings(weapon, enemy); //this is only called once
-		weapon.setSimulationStats();
 		
 		//System.out.printf("Simulating Weapon: "+weapon.name+"\n");
 		
@@ -2711,14 +2765,8 @@ public class MainGUI {
 			event_index[4] = Enemy.heat_offset;
 			
 			/*
-			if(Enemy.electricity_offset < get_safe_offset(next_dot) && Enemy.electricity_offset < Enemy.gas_offset ) {
-				event_index[2] = Enemy.electricity_offset;
-			}
-			if(Enemy.gas_offset < get_safe_offset(next_dot) && Enemy.gas_offset < Enemy.electricity_offset) {
-				event_index[3] = Enemy.gas_offset;
-			}
-			if(Enemy.heat_offset < get_safe_offset(next_dot) && Enemy.heat_offset < Enemy.electricity_offset) {
-				event_index[4] = Enemy.heat_offset;
+			if(event_index[0] >= 6000) {
+				System.out.printf("yo");
 			}
 			*/
 			
@@ -2752,7 +2800,7 @@ public class MainGUI {
 				}else{
 					numPellets = (int)(weapon.pellet);								
 				}
-				if(weapon.shot_type.equals("Discharge")) {
+				if(weapon.shot_type.equals("HELD")) {
 					if(rMulti.nextDouble() <= weapon.beam_multishot_chance){
 						weapon.beam_multishot_multiplier = (int)(weapon.beam_multishot) + 1;								
 					}else{
@@ -2960,190 +3008,6 @@ public class MainGUI {
 			 
 	}
 	
-	public static void setupCustomBuild(String name, Weapon weapon) {
-		//weapon.set_primed_chamber(btnPrimedchamber.getSelection());
-		
-		
-		//gui_setup
-		
-		String s = damage_mod_text.getText();
-		double damage_mods = percent_to_double( parse_double_textbox(s), 1);
-		
-		s = bane_mod_text.getText();
-		double bane_dmg = percent_to_double( parse_double_textbox(s), 1);
-		
-		s = general_multiplier_mod_text.getText();
-		double general_mult = parse_double_multiply_textbox(s);
-		
-		double combined_multipliers = bane_dmg * general_mult;
-		
-		//setup base damages
-        weapon.slash = weapon.base_slash * damage_mods * combined_multipliers;
-        weapon.puncture = weapon.base_puncture*damage_mods * combined_multipliers;
-        weapon.impact = weapon.base_impact*damage_mods * combined_multipliers;
-        weapon.cold = weapon.base_cold*damage_mods * combined_multipliers;
-        weapon.electricity = weapon.base_electricity*damage_mods * combined_multipliers;
-        weapon.heat = weapon.base_heat*damage_mods * combined_multipliers;
-        weapon.toxin = weapon.base_toxin*damage_mods * combined_multipliers;
-        weapon.corrosive = weapon.base_corrosive*damage_mods * combined_multipliers;
-        weapon.magnetic = weapon.base_magnetic*damage_mods * combined_multipliers;
-        weapon.blast = weapon.base_blast*damage_mods * combined_multipliers;
-        weapon.viral = weapon.base_viral*damage_mods * combined_multipliers;
-        weapon.radiation = weapon.base_radiation*damage_mods * combined_multipliers;
-        weapon.gas = weapon.base_gas*damage_mods * combined_multipliers;
-        weapon.void1 = weapon.base_void1*damage_mods * combined_multipliers;
-        weapon.void2 = weapon.base_void2*damage_mods * combined_multipliers;
-        
-        weapon.totBaseDMG = (weapon.base_slash + weapon.base_puncture + weapon.base_impact + 
-        					weapon.base_cold+ weapon.base_electricity+ weapon.base_heat + 
-        					weapon.base_toxin + weapon.base_corrosive + weapon.base_magnetic + 
-        					weapon.base_blast + weapon.base_viral + weapon.base_radiation+ weapon.base_gas) * damage_mods * combined_multipliers;
-        
-        weapon.quanta = (weapon.base_slash + weapon.base_puncture + weapon.base_impact + 
-						weapon.base_cold+ weapon.base_electricity+ weapon.base_heat + 
-						weapon.base_toxin + weapon.base_corrosive + weapon.base_magnetic + 
-						weapon.base_blast + weapon.base_viral + weapon.base_radiation+ weapon.base_gas) * damage_mods * combined_multipliers/ 16;
-        
-        //set up modded physical
-        s = slash_mod_text.getText();
-        weapon.slash = weapon.base_slash * damage_mods * combined_multipliers * percent_to_double( parse_double_textbox(s), 1);
-        weapon.slashDOT = 0.35 * weapon.totBaseDMG * bane_dmg ;
-		
-        s = puncture_mod_text.getText();
-        weapon.puncture = weapon.base_puncture* damage_mods * combined_multipliers * percent_to_double( parse_double_textbox(s), 1);
-        
-        s = impact_mod_text.getText(); 
-        weapon.impact = weapon.base_impact * damage_mods * combined_multipliers * percent_to_double( parse_double_textbox(s), 1);
-        
-        //set up modded elemental
-        s = cold_mod_text.getText();
-        weapon.cold += weapon.totBaseDMG*percent_to_double( parse_double_textbox(s), 0);
-        
-        s = electricity_mod_text.getText();
-        weapon.electricity += weapon.totBaseDMG * percent_to_double( parse_double_textbox(s), 0);
-        weapon.electricityDOT = weapon.totBaseDMG * ( percent_to_double( parse_double_textbox(s), 1)/2.0 ) * bane_dmg;
-        
-        s = heat_mod_text.getText();
-        weapon.heat += weapon.totBaseDMG * percent_to_double( parse_double_textbox(s), 0);
-        weapon.heatDOT = weapon.totBaseDMG * ( percent_to_double( parse_double_textbox(s), 1)/2.0 ) * bane_dmg;
-        
-        s = toxin_mod_text.getText();
-        weapon.toxin += weapon.totBaseDMG*percent_to_double( parse_double_textbox(s), 0);
-        weapon.toxinDOT = weapon.totBaseDMG * ( percent_to_double( parse_double_textbox(s), 1)/2.0 ) * bane_dmg;
-                        
-        weapon.gasDOT = 0.5 * weapon.totBaseDMG * bane_dmg;
-        
-        if(btnCorrosive.getSelection()) {
-        	weapon.corrosive += weapon.electricity+weapon.toxin;
-        	weapon.electricity = 0;
-        	weapon.toxin = 0;
-        }
-        if(btnGas.getSelection()) {
-        	weapon.gas += weapon.heat+weapon.toxin;
-        	weapon.heat =0;
-        	weapon.toxin = 0;
-        }
-        if(btnRadiation.getSelection()) {
-        	weapon.radiation += weapon.electricity+weapon.heat;
-        	weapon.electricity = 0;
-        	weapon.heat = 0;
-        }
-        if(btnViral.getSelection()) {
-        	weapon.viral += weapon.cold+weapon.toxin;
-        	weapon.toxin = 0;
-        	weapon.cold = 0;
-        	
-        }
-        if(btnBlast.getSelection()) {
-        	weapon.blast += weapon.heat+weapon.cold;
-        	weapon.heat = 0;
-        	weapon.cold = 0;
-        }
-        if(btnMagnetic.getSelection()) {
-        	weapon.magnetic += weapon.electricity+weapon.cold;
-        	weapon.cold = 0;
-        	weapon.electricity =0;
-        }
-		
-        weapon.totProportionalDMG = (weapon.slash+weapon.puncture+weapon.impact) + weapon.cold+ weapon.electricity+ weapon.heat + weapon.toxin 
-        		+ weapon.blast + weapon.corrosive + weapon.gas + weapon.magnetic + weapon.radiation+ weapon.viral + weapon.void1 + weapon.void2;
-        
-        //aux stats
-		s = crit_chance_mod_text.getText();
-		weapon.critChance = weapon.base_crit_chance * percent_to_double( parse_double_textbox(s), 1);
-		
-		s = crit_damage_mod_text.getText();
-		weapon.critMultiplier = weapon.base_crit_multiplier *percent_to_double( parse_double_textbox(s), 1);
-		
-		if(!stance_combo.getText().equals("None") && melee_time!=0) {
-			s = fire_rate_mod_text.getText();
-			weapon.fireRate = weapon.base_fireRate * percent_to_double( parse_double_textbox(s), 1)/melee_time;
-			weapon.fire_rate_non_melee = weapon.base_fireRate *percent_to_double( parse_double_textbox(s), 1);
-			//System.out.println(weapon.fireRate);
-			
-		}
-		else {
-			s = fire_rate_mod_text.getText();
-			//Find more elegant way to handle melee fire rate
-			weapon.fireRate = weapon.base_fireRate * percent_to_double( parse_double_textbox(s), 1);
-			weapon.fire_rate_non_melee = weapon.base_fireRate *percent_to_double( parse_double_textbox(s), 1);		
-		}
-		
-		s = status_chance_mod_text.getText();
-		weapon.status = weapon.base_status *percent_to_double( parse_double_textbox(s), 1);
-		
-		s = multishot_mod_text.getText();
-		if(weapon.shot_type.equals("Discharge")) {
-			weapon.beam_multishot = weapon.base_pellet * percent_to_double( parse_double_textbox(s), 1);
-			
-			weapon.pellet = 1;
-			weapon.status = weapon.beam_multishot * weapon.status;
-		}
-		else {
-			weapon.pellet = weapon.base_pellet *percent_to_double( parse_double_textbox(s), 1);
-		}
-		
-		weapon.multishot_mods = percent_to_double( parse_double_textbox(s), 1);
-		
-		
-		s = reload_mod_text.getText();
-		weapon.reload = weapon.base_reload /percent_to_double( parse_double_textbox(s), 1);
-		
-		s = magazine_mod_text.getText();
-		weapon.magazine = (int) (weapon.base_magazine *percent_to_double( parse_double_textbox(s), 1));
-		
-		s = status_duration_mod_text.getText();
-		weapon.statusDurationPercent = percent_to_double( parse_double_textbox(s), 1);	
-		
-		s = additive_crit_damage_text.getText();
-		weapon.additive_crit_damage = parse_double_textbox(s);	
-		
-		//setup status
-		//weapon.setStatus();
-		weapon.slashChance = weapon.slash/ weapon.totProportionalDMG;
-		weapon.corrosiveChance = weapon.corrosive/ weapon.totProportionalDMG;
-		weapon.viralChance = weapon.viral/ weapon.totProportionalDMG;
-		weapon.toxinChance = weapon.toxin/ weapon.totProportionalDMG;
-		weapon.heatChance = weapon.heat/ weapon.totProportionalDMG;
-		weapon.gasChance = weapon.gas/ weapon.totProportionalDMG;
-		weapon.magneticChance = weapon.magnetic/ weapon.totProportionalDMG;
-		weapon.coldChance = weapon.cold/ weapon.totProportionalDMG;
-		weapon.electricityChance = weapon.electricity/ weapon.totProportionalDMG;
-		
-		weapon.quantize();
-		
-		weapon.reload_ms = (int) (weapon.reload * 1000 + 1);
-		weapon.critTier = (int)weapon.critChance + 1;
-		weapon.highCC = weapon.critChance % 1;
-		if (weapon.highCC == 0 && weapon.critChance != 0) // corrects modulo if cc is whole num, but realcritchance will stay 0 if cc is 0
-			weapon.highCC = 1;
-		
-		weapon.msPerShot = (int) Math.round(1000 / weapon.fireRate);
-		weapon.multiShotChance = weapon.pellet % 1;
-		weapon.beam_multishot_chance = weapon.beam_multishot % 1;
-	
-		
-	}
 	
 	private void update_enemy_table(Enemy enemy) {
 		enemy_table.clearAll();
@@ -3160,15 +3024,16 @@ public class MainGUI {
 		tableItem_4.setText(new String[] {"EHP","",String.format("%,.0f", enemy.ehp()),""});
 	}
 	
-	public static void update_weapon_table(Weapon w) {
+	public void update_weapon_table(Weapon w) {
 		if (weapon_table != null) {
 			weapon_table.clearAll();
+			w.melee_multiplier = stance_multipliers.get(0);
 
-			tableItem.setText(new String[] {"Impact", Double.toString(w.impact * w.beam_multishot)});
+			tableItem.setText(new String[] {"Impact", Double.toString(w.beam_multishot * w.damage_array[index("impact")])});
 			
-			tableItem1.setText(new String[] {"Puncture", Double.toString(w.puncture* w.beam_multishot)});
+			tableItem1.setText(new String[] {"Puncture", Double.toString(w.beam_multishot * w.damage_array[index("puncture")])});
 			
-			tableItem2.setText(new String[] {"Slash", Double.toString(w.slash* w.beam_multishot)});
+			tableItem2.setText(new String[] {"Slash", Double.toString(w.beam_multishot * w.damage_array[index("slash")])});
 			
 			tableItem3.setText(new String[] {"Crit Chance", Double.toString(w.critChance)});
 			
@@ -3184,29 +3049,29 @@ public class MainGUI {
 			
 			tableItem9.setText(new String[] {"Magazine", Double.toString(w.magazine)});
 			
-			tableItem10.setText(new String[] {"Cold", Double.toString(w.cold* w.beam_multishot)});
+			tableItem10.setText(new String[] {"Cold", Double.toString(w.beam_multishot * w.damage_array[index("cold")])});
 			
-			tableItem11.setText(new String[] {"Electricity", Double.toString(w.electricity* w.beam_multishot)});
+			tableItem11.setText(new String[] {"Electricity", Double.toString(w.beam_multishot * w.damage_array[index("electricity")])});
 			
-			tableItem12.setText(new String[] {"Heat", Double.toString(w.heat* w.beam_multishot)});
+			tableItem12.setText(new String[] {"Heat", Double.toString(w.beam_multishot * w.damage_array[index("heat")])});
 			
-			tableItem13.setText(new String[] {"Toxin", Double.toString(w.toxin* w.beam_multishot)});
+			tableItem13.setText(new String[] {"Toxin", Double.toString(w.beam_multishot * w.damage_array[index("toxin")])});
 			
-			tableItem14.setText(new String[] {"Blast", Double.toString(w.blast* w.beam_multishot)});
+			tableItem14.setText(new String[] {"Blast", Double.toString(w.beam_multishot * w.damage_array[index("blast")])});
 			
-			tableItem15.setText(new String[] {"Corrosive", Double.toString(w.corrosive* w.beam_multishot)});
+			tableItem15.setText(new String[] {"Corrosive", Double.toString(w.beam_multishot * w.damage_array[index("corrosive")])});
 			
-			tableItem16.setText(new String[] {"Gas", Double.toString(w.gas* w.beam_multishot)});
+			tableItem16.setText(new String[] {"Gas", Double.toString(w.beam_multishot * w.damage_array[index("gas")])});
 			
-			tableItem17.setText(new String[] {"Magnetic", Double.toString(w.magnetic* w.beam_multishot)});
+			tableItem17.setText(new String[] {"Magnetic", Double.toString(w.beam_multishot * w.damage_array[index("magnetic")])});
 			
-			tableItem18.setText(new String[] {"Radiation", Double.toString(w.radiation* w.beam_multishot)});
+			tableItem18.setText(new String[] {"Radiation", Double.toString(w.beam_multishot * w.damage_array[index("radiation")])});
 			
-			tableItem19.setText(new String[] {"Viral", Double.toString(w.viral* w.beam_multishot)});
+			tableItem19.setText(new String[] {"Viral", Double.toString(w.beam_multishot * w.damage_array[index("viral")])});
 			
-			tableItem20.setText(new String[] {"Void 1", Double.toString(w.void1* w.beam_multishot)});
+			//tableItem20.setText(new String[] {"Void 1", Double.toString(w.beam_multishot * w.damage_array[index("void1")])});
 			
-			tableItem21.setText(new String[] {"Void 2", Double.toString(w.void2* w.beam_multishot)});
+			//tableItem21.setText(new String[] {"Void 2", Double.toString(w.beam_multishot * w.damage_array[index("void2")])});
 			
 			tableItem22.setText(new String[] {"Ammo Max", Double.toString(w.ammo)});
 			
@@ -3221,10 +3086,12 @@ public class MainGUI {
 			tableItem27.setText(new String[] {"Avg Toxin Dot Dmg", "Run a simulation"});
 			
 			tableItem28.setText(new String[] {"Avg Heat Dot Dmg", "Run a simulation"});
+			
+			tableItem29.setText(new String[] {"Damage", Double.toString(default_enemy.display_damage(default_enemy.array_scale(w.damage_array, w.getMultiplier()),w)[0]) });
 		}
 		
 	}
-	private static double parse_double_textbox(String s) {
+	static double parse_double_textbox(String s) {
 	    String[] arrSplit = s.split("\\s");
 	    double tot = 0;
 	    for (int i=0; i < arrSplit.length; i++)
@@ -3236,7 +3103,7 @@ public class MainGUI {
 	    return tot;
 		
 	}
-	private static double parse_double_multiply_textbox(String s) {
+	static double parse_double_multiply_textbox(String s) {
 	    String[] arrSplit = s.split("\\s");
 	    double tot = 1.0;
 	    for (int i=0; i < arrSplit.length; i++)
@@ -3262,24 +3129,26 @@ public class MainGUI {
 	@SuppressWarnings("unchecked")
 	public static void set_up_fire_mode_combo() {
 		fireModeCombo.removeAll();
+		fireModeCombo.add("Primary");
 		
         // typecasting obj to JSONObject 
-        JSONObject jo = (JSONObject) obj; 
+        JSONObject jo = (JSONObject) wep_obj; 
   
         // getting address 
-        Map<String,Object> data = (Map<String,Object>)jo.get("data"); 
-        Map<String,Object> weapons = (Map<String,Object>)data.get("Weapons");
+        Map<String,Object> weapons = (Map<String,Object>)jo;
         Map<String,Object> selectedWep =(Map<String,Object>)weapons.get(weaponListCombo.getText());
         
+        
         if(selectedWep != null) {
+        	Map<String,Object> firemodes =(Map<String,Object>)selectedWep.get("OtherFireModes");
 	        ArrayList<String> attackModes = new ArrayList<>();
-	        Iterator<Map.Entry<String,Object>> itr1 = selectedWep.entrySet().iterator(); 
+	        Iterator<Map.Entry<String,Object>> itr1 = firemodes.entrySet().iterator(); 
 	        while (itr1.hasNext()) { 
 
 	            Map.Entry<String,Object> pair = itr1.next(); 
 	            
-	            if(checkModes(pair))	
-	            	attackModes.add((String)pair.getKey());
+
+	            attackModes.add((String)pair.getKey());
 	        }
 	        
 	        for(int i =0;i<attackModes.size();i++) {
@@ -3321,5 +3190,39 @@ public class MainGUI {
         btnHunterMunitions.setSelection( false );
         btnShatteringImpact.setSelection( false );
           
+	}
+	public static int index(String s) {
+	    if (s.equals("impact"))
+	        return 0;
+	    else if (s.equals("puncture"))
+	        return 1;
+	    else if (s.equals("slash"))
+	        return 2;
+	    else if (s.equals("heat"))
+	        return 3;
+	    else if (s.equals("cold"))
+	        return 4;
+	    else if (s.equals("electricity"))
+	        return 5;
+	    else if (s.equals("toxin"))
+	        return 6;
+	    else if (s.equals("blast"))
+	        return 7;
+	    else if (s.equals("radiation"))
+	        return 8;
+	    else if (s.equals("gas"))
+	        return 9;
+	    else if (s.equals("magnetic"))
+	        return 10;
+	    else if (s.equals("viral"))
+	        return 11;
+	    else if (s.equals("corrosive"))
+	        return 12;
+	    else if (s.equals("void"))
+	        return 13;
+	    else if (s.equals("true"))
+	        return 14;
+	    System.out.printf("Invalid damage type name," );
+	    return 0;
 	}
 }

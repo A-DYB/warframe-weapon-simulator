@@ -34,13 +34,13 @@ public class Enemy {
 	public boolean amalgam_shattering_impact;
 	public boolean demolyst;
 	
-	public double[] shield_multipliers = new double[15];
-	public double[] health_multipliers = new double[15];
-	public double[] armor_multipliers = new double[15];
-	public double[] bypass_multipliers = new double[15];
-	public double[] armor_dr_multipliers = new double[15];
+	public double[] shield_multipliers = new double[20];
+	public double[] health_multipliers = new double[20];
+	public double[] armor_multipliers = new double[20];
+	public double[] bypass_multipliers = new double[20];
+	public double[] armor_dr_multipliers = new double[20];
 
-	double[] init = new double[15];
+	double[] init = new double[20];
 	
 	public Dot heatDot = new Dot(1000000000,0,init,3);
 	public Dot heat_dot_armor_reduction = new Dot(1000000000,0,init,15);
@@ -81,12 +81,14 @@ public class Enemy {
 	LinkedList<Dot> gasQ = new LinkedList<>();
 	
 	private Weapon current_weapon;
+	private double status_duration = 1;
 
 	public Enemy(String name, double level, double armorReduct, Weapon weapon) {
 		this.name = name;
 		this.level = level;
 		this.armorReduct=armorReduct;
 		this.current_weapon = weapon;
+		this.status_duration = weapon.statusDurationPercent;
 		
 		getEnemy(name);
 		reset(armorReduct);
@@ -96,12 +98,13 @@ public class Enemy {
 	
 	public class Dot {
 		private double offset;
-		private int life; //in milliseconds
+		private double life; //in milliseconds
 		private double[] damage;
+		//private double status_duration;
 		
 		int identifier;
 		boolean heat_active;
-		int base_life;
+		double base_life;
 		int tick;
 		/*
 		IDENTIFIERS
@@ -127,19 +130,21 @@ public class Enemy {
 	    19
 	    */
 		
-		public Dot(int offset, int life, double[] proc_damage, int id) {
-			this.offset = offset;
-			this.life = life;
+		public Dot(double d, double e, double[] proc_damage, int id) {
+			this.offset = d;
+			//this.status_duration = get_status_duration();
+
+			this.life = e ;
 			this.damage = proc_damage;
 			this.identifier = id;
 			this.heat_active = false;
-			this.base_life = life;
+			this.base_life = e;
 			this.tick = 0;
 		}
 		
 		//life is in ms
-		public void setLife(int life) {
-			this.life =life;
+		public void setLife(double d) {
+			this.life = d ;
 		}
 		public void setOffset(double d) {
 			this.offset = d;
@@ -149,6 +154,7 @@ public class Enemy {
 		}
 		public void decLife(int period) {
 			life =life-period;
+			
 		}
 		public double getOffset() {
 			return offset;
@@ -162,7 +168,7 @@ public class Enemy {
 		public void reset() {
 			offset = 1000000;
 			life = 0;
-			damage = new double[15];
+			damage = new double[20];
 			heat_active = false;
 			tick = 0;
 		}
@@ -194,15 +200,17 @@ public class Enemy {
 			//heat
 			else if(identifier == 3) {
 				//expired
-				heat_offset = 1000000;
-				heatDot.reset();
+				
 				//start armor regeneration
-				heat_dot_armor_regeneration.setLife(6000);
+				heat_dot_armor_regeneration.setLife((int) (6000 * status_duration));
 				
 				//start regeneration
-				heat_dot_armor_regeneration.setLife(6000);
-				heat_dot_armor_regeneration.setOffset(this.getOffset() + 1500);
+				heat_dot_armor_regeneration.setLife((int) (6000 * status_duration));
+				heat_dot_armor_regeneration.setOffset(heatDot.getOffset() + 1500 * status_duration);
 				heat_dot_armor_regeneration.tick = 4;
+				
+				heat_offset = 1000000;
+				heatDot.reset();
 				
 			}
 			//electric
@@ -245,7 +253,7 @@ public class Enemy {
 				gasQ.removeFirst();
 				
 				if(gasQ.isEmpty()) {
-					Enemy.gas_offset = -1;
+					Enemy.gas_offset = 1000000;
 				}
 			}
 			//magnetic
@@ -310,14 +318,15 @@ public class Enemy {
 				
 				armor = armor*cur_strip/prev_strip;
 				
-				this.decLife(500);
-				if(this.getLife() <= 0) {
+				this.decLife((int) (500* status_duration));
+				if(heat_dot_armor_reduction.getLife() <= 0) {
 					
 					
-					this.reset();
+					heat_dot_armor_reduction.reset();
 				}
 				else {
-					this.setOffset(this.getOffset() + 500);
+					heat_dot_armor_reduction.setOffset(heat_dot_armor_reduction.getOffset() + 500* status_duration);
+					
 				}
 				
 			}
@@ -330,12 +339,13 @@ public class Enemy {
 				
 				armor = armor*cur_strip/prev_strip;
 				
-				this.decLife(1500);
-				if(this.getLife() <= 0) {
-					this.reset();
+				heat_dot_armor_regeneration.decLife((int) (1500* status_duration));
+				if(heat_dot_armor_regeneration.getLife() <= 0) {
+					heat_dot_armor_regeneration.reset();
 				}
 				else {
-					this.setOffset(this.getOffset() + 1500);
+					heat_dot_armor_regeneration.setOffset(heat_dot_armor_regeneration.getOffset() + 1500* status_duration);
+					
 				}
 			}
 			
@@ -362,14 +372,16 @@ public class Enemy {
 		
 		public void electric_trigger() {
 			double total_elec_dot = 0;
-			double [] dmg = new double[15];
+			double [] dmg = new double[20];
 			for (Dot item: elecQ) {
 				total_elec_dot += item.getDamage()[5];
 	        }
+			//System.out.println(elecQ.size());
 			
 			Enemy.electricity_offset += 1000;
 			
-			dmg[5] = total_elec_dot;
+			//Note, electric procced on head will trigger headshot multiplier again
+			dmg[5] = total_elec_dot * current_weapon.headshot_multiplier;
 
 			
 			damage_enemy(dmg, 1, true);
@@ -379,14 +391,15 @@ public class Enemy {
 		}
 		public void gas_trigger() {
 			double total_gas_dot = 0;
-			double [] dmg = new double[15];
+			double [] dmg = new double[20];
 			for (Dot item: gasQ) {
 				total_gas_dot += item.getDamage()[9];
 	        }
 			
 			Enemy.gas_offset += 1000;
 			
-			dmg[9] = total_gas_dot;
+			//Note, gas procced on head will trigger headshot multiplier again
+			dmg[9] = total_gas_dot * current_weapon.headshot_multiplier;
 			
 			damage_enemy(dmg, 1, true);
 			
@@ -399,7 +412,7 @@ public class Enemy {
 			Enemy.heat_offset += 1000;
 			
 			damage_enemy(heatDot.getDamage(), 1, true);
-			System.out.println(heatDot.getDamage()[3]);
+			//System.out.println(heatDot.getDamage()[3]);
 			
 			// REMOVE ARMOR
 			amalgam_armor_removal();
@@ -442,7 +455,7 @@ public class Enemy {
 		total_health_damage = total_health_damage * crit_multiplier * health_dr;
 		total_shield_damage = total_shield_damage * crit_multiplier * shield_dr;
 		
-		//System.out.printf("R-Damage: %f, DR: %f, Crit Mult: %f\n",total_health_damage, health_dr, crit_multiplier);
+		//System.out.printf("R-Damage: %f, DR: %f, Crit Mult: %f, Proc: %b\n",total_health_damage, health_dr, crit_multiplier, proc );
 		
 		
 		health -= total_health_damage  ;
@@ -465,6 +478,48 @@ public class Enemy {
 		if(health <0) {
 			health = 0;
 		}
+	}
+	public double[] display_damage(double []damage, Weapon wep) {
+		// Apply current_weapon.getMultiplier(), before passing array
+		//double []damage = current_weapon.damage_array;
+		
+		double total_shield_damage = 0;
+		double total_health_damage = 0;
+		
+		
+		if(shield >0 ) {
+			
+			total_shield_damage = array_multiply_sum(damage, shield_multipliers) * magneticMult;
+			if(armor > 0) {
+				total_health_damage = damage[6] * armor_multipliers[6] * health_multipliers[6] * get_armor_dr()[6] * viralMult;
+			}
+			else {
+				total_health_damage = damage[6] * health_multipliers[6] * viralMult;
+			}
+
+		}
+		else if(armor > 0) {
+			total_health_damage = array_multiply_sum(damage, array_multiply(armor_multipliers,array_multiply(health_multipliers,get_armor_dr()))) * viralMult;
+			//System.out.println(total_health_damage);
+		}
+		else {
+			total_health_damage = array_multiply_sum(damage, health_multipliers) * viralMult;
+		}
+		
+		
+		double shield_dr = demolyst_dr(false, total_shield_damage * wep.fire_rate_non_melee * wep.multishot_mods * wep.multishot_scalar);
+		double health_dr = demolyst_dr(false, (total_health_damage + shield_multipliers[6]*damage[6]) * wep.fire_rate_non_melee * wep.multishot_scalar * wep.multishot_mods);
+		//System.out.printf("Damage: %f, ",total_health_damage*crit_multiplier);
+		
+		total_health_damage = total_health_damage * health_dr;
+		total_shield_damage = total_shield_damage * shield_dr;
+		
+		//System.out.printf("R-Damage: %f, DR: %f, Crit Mult: %f, Proc: %b\n",total_health_damage, health_dr, crit_multiplier, proc);
+		
+		double [] res = { total_health_damage, total_shield_damage };
+		
+		return res;
+		
 	}
 
 
@@ -596,24 +651,24 @@ public class Enemy {
 		//NOTE : VIRAL SHOULD ONLY BE APPLIED WHEN APPLYING DAMAGE
 		double [] proc_damage;
 		if(force_slash) {
-			proc_damage = new double[15];
+			proc_damage = new double[20];
 			proc_damage[14] = weapon.slashDOT * weapon.getMultiplier() * critM;
-			Dot p = new Dot(millis+1000 ,6000 ,proc_damage, 2);
+			Dot p = new Dot(millis+1000 ,6000 * status_duration ,proc_damage, 2);
 			slQ.addLast(p);
 		}
 		
 		if(weapon.toxicLash) {
-			proc_damage = new double[15];
+			proc_damage = new double[20];
 			proc_damage[6] = weapon.toxicLashPercent * weapon.getTotalDamage() * weapon.getMultiplier() * critM / 2;
 			
-			Dot p = new Dot(millis+1000,6000, proc_damage, 6); // affected by bane 3x, affected by elemental mods too
+			Dot p = new Dot(millis+1000,6000* status_duration, proc_damage, 6); // affected by bane 3x, affected by elemental mods too
 			toxQ.addLast(p);
 		}
 		
 		if(weapon.getHunter() && Math.random() < 0.3) {
-			proc_damage = new double[15];
+			proc_damage = new double[20];
 			proc_damage[14] = weapon.slashDOT * weapon.getMultiplier() * critM;
-			Dot p = new Dot(millis+1000 ,6000 ,proc_damage, 2);
+			Dot p = new Dot(millis+1000 ,6000* status_duration ,proc_damage, 2);
 			slQ.addLast(p);
 		}
 		
@@ -632,34 +687,33 @@ public class Enemy {
 	public void procAssign(Weapon weapon, double critM, int millis) {
 		//NOTE : VIRAL SHOULD ONLY BE APPLIED WHEN APPLYING DAMAGE
 		double random = rProc.nextDouble();
-		double []proc_damage = new double[15];
+		double []proc_damage = new double[20];
 		if( (random -= weapon.slashChance) < 0) {
 			proc_damage[14] = weapon.slashDOT * weapon.getMultiplier() * critM;
-			Dot p = new Dot(millis+1000 ,6000 ,proc_damage, 2);
+			Dot p = new Dot(millis+1000 ,6000* status_duration ,proc_damage, 2);
 			slQ.addLast(p);
 		}
 		else if((random -= weapon.toxinChance) < 0){	
 			proc_damage[6] = weapon.toxinDOT*weapon.getMultiplier()*critM;
-			Dot p = new Dot(millis+1000 ,6000 ,proc_damage, 6);
+			Dot p = new Dot(millis+1000 ,6000* status_duration ,proc_damage, 6);
 			toxQ.addLast(p);
 		}
 		else if((random -= weapon.gasChance) < 0) {																
-			Dot p;
 			proc_damage[9] = weapon.gasDOT*weapon.getMultiplier()*critM;
-			if(!gasQ.isEmpty()) {
-				p = new Dot(millis + 6000,6000,proc_damage ,9);
-			}else {
-				p = new Dot(millis + 6000,6000,proc_damage ,9);
-				gas_offset = millis+1000;
+			if(gasQ.isEmpty()) {
+				gas_offset = millis;
 			}
+			
+			Dot p = new Dot(millis + 6000* status_duration,6000* status_duration,proc_damage ,9);
+			gasQ.addLast(p);
 
 			if(gasQ.size()>=10) {
 				gasQ.removeFirst();
 			}
-			gasQ.addLast(p);
+
 		}
 		else if((random -= weapon.corrosiveChance) < 0){	 
-			Dot p = new Dot(millis+(int)(6000*weapon.statusDurationPercent),(int)(6000*weapon.statusDurationPercent), proc_damage, 12);
+			Dot p = new Dot(millis+6000* status_duration,6000* status_duration, proc_damage, 12);
 			
 			int size = corrosiveQ.size();
 			
@@ -689,7 +743,7 @@ public class Enemy {
 		}	
 		
 		else if((random -= weapon.viralChance) < 0){		
-			Dot p = new Dot(millis + (int)(6000*weapon.statusDurationPercent),(int)(6000*weapon.statusDurationPercent), proc_damage, 11);
+			Dot p = new Dot(millis + 6000* status_duration,6000* status_duration, proc_damage, 11);
 			int size = viralQ.size();
 			
 			if(size<=0) {
@@ -715,27 +769,28 @@ public class Enemy {
 			
 			if(heatDot.heat_active) {
 				heatDot.setDamage( array_add( proc_damage, heatDot.getDamage() ) );
-				heatDot.setLife(6000);
-				heatDot.setOffset(millis + 6000);
+				heatDot.setLife(6000* status_duration);
+				heatDot.setOffset(millis + heatDot.getLife());
 				//heat_offset = millis + 1000;
 			}
 			else {
+				heat_dot_armor_regeneration.reset();
 				heatDot.setDamage( proc_damage );
-				heatDot.setLife(6000);
-				heatDot.setOffset(millis + 6000);
+				heatDot.setLife(6000* status_duration);
+				heatDot.setOffset(millis + heatDot.getLife());
 				heatDot.heat_active = true;
 				heat_offset = millis + 1000;
 				
 				//start armor reduction
 				heat_dot_armor_reduction.heat_active = true;
-				heat_dot_armor_reduction.setOffset(millis + 500);
-				heat_dot_armor_reduction.setLife(2000);
+				heat_dot_armor_reduction.setOffset(millis + 500 * status_duration);
+				heat_dot_armor_reduction.setLife(2000 * status_duration);
 
 			}
 			
 		}
 		else if((random -= weapon.magneticChance) < 0){	//mag Proc
-			Dot p = new Dot(millis+(int)(6000*weapon.statusDurationPercent),(int)(6000*weapon.statusDurationPercent), proc_damage, 10);
+			Dot p = new Dot(millis+6000* status_duration,6000* status_duration, proc_damage, 10);
 			int size = magneticQ.size();
 			
 			if(size<=0) {
@@ -760,14 +815,14 @@ public class Enemy {
 			proc_damage[5] = weapon.electricityDOT*weapon.getMultiplier()*critM;
 			if(elecQ.isEmpty()) {
 				Enemy.electricity_offset = millis;
-				p = new Dot(millis+6000, 6000, proc_damage, 5);
+				p = new Dot(millis+6000* status_duration, 6000* status_duration, proc_damage, 5);
 			}
 			else {
-				p = new Dot(millis+6000, 6000, proc_damage, 5);
+				p = new Dot(millis+6000* status_duration, 6000* status_duration, proc_damage, 5);
 			}
 
-			//have to add to the front for electric b/c it damages instantly
-			elecQ.addFirst(p);
+			
+			elecQ.addLast(p);
 					
 		}
 		
@@ -923,7 +978,7 @@ public class Enemy {
 	}
 	public double[] get_armor_dr() {
 		int l1 = armor_multipliers.length;
-		double[] result = new double[15];
+		double[] result = new double[20];
 		for(int i = 0; i < l1; i++) {
 			if(i == 14) {
 				result[i] = 1.0;
@@ -974,7 +1029,7 @@ public class Enemy {
 	public double[] array_multiply(double[] a1, double[] a2) {
 		int l1 = a1.length;
 		int l2 = a2.length;
-		double[] res = new double[15];
+		double[] res = new double[20];
 		
 		if(l1 == l2) {
 			for(int i =0;i<l1;i++) {
@@ -989,7 +1044,7 @@ public class Enemy {
 	}
 	public double[] array_scale(double[] a1, double d) {
 		int l1 = a1.length;
-		double[] res = new double[15];
+		double[] res = new double[20];
 		
 		for(int i =0;i<l1;i++) {
 			res[i] = a1[i] * d;
@@ -1011,7 +1066,7 @@ public class Enemy {
 	public double[] array_add(double[] a1, double[] a2) {
 		int l1 = a1.length;
 		int l2 = a2.length;
-		double[] res = new double[15];
+		double[] res = new double[20];
 		
 		if(l1 == l2) {
 			for(int i =0;i<l1;i++) {
@@ -1044,5 +1099,10 @@ public class Enemy {
 
 		return a1;
 	}
+	public double get_status_duration() {
+
+		return status_duration;
+	}
+
 	
 }
