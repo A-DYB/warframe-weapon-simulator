@@ -30,25 +30,6 @@ public class Weapon {
 	String sub_class;
 	String stance = "None";
 	String move_set = "Neutral";
-
-	/*
-	public double impact;
-	public double slash;
-	public double puncture;
-	public double cold;
-	public double electricity;
-	public double heat;
-	public double toxin;
-	public double toxicLashDamage;
-	public double blast;
-	public double corrosive;
-	public double gas;
-	public double magnetic;
-	public double radiation;
-	public double viral;
-	public double void1;
-	public double void2;
-	*/
 	
 	//base stats
 	public double base_crit_chance;
@@ -59,24 +40,6 @@ public class Weapon {
 	public double base_reload;
 	public int base_magazine;
 	public int base_ammo;
-
-	/*
-	public double base_impact;
-	public double base_slash;
-	public double base_puncture;
-	public double base_cold;
-	public double base_electricity;
-	public double base_heat;
-	public double base_toxin;
-	public double base_blast;
-	public double base_corrosive;
-	public double base_gas;
-	public double base_magnetic;
-	public double base_radiation;
-	public double base_viral;
-	public double base_void1;
-	public double base_void2;
-	*/
 	
 	public double[] damage_array = new double[20];
 	public double[] base_damage_array = new double[20];
@@ -133,69 +96,8 @@ public class Weapon {
 	
 	public Firing_offsets fo;
 	
-	public class Firing_offsets{
-		int index;
-		double fire_offset[];
-		int size;
-		double current_time;
-		public Firing_offsets() {
-			size = (int)(magazine/ammoCost);
-			fire_offset = new double[size];
-			
-			for(int i = 0; i<size; i++) {
-				fire_offset[i] = (1/fireRate)*i;
-
-			}
-		}
-		public void increment() {
-			index ++;
-			
-			//System.out.println(beam_ramp_multiplier);
-			//beam ramp
-			beam_ramp_multiplier = Math.min( beam_ramp_base + ((1-beam_ramp_base)/0.6)*index/fireRate , 1 );
-			
-			//reload
-			if(index > size - 1) {
-				current_time = fire_offset[index-1];
-				index = 0;
-				for(int i = 0; i<size; i++) {
-					fire_offset[i] = current_time + reload + (1/fireRate)*i;
-
-				}
-				
-				//set beam ramp multiplier
-				//change beam ramp base from when reload ends
-				if(reload > 0.8) {
-					//decay over 2 s
-					double decay_time = (reload - 0.8);
-					beam_ramp_base = beam_ramp_multiplier - decay_time * (beam_ramp_multiplier - beam_ramp_base)/2;
-				}
-				beam_ramp_multiplier = beam_ramp_base;
-				
-			}
-			
-			
-		}
-		public double get_event_time() {
-			return fire_offset[index];
-		}
-		public void reset() {
-			index = 0;
-			current_time = 0;
-			size = (int)(magazine/ammoCost);
-			fire_offset = new double[size];
-			
-
-			for(int i = 0; i<size; i++) {
-				fire_offset[i] = (1/fireRate)*i;
-
-			}
-		}
-		
-	}
-
 	public Weapon(String name) {
-				
+		
 		//this.name = MainGUI.weaponListCombo.getText();
 		
 		if(name.contentEquals("Custom Build Tab")) {
@@ -216,7 +118,7 @@ public class Weapon {
 	        MainGUI.stance_combo.select(stance_index);
 	        MainGUI.move_combo.select(move_index);
 	        
-			//setupCustomBuild();
+			setupCustomBuild();
 
 		}else {
 			//go look for name in build 
@@ -246,6 +148,96 @@ public class Weapon {
 		
 		//setup_base_array();
 	}
+	
+	public class Firing_offsets{
+		int index;
+		double fire_offset[];
+		int size;
+		double current_time;
+		public Firing_offsets() {
+			size = (int)Math.round(magazine/ammoCost);
+			fire_offset = new double[size];
+			
+			/*
+			if(shot_type.equals("CHARGE")) {
+				for(int i = 0; i<size; i++) {
+					fire_offset[i] = (1/fireRate)*(i+1);
+				}
+			}
+			else {
+				for(int i = 0; i<size; i++) {
+					fire_offset[i] = (1/fireRate)*i;
+				}
+			}
+			*/
+			setup_fire_offset(0);
+		}
+		public void increment() {
+			index ++;
+			
+			//System.out.println(beam_ramp_multiplier);
+			//beam ramp
+			beam_ramp_multiplier = Math.min( beam_ramp_base + ((1-beam_ramp_base)/0.6)*index/fireRate , 1 );
+			
+			//reload
+			if(index > size - 1) {
+				current_time = fire_offset[index-1];
+				index = 0;
+				
+				/*
+				for(int i = 0; i<size; i++) {
+					fire_offset[i] = current_time + reload + (1/fireRate)*i;
+				}
+				*/
+				setup_fire_offset(current_time + reload);
+				
+				//set beam ramp multiplier
+				//change beam ramp base from when reload ends
+				if(reload > 0.8) {
+					//decay over 2 s
+					double decay_time = (reload - 0.8);
+					beam_ramp_base = beam_ramp_multiplier - decay_time * (beam_ramp_multiplier - beam_ramp_base)/2;
+				}
+				beam_ramp_multiplier = beam_ramp_base;
+				
+			}
+			
+			
+		}
+		public double get_event_time() {
+			return fire_offset[index];
+		}
+		public void reset() {
+			index = 0;
+			current_time = 0;
+			size = (int)Math.round(magazine/ammoCost);
+			fire_offset = new double[size];
+			
+			
+			/*
+			for(int i = 0; i<size; i++) {
+				fire_offset[i] = (1/fireRate)*i;
+
+			}
+			*/
+			setup_fire_offset(0);
+		}
+		private void setup_fire_offset(double base_offset) {
+			if(shot_type.equals("CHARGE")) {
+				for(int i = 0; i<size; i++) {
+					fire_offset[i] = base_offset +(1/fireRate)*(i+1);
+				}
+			}
+			else {
+				for(int i = 0; i<size; i++) {
+					fire_offset[i] = base_offset + (1/fireRate)*i;
+				}
+			}
+		}
+		
+	}
+
+
 	@SuppressWarnings("unchecked")
 	public ArrayList<String> parseStanceList() throws FileNotFoundException, IOException, ParseException{
 		ArrayList<String> stanceList = new ArrayList<String>();
@@ -368,7 +360,7 @@ public class Weapon {
 		ammoCost = ((Number)selectedWep.getOrDefault("ammoCost", 1 )).doubleValue();
 		base_status = ((Number)selectedWep.getOrDefault("procChance", 0)).doubleValue();
 		base_reload = ((Number)selectedWep.getOrDefault("reloadTime", 0 )).doubleValue();
-		base_ammo = ((Number)selectedWep.getOrDefault("maxAmmo", 540 )).intValue();
+		base_ammo = ((Number)selectedWep.getOrDefault("ammo", 540 )).intValue();
 		base_magazine = ((Number)selectedWep.getOrDefault("magazineSize", 100)).intValue();
 		shot_type = (String)selectedWep.getOrDefault("trigger", "AUTO");
         
@@ -384,7 +376,7 @@ public class Weapon {
     		JSONArray jsonArray2 = (JSONArray)selectedWep.get("damagePerShot"); 
 
     		// Extract numbers from JSON array.
-    		damage_array = fillData(jsonArray2);
+    		base_damage_array = fillData(jsonArray2);
 
     		totBaseDMG =  array_sum(damage_array);
     		
@@ -399,7 +391,7 @@ public class Weapon {
     		ammoCost = ((Number)selectedWep.getOrDefault("ammoCost", ammoCost)).doubleValue();
     		base_status = ((Number)selectedWep.getOrDefault("procChance", base_status)).doubleValue();
     		base_reload = ((Number)selectedWep.getOrDefault("reloadTime", base_reload)).doubleValue();
-    		base_ammo = ((Number)selectedWep.getOrDefault("maxAmmo", base_ammo )).intValue();
+    		base_ammo = ((Number)selectedWep.getOrDefault("ammo", base_ammo )).intValue();
     		base_magazine = ((Number)selectedWep.getOrDefault("magazineSize", base_magazine)).intValue();
     		shot_type = (String)selectedWep.getOrDefault("trigger", shot_type);
         }
@@ -592,12 +584,13 @@ public class Weapon {
 		
 		multishot_mods = MainGUI.percent_to_double( MainGUI.parse_double_textbox(s), 1);
 		
+		ammo = base_ammo;
 		
 		s = MainGUI.reload_mod_text.getText();
 		reload = base_reload /MainGUI.percent_to_double( MainGUI.parse_double_textbox(s), 1);
 		
 		s = MainGUI.magazine_mod_text.getText();
-		magazine = (int) (base_magazine *MainGUI.percent_to_double( MainGUI.parse_double_textbox(s), 1));
+		magazine = (int) Math.round(base_magazine *MainGUI.percent_to_double( MainGUI.parse_double_textbox(s), 1));
 		
 		s = MainGUI.status_duration_mod_text.getText();
 		statusDurationPercent =MainGUI.percent_to_double( MainGUI.parse_double_textbox(s), 1);	

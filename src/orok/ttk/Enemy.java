@@ -55,6 +55,8 @@ public class Enemy {
 	public double totTrueDotDmg;
 	public double totToxDotDmg;
 	public double totHeatDotDmg;
+	public double totElectricDotDmg;
+	public double totGasDotDmg;
 	
 	private double viralMult=1;
 	private double magneticMult=1;
@@ -371,6 +373,8 @@ public class Enemy {
 		}
 		
 		public void electric_trigger() {
+			totElectricDotDmg += (health + shield);
+			
 			double total_elec_dot = 0;
 			double [] dmg = new double[20];
 			for (Dot item: elecQ) {
@@ -388,8 +392,12 @@ public class Enemy {
 			
 			// REMOVE ARMOR
 			amalgam_armor_removal();
+			
+			totElectricDotDmg -= (health + shield);
 		}
 		public void gas_trigger() {
+			totGasDotDmg += (health + shield);
+			
 			double total_gas_dot = 0;
 			double [] dmg = new double[20];
 			for (Dot item: gasQ) {
@@ -405,6 +413,8 @@ public class Enemy {
 			
 			// REMOVE ARMOR
 			amalgam_armor_removal();
+			
+			totGasDotDmg -= (health + shield);
 		}
 		public void heat_trigger() {
 			totHeatDotDmg += (health + shield);
@@ -855,10 +865,14 @@ public class Enemy {
 		totToxDotDmg =0;
 		totTrueDotDmg =0;
 		totHeatDotDmg=0;
+		totElectricDotDmg = 0;
+		totGasDotDmg = 0;
 		
 		heatDot.reset();
 		heat_dot_armor_reduction.reset();
 		heat_dot_armor_regeneration.reset();
+		
+		
 		
 	}
 	
@@ -888,14 +902,6 @@ public class Enemy {
 		shield_multipliers = array_add_const(shield_multipliers, -resistance);
 		shield_multipliers = check_positive(shield_multipliers);
 		
-	}
-	
-	private double subtract_resistance(double modifier, double resist_val) {
-		modifier -= resist_val;
-		if(modifier < 0)
-			modifier=0;
-		
-		return modifier;
 	}
 
 	public double armorScale(double a, double level, double b_level){

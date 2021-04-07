@@ -6,7 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
@@ -159,10 +160,16 @@ public class MainGUI {
 	private static TableItem tableItem27 ;
 	private static TableItem tableItem28 ;
 	private static TableItem tableItem29 ;
+	private static TableItem tableItem30 ;
+	private static TableItem tableItem31 ;
+	private static TableItem tableItem32 ;
+	private static TableItem tableItem33 ;
 	
 	private static TableItem tableItem_1;
 	private static TableItem tableItem_2;
 	private static TableItem tableItem_3;
+	
+	private static TableColumn tblclmnStat;
 	
 	
 	private Random rMulti = new Random();
@@ -247,7 +254,7 @@ public class MainGUI {
 	 */
 	protected void createContents() {
 		shell = new Shell();
-		shell.setSize(1250, 950);
+		shell.setSize(823, 950);
 		shell.setText("Pocket Simulacrum v0.3.1");
 		shell.setLayout(null);
 		
@@ -363,7 +370,8 @@ public class MainGUI {
 		        JSONObject jo = (JSONObject) obj;
 		        
 		        //Check if name already exists
-		        Map<String,Object> data = (Map<String,Object>)jo; 
+		        @SuppressWarnings("unchecked")
+				Map<String,Object> data = (Map<String,Object>)jo; 
 		        if(data.get(weaponCombo.getText()) != null) {
 		        	data.remove(weaponCombo.getText());
 		        	weaponCombo.remove(weaponCombo.getSelectionIndex());
@@ -617,18 +625,22 @@ public class MainGUI {
 		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
 		
-		series = new XYSeries("Time To Kill");
+		series = new XYSeries("Health + Shields");
 		XYSeriesCollection dataset = new XYSeriesCollection(series);
-		chart = ChartFactory.createXYLineChart("Health Depletion Over Time", "Time", "Health", dataset);
+		chart = ChartFactory.createXYLineChart("Single Simulation", "Time", "Health", dataset);
 		ChartFrame frame = new ChartFrame("chart",chart);
+		frame.setAlwaysOnTop(false);
+		frame.setBounds(0, 0, 135, 240);
 		
 		//armor graph
 		armor_series = new XYSeries("Armor");
 		XYSeriesCollection armor_dataset = new XYSeriesCollection(armor_series);
-		JFreeChart armor_chart = ChartFactory.createXYLineChart("Armor Depletion Over Time", "Time", "Health", armor_dataset);
+		JFreeChart armor_chart = ChartFactory.createXYLineChart("Armor Tracker", "Time", "Armor", armor_dataset);
 		ChartFrame armor_frame = new ChartFrame("chart", armor_chart);
+		armor_frame.setAlwaysOnTop(false);
+		armor_frame.setBounds(0, 480, 135, 240);
 		
-		//scaleSeries = new XYSeries("wierdchamp");
+		
 		XYSeriesCollection datasetB = new XYSeriesCollection(scaleSeries);
 		JFreeChart chartB = ChartFactory.createXYLineChart("Time to Kill", "Level", "TTK", datasetB);
 		ChartFrame frameB = new ChartFrame("chart",chartB);
@@ -754,6 +766,8 @@ public class MainGUI {
 				
 				if(default_enemy.baseArmor > 0) {
 					armor_frame.setVisible(true);
+					
+					
 					armor_frame.setSize(1000, 450);
 				}
 
@@ -901,6 +915,14 @@ public class MainGUI {
 				
 					//Weapon tableWeapon = new Weapon(name);
 				default_weapon = new Weapon(name);
+				
+				stance_procs.clear();
+				stance_procs.add(0);
+				stance_multipliers.clear();
+				stance_multipliers.add(1.0);
+				move_combo.removeAll();
+				update_weapon_table(default_weapon);
+				
 				//default_weapon.setupCustomBuild();
 				update_weapon_table(default_weapon);
 
@@ -2240,30 +2262,23 @@ public class MainGUI {
 		new Label(composite_3, SWT.NONE);
 		
 		weapon_table = new Table(shell, SWT.BORDER | SWT.FULL_SELECTION);
-		weapon_table.setBounds(507, 0, 305, 665);
+		weapon_table.setBounds(486, 20, 305, 738);
 		formToolkit.adapt(weapon_table);
 		formToolkit.paintBordersFor(weapon_table);
 		weapon_table.setHeaderVisible(true);
 		weapon_table.setLinesVisible(true);
 		
-		
-		TableColumn tblclmnStat = new TableColumn(weapon_table, SWT.NONE);
+		tblclmnStat = new TableColumn(weapon_table, SWT.NONE);
 		tblclmnStat.setWidth(156);
-		tblclmnStat.setText("Stat");
+		tblclmnStat.setText("");
 		
 		TableColumn tblclmnNewColumn = new TableColumn(weapon_table, SWT.NONE);
 		tblclmnNewColumn.setWidth(141);
-		tblclmnNewColumn.setText("Value");
-		
-		//System.out.println(weaponListCombo.getText());
-		
+		tblclmnNewColumn.setText("");
+
 		default_weapon = new Weapon(weaponCombo.getText());
 		default_enemy = new Enemy(enemy_combo.getText(),165, 1, default_weapon);
 		populate_build_combo(weaponCombo);
-		
-		//populate_stance_combo(default_weapon);
-		
-		//populateCombo(default_weapon, enemy_combo, weaponListCombo,weaponCombo);
 		
 		tableItemName = new TableItem(weapon_table, SWT.NONE);
 		tableItem = new TableItem(weapon_table, SWT.NONE);
@@ -2296,92 +2311,33 @@ public class MainGUI {
 		tableItem27 = new TableItem(weapon_table, SWT.NONE);
 		tableItem28 = new TableItem(weapon_table, SWT.NONE);
 		tableItem29 = new TableItem(weapon_table, SWT.NONE);
-		
-		tableItemName.setText(new String[] {"Weapon", weaponListCombo.getText()});
-		
-		tableItem.setText(new String[] {"Impact", Double.toString(default_weapon.damage_array[index("impact")])});
-		
-		tableItem1.setText(new String[] {"Puncture", Double.toString(default_weapon.damage_array[index("puncture")])});
-		
-		tableItem2.setText(new String[] {"Slash", Double.toString(default_weapon.damage_array[index("slash")])});
-		
-		tableItem3.setText(new String[] {"Crit Chance", Double.toString(default_weapon.critChance)});
-		
-		tableItem4.setText(new String[] {"Crit Damage", Double.toString(default_weapon.critMultiplier)});
-		
-		tableItem5.setText(new String[] {"Pellets", Double.toString(default_weapon.pellet)});
-		
-		tableItem6.setText(new String[] {"Status", Double.toString(default_weapon.status)});
-		
-		tableItem7.setText(new String[] {"Reload", Double.toString(default_weapon.reload)});
-		
-		tableItem8.setText(new String[] {"Fire Rate", Double.toString(default_weapon.fireRate)});
-		
-		tableItem9.setText(new String[] {"Magazine", Double.toString(default_weapon.magazine)});
-		
-		tableItem10.setText(new String[] {"Cold", Double.toString(default_weapon.damage_array[index("cold")])});
-		
-		tableItem11.setText(new String[] {"Electricity", Double.toString(default_weapon.damage_array[index("electricity")])});
-		
-		tableItem12.setText(new String[] {"Heat", Double.toString(default_weapon.damage_array[index("heat")])});
-		
-		tableItem13.setText(new String[] {"Toxin", Double.toString(default_weapon.damage_array[index("toxin")])});
-		
-		tableItem14.setText(new String[] {"Blast", Double.toString(default_weapon.damage_array[index("blast")])});
-		
-		tableItem15.setText(new String[] {"Corrosive", Double.toString(default_weapon.damage_array[index("corrosive")])});
-		
-		tableItem16.setText(new String[] {"Gas", Double.toString(default_weapon.damage_array[index("gas")])});
-		
-		tableItem17.setText(new String[] {"Magnetic", Double.toString(default_weapon.damage_array[index("magnetic")])});
-		
-		tableItem18.setText(new String[] {"Radiation", Double.toString(default_weapon.damage_array[index("radiation")])});
-		
-		tableItem19.setText(new String[] {"Viral", Double.toString(default_weapon.damage_array[index("viral")])});
-		
-		//tableItem20.setText(new String[] {"Void 1", Double.toString(default_weapon.damage_array[index("void1")])});
-		
-		//tableItem21.setText(new String[] {"Void 2", Double.toString(default_weapon.damage_array[index("void2")])});
-		
-		tableItem22.setText(new String[] {"Ammo Max", Double.toString(default_weapon.ammo)});
-		
-		tableItem23.setText(new String[] {"Ammo Cost", Double.toString(default_weapon.ammoCost)});
-		
-		tableItem24.setText(new String[] {"Avg Hp/s", "Run Simulation"});
-		
-		tableItem25.setText(new String[] {"Avg Ammo Eff", "Run Simulation"});
-		
-		tableItem26.setText(new String[] {"Avg Slash Dot Dmg", "Run Simulation"});
-		
-		tableItem27.setText(new String[] {"Avg Toxin Dot Dmg", "Run Simulation"});
-		
-		tableItem28.setText(new String[] {"Avg Heat Dot Dmg", "Run Simulation"});
-		
-		tableItem29.setText(new String[] {"Damage", "Run Simulation"});
-		//default_enemy.getEnemy(default_enemy.name);
-		//default_enemy.reset(Double.valueOf(armor_strip_spinner.getText()));
+		tableItem30 = new TableItem(weapon_table, SWT.NONE);
+		tableItem31 = new TableItem(weapon_table, SWT.NONE);
+		tableItem32 = new TableItem(weapon_table, SWT.NONE);
+		tableItem33 = new TableItem(weapon_table, SWT.NONE);
+
 		
 		enemy_table = new Table(shell, SWT.BORDER | SWT.FULL_SELECTION);
-		enemy_table.setBounds(818, 0, 406, 122);
+		enemy_table.setBounds(486, 779, 305, 122);
 		formToolkit.adapt(enemy_table);
 		formToolkit.paintBordersFor(enemy_table);
 		enemy_table.setHeaderVisible(true);
 		enemy_table.setLinesVisible(true);
 		
 		TableColumn tblclmnEnemyStat = new TableColumn(enemy_table, SWT.NONE);
-		tblclmnEnemyStat.setWidth(100);
+		tblclmnEnemyStat.setWidth(72);
 		tblclmnEnemyStat.setText("Enemy Stat");
 		
 		TableColumn tblclmnBaseValue = new TableColumn(enemy_table, SWT.NONE);
-		tblclmnBaseValue.setWidth(100);
+		tblclmnBaseValue.setWidth(75);
 		tblclmnBaseValue.setText("Base Value");
 		
 		TableColumn tblclmnValue = new TableColumn(enemy_table, SWT.NONE);
-		tblclmnValue.setWidth(100);
+		tblclmnValue.setWidth(81);
 		tblclmnValue.setText("Scaled Value");
 		
 		TableColumn tblclmnType = new TableColumn(enemy_table, SWT.NONE);
-		tblclmnType.setWidth(100);
+		tblclmnType.setWidth(70);
 		tblclmnType.setText("Type");
 		
 		tableItem_1 = new TableItem(enemy_table, SWT.NONE);
@@ -2444,8 +2400,6 @@ public class MainGUI {
 		        while (itr1.hasNext()) { 
 	
 		            Map.Entry<String,Object> pair = itr1.next(); 
-		            //TODO
-		            
 	            	attackModes.add((String)pair.getKey());
 		        }
         	}
@@ -2488,7 +2442,7 @@ public class MainGUI {
 	static void populate_stance_combo(Weapon weapon) {
 		stance_combo.add("None");
 		stance_combo.removeAll();
-		
+
 		ArrayList<String> init_stance = new ArrayList<String>(); 
 
 		try {
@@ -2502,28 +2456,10 @@ public class MainGUI {
 		for(int i =0; i<init_stance.size();i++) {
 			stance_combo.add(init_stance.get(i));
 		}
-		//Setup initial selection
-		/*
-		if(init_stance.size() >= 1) {
-			stance_combo.select(init_stance.size());
-		}
-		else {
-			stance_combo.select(0);
-		}
-		*/
 		stance_combo.select(0);
-		
-		
 	}
-	private static boolean checkModes(Map.Entry<String,Object> pair) {
-		if(pair.getKey().contains("NormalAttack") || pair.getKey().contains("ChargeAttack")|| pair.getKey().contains("AreaAttack")|| pair.getKey().contains("SecondaryAttack")
-				|| pair.getKey().contains("SecondaryAttack"))
-			return true;
-		
-		
-		return false;		
-		
-	}
+
+	@SuppressWarnings("unchecked")
 	private void setup_move_combo(String stance_name) {
 		ArrayList<String> moveList = new ArrayList<String>();
 		move_combo.removeAll();
@@ -2531,7 +2467,7 @@ public class MainGUI {
 		try {
 			s_obj = new JSONParser().parse(new FileReader("stances.json"));
 		} catch (IOException | ParseException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
         JSONObject jo = (JSONObject) s_obj; 
@@ -2539,15 +2475,11 @@ public class MainGUI {
         Map<String,Object> stances = (Map<String,Object>)jo.get(stance_name);
         Map<String,Object> moveset = (Map<String,Object>)stances.get("ComboName");
 		for (Map.Entry<String, Object> entry : moveset.entrySet()) {
-
         	moveList.add((String)entry.getKey());
-
         }
-		
 		for(int i =0; i<moveList.size();i++) {
 			move_combo.add(moveList.get(i));
 		}
-
 		move_combo.select(0);
 	}
 	
@@ -2556,7 +2488,7 @@ public class MainGUI {
 		try {
 			s_obj = new JSONParser().parse(new FileReader("stances.json"));
 		} catch (IOException | ParseException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
         JSONObject jo = (JSONObject) s_obj; 	
@@ -2601,6 +2533,8 @@ public class MainGUI {
 		double tox_proc_dmg =0;
 		double sl_proc_dmg =0;
 		double heat_proc_dmg =0;		
+		double electric_proc_dmg =0;
+		double gas_proc_dmg =0;
 		
 		double oneSim[] = new double[2];
 			
@@ -2624,6 +2558,8 @@ public class MainGUI {
 			tox_proc_dmg += enemy.totToxDotDmg;
 			sl_proc_dmg += enemy.totTrueDotDmg;
 			heat_proc_dmg += enemy.totHeatDotDmg;
+			electric_proc_dmg += enemy.totElectricDotDmg;
+			gas_proc_dmg += enemy.totGasDotDmg;
 
 			count++;
 		}
@@ -2655,6 +2591,8 @@ public class MainGUI {
 				tox_proc_dmg += enemy.totToxDotDmg;
 				sl_proc_dmg += enemy.totTrueDotDmg;
 				heat_proc_dmg += enemy.totHeatDotDmg;
+				electric_proc_dmg += enemy.totElectricDotDmg;
+				gas_proc_dmg += enemy.totGasDotDmg;
 
 				count++;
 			}
@@ -2674,14 +2612,19 @@ public class MainGUI {
 		tox_proc_dmg = tox_proc_dmg/thresh;
 		sl_proc_dmg = sl_proc_dmg/thresh;
 		heat_proc_dmg = heat_proc_dmg/thresh;
+		electric_proc_dmg = electric_proc_dmg/thresh;
+		gas_proc_dmg = gas_proc_dmg/thresh;
 
 		enemy.reset(0);
-		tableItem24.setText(new String[] {"Avg Ammo Eff",String.format("%,.1f", meanShots*weapon.ammoCost*100/(double)weapon.base_ammo)+"% of max ammo"});
-		tableItem25.setText(new String[] {"Avg Hp/s",String.format("%,.0f", enemy.getHealthRemaining()/meanTime)});
+		tableItem25.setText(new String[] {"Ammo Efficiency",String.format("%,.1f", meanShots*weapon.ammoCost*100/(double)weapon.base_ammo)+"% of max ammo"});
+		tableItem24.setText(new String[] {"DPS",String.format("%,.0f", enemy.getHealthRemaining()/meanTime)});
 		
-		tableItem26.setText(new String[] {"Avg Slash Proc Dmg",String.format("%,.1f", sl_proc_dmg)+": "+String.format("%,.1f",sl_proc_dmg*100/(enemy.getHealthRemaining()+enemy.getShieldRemaining()))+"%"});
-		tableItem27.setText(new String[] {"Avg Toxin Proc Dmg",String.format("%,.1f", tox_proc_dmg)+": "+String.format("%,.1f",tox_proc_dmg*100/enemy.getHealthRemaining())+"%"});
-		tableItem28.setText(new String[] {"Avg Heat Proc Dmg",String.format("%,.1f", heat_proc_dmg)+": "+String.format("%,.1f",heat_proc_dmg*100/(enemy.getHealthRemaining()+enemy.getShieldRemaining()))+"%"});
+		tableItem27.setText(new String[] {"Slash Proc", String.format("%,.1f",sl_proc_dmg*100/(enemy.getHealthRemaining()+enemy.getShieldRemaining()))+"%"});
+		tableItem28.setText(new String[] {"Toxin Proc", String.format("%,.1f",tox_proc_dmg*100/enemy.getHealthRemaining())+"%"});
+		tableItem29.setText(new String[] {"Heat Proc", String.format("%,.1f",heat_proc_dmg*100/(enemy.getHealthRemaining()+enemy.getShieldRemaining()))+"%"});
+		tableItem30.setText(new String[] {"Electric Proc", String.format("%,.1f",electric_proc_dmg*100/(enemy.getHealthRemaining()+enemy.getShieldRemaining()))+"%"});
+		tableItem31.setText(new String[] {"Gas Proc", String.format("%,.1f",gas_proc_dmg*100/(enemy.getHealthRemaining()+enemy.getShieldRemaining()))+"%"});
+		
 		
 		double results[] = {meanTime,meanShots,varTime,varShots};
 		return results;
@@ -2715,7 +2658,7 @@ public class MainGUI {
 			armor_series.add(millis/1000.0, enemy.getArmorRemaining());
 			//System.out.println(millis*1000);
 		}
-		double next_event = 0;
+		double next_event = weapon.fo.get_event_time();
 		
 		while(enemy.getHealthRemaining() > 0){ 
 			
@@ -3024,73 +2967,240 @@ public class MainGUI {
 		tableItem_4.setText(new String[] {"EHP","",String.format("%,.0f", enemy.ehp()),""});
 	}
 	
+	/*
 	public void update_weapon_table(Weapon w) {
 		if (weapon_table != null) {
 			weapon_table.clearAll();
 			w.melee_multiplier = stance_multipliers.get(0);
 
-			tableItem.setText(new String[] {"Impact", Double.toString(w.beam_multishot * w.damage_array[index("impact")])});
+			update_table_item( tableItem,"Impact", w.beam_multishot * w.damage_array[index("impact")] );
+			//tableItem.setText(new String[] {"Impact", Double.toString(w.beam_multishot * w.damage_array[index("impact")])});
+			update_table_item( tableItem1,"Puncture", w.beam_multishot * w.damage_array[index("puncture")] );
+			//tableItem1.setText(new String[] {"Puncture", Double.toString(w.beam_multishot * w.damage_array[index("puncture")])});
+			update_table_item( tableItem2,"Slash", w.beam_multishot * w.damage_array[index("slash")] );
+			//tableItem2.setText(new String[] {"Slash", Double.toString(w.beam_multishot * w.damage_array[index("slash")])});
 			
-			tableItem1.setText(new String[] {"Puncture", Double.toString(w.beam_multishot * w.damage_array[index("puncture")])});
+			update_table_item( tableItem3,"Heat", w.beam_multishot * w.damage_array[index("heat")] );
+			//tableItem12.setText(new String[] {"Heat", Double.toString(w.beam_multishot * w.damage_array[index("heat")])});
+			update_table_item( tableItem4,"Cold", w.beam_multishot * w.damage_array[index("cold")] );
+			//tableItem10.setText(new String[] {"Cold", Double.toString(w.beam_multishot * w.damage_array[index("cold")])});
+			update_table_item( tableItem5,"Electricity", w.beam_multishot * w.damage_array[index("electricity")] );
+			//tableItem11.setText(new String[] {"Electricity", Double.toString(w.beam_multishot * w.damage_array[index("electricity")])});
+			update_table_item( tableItem6,"Toxin", w.beam_multishot * w.damage_array[index("toxin")] );
+			//tableItem13.setText(new String[] {"Toxin", Double.toString(w.beam_multishot * w.damage_array[index("toxin")])});
 			
-			tableItem2.setText(new String[] {"Slash", Double.toString(w.beam_multishot * w.damage_array[index("slash")])});
-			
-			tableItem3.setText(new String[] {"Crit Chance", Double.toString(w.critChance)});
-			
-			tableItem4.setText(new String[] {"Crit Damage", Double.toString(w.critMultiplier)});
-			
-			tableItem5.setText(new String[] {"Pellets", Double.toString(w.pellet)});
-			
-			tableItem6.setText(new String[] {"Status", Double.toString(w.status)});
-			
-			tableItem7.setText(new String[] {"Reload", Double.toString(w.reload)});
-			
-			tableItem8.setText(new String[] {"Fire Rate", Double.toString(w.fireRate)});
-			
-			tableItem9.setText(new String[] {"Magazine", Double.toString(w.magazine)});
-			
-			tableItem10.setText(new String[] {"Cold", Double.toString(w.beam_multishot * w.damage_array[index("cold")])});
-			
-			tableItem11.setText(new String[] {"Electricity", Double.toString(w.beam_multishot * w.damage_array[index("electricity")])});
-			
-			tableItem12.setText(new String[] {"Heat", Double.toString(w.beam_multishot * w.damage_array[index("heat")])});
-			
-			tableItem13.setText(new String[] {"Toxin", Double.toString(w.beam_multishot * w.damage_array[index("toxin")])});
-			
-			tableItem14.setText(new String[] {"Blast", Double.toString(w.beam_multishot * w.damage_array[index("blast")])});
-			
+			update_table_item( tableItem7,"Blast", w.beam_multishot * w.damage_array[index("blast")] );
+			//tableItem14.setText(new String[] {"Blast", Double.toString(w.beam_multishot * w.damage_array[index("blast")])});
+			update_table_item( tableItem8,"Radiation", w.beam_multishot * w.damage_array[index("radiation")] );
+			//tableItem18.setText(new String[] {"Radiation", Double.toString(w.beam_multishot * w.damage_array[index("radiation")])});
+			update_table_item( tableItem9,"Gas", w.beam_multishot * w.damage_array[index("gas")] );
+			//tableItem16.setText(new String[] {"Gas", Double.toString(w.beam_multishot * w.damage_array[index("gas")])});
+			update_table_item( tableItem10,"Magnetic", w.beam_multishot * w.damage_array[index("magnetic")] );
+			//tableItem17.setText(new String[] {"Magnetic", Double.toString(w.beam_multishot * w.damage_array[index("magnetic")])});
+			update_table_item( tableItem11,"Viral", w.beam_multishot * w.damage_array[index("viral")] );
+			//tableItem19.setText(new String[] {"Viral", Double.toString(w.beam_multishot * w.damage_array[index("viral")])});
+			update_table_item( tableItem12,"Corrosive", w.beam_multishot * w.damage_array[index("corrosive")] );
 			tableItem15.setText(new String[] {"Corrosive", Double.toString(w.beam_multishot * w.damage_array[index("corrosive")])});
 			
-			tableItem16.setText(new String[] {"Gas", Double.toString(w.beam_multishot * w.damage_array[index("gas")])});
+			tableItem13.setText(new String[] {"Critical Chance", format_double(w.critChance,3)});
+			tableItem14.setText(new String[] {"Critical Damage", format_double(w.critMultiplier, 3)});
+			tableItem15.setText(new String[] {"Pellets", format_double(w.pellet,3)});
+			tableItem16.setText(new String[] {"Status", format_double(w.status,3)});
 			
-			tableItem17.setText(new String[] {"Magnetic", Double.toString(w.beam_multishot * w.damage_array[index("magnetic")])});
+			tableItem17.setText(new String[] {"", ""});
 			
-			tableItem18.setText(new String[] {"Radiation", Double.toString(w.beam_multishot * w.damage_array[index("radiation")])});
+			tableItem18.setText(new String[] {"Reload", format_double(w.reload, 2)});
+			tableItem19.setText(new String[] {"Fire Rate", format_double(w.fireRate, 2)});
+			tableItem20.setText(new String[] {"Magazine", String.format("%,d",(w.magazine))});
+			tableItem21.setText(new String[] {"Ammo", String.format("%,d",(w.ammo))});
+			tableItem22.setText(new String[] {"Ammo Cost", format_double(w.ammoCost,2)});
 			
-			tableItem19.setText(new String[] {"Viral", Double.toString(w.beam_multishot * w.damage_array[index("viral")])});
+			tableItem23.setText(new String[] {"", ""});
 			
-			//tableItem20.setText(new String[] {"Void 1", Double.toString(w.beam_multishot * w.damage_array[index("void1")])});
+			tableItem25.setText(new String[] {"Ammo Efficiency", "Run a simulation"});
+			tableItem24.setText(new String[] {"DPS", "Run a simulation"});
 			
-			//tableItem21.setText(new String[] {"Void 2", Double.toString(w.beam_multishot * w.damage_array[index("void2")])});
+			tableItem26.setText(new String[] {"", ""});
 			
-			tableItem22.setText(new String[] {"Ammo Max", Double.toString(w.ammo)});
+			tableItem27.setText(new String[] {"Slash Procs", "Run a simulation"});
+			tableItem28.setText(new String[] {"Toxin Procs", "Run a simulation"});
+			tableItem29.setText(new String[] {"Heat Procs", "Run a simulation"});
+			tableItem30.setText(new String[] {"Electric Procs", "Run a simulation"});
+			tableItem31.setText(new String[] {"Gas Procs", "Run a simulation"});
+
+			tableItem32.setText(new String[] {"", ""});
 			
-			tableItem23.setText(new String[] {"Ammo Cost", Double.toString(w.ammoCost)});
-			
-			tableItem24.setText(new String[] {"Avg Ammo Eff", "Run a simulation"});
-			
-			tableItem25.setText(new String[] {"Avg Hp/s", "Run a simulation"});
-			
-			tableItem26.setText(new String[] {"Avg Slash Dot Dmg", "Run a simulation"});
-			
-			tableItem27.setText(new String[] {"Avg Toxin Dot Dmg", "Run a simulation"});
-			
-			tableItem28.setText(new String[] {"Avg Heat Dot Dmg", "Run a simulation"});
-			
-			tableItem29.setText(new String[] {"Damage", Double.toString(default_enemy.display_damage(default_enemy.array_scale(w.damage_array, w.getMultiplier()),w)[0]) });
+			tableItem33.setText(new String[] {"Damage", String.format("%,.2f",(default_enemy.display_damage(default_enemy.array_scale(w.damage_array, w.getMultiplier()),w)[0])) });
 		}
 		
 	}
+	*/
+	public void update_weapon_table(Weapon w) {
+		String [][] table_string = get_table_string(w);
+		
+		weapon_table.clearAll();
+		w.melee_multiplier = stance_multipliers.get(0);
+		
+		tblclmnStat.setText(weaponListCombo.getText());
+		
+		tableItem.setText( table_string[0] );
+		tableItem1.setText( table_string[1] );
+		tableItem2.setText( table_string[2] );
+		
+		tableItem3.setText( table_string[3] );
+		tableItem4.setText( table_string[4] );
+		tableItem5.setText( table_string[5] );
+		tableItem6.setText( table_string[6] );
+		
+		tableItem7.setText( table_string[7] );
+		tableItem8.setText( table_string[8] );
+		tableItem9.setText( table_string[9] );
+		tableItem10.setText( table_string[10] );
+		tableItem11.setText( table_string[11] );
+		tableItem12.setText( table_string[12] );
+		
+		tableItem13.setText( table_string[13] );
+		tableItem14.setText( table_string[14] );
+		tableItem15.setText( table_string[15] );
+		tableItem16.setText( table_string[16] );
+		
+		tableItem17.setText( table_string[17] );
+		
+		tableItem18.setText( table_string[18] );
+		tableItem19.setText( table_string[19] );
+		tableItem20.setText( table_string[20] );
+		tableItem21.setText( table_string[21] );
+		tableItem22.setText( table_string[22] );
+		
+		
+		/////////
+		tableItem23.setText(new String[] {"", ""});
+		
+		tableItem25.setText(new String[] {"Ammo Efficiency", "Run a simulation"});
+		tableItem24.setText(new String[] {"DPS", "Run a simulation"});
+		
+		tableItem26.setText(new String[] {"", ""});
+		
+		tableItem27.setText(new String[] {"Slash Procs", "Run a simulation"});
+		tableItem28.setText(new String[] {"Toxin Procs", "Run a simulation"});
+		tableItem29.setText(new String[] {"Heat Procs", "Run a simulation"});
+		tableItem30.setText(new String[] {"Electric Procs", "Run a simulation"});
+		tableItem31.setText(new String[] {"Gas Procs", "Run a simulation"});
+
+		tableItem32.setText(new String[] {"", ""});
+		
+		tableItem33.setText(new String[] {"Damage", String.format("%,.2f",(default_enemy.display_damage(default_enemy.array_scale(w.damage_array, w.getMultiplier()),w)[0])) });
+	}
+	
+	String [][] get_table_string(Weapon w) {
+		String [][] table_string = new String[24][];
+		int index = 0;
+		
+		if( w.damage_array[index("impact")] != 0) {
+			table_string[index] = new String[] { "Impact", format_double( w.beam_multishot * w.damage_array[index("impact")] , 3 ) };
+			index++;
+		}
+		if( w.damage_array[index("puncture")] != 0) {
+			table_string[index] = new String[] { "puncture", format_double( w.beam_multishot * w.damage_array[index("puncture")] , 3 ) };
+			index++;
+		}
+		if( w.damage_array[index("slash")] != 0) {
+			table_string[index] = new String[] { "slash", format_double( w.beam_multishot * w.damage_array[index("slash")] , 3 ) };
+			index++;
+		}
+		if( w.damage_array[index("heat")] != 0) {
+			table_string[index] = new String[] { "heat", format_double( w.beam_multishot * w.damage_array[index("heat")] , 3 ) };
+			index++;
+		}
+		if( w.damage_array[index("cold")] != 0) {
+			table_string[index] = new String[] { "cold", format_double( w.beam_multishot * w.damage_array[index("cold")] , 3 ) };
+			index++;
+		}
+		if( w.damage_array[index("electricity")] != 0) {
+			table_string[index] = new String[] { "electric", format_double( w.beam_multishot * w.damage_array[index("electricity")] , 3 ) };
+			index++;
+		}
+		if( w.damage_array[index("toxin")] != 0) {
+			table_string[index] = new String[] { "toxin", format_double( w.beam_multishot * w.damage_array[index("toxin")] , 3 ) };
+			index++;
+		}
+		
+		if( w.damage_array[index("blast")] != 0) {
+			table_string[index] = new String[] { "blast", format_double( w.beam_multishot * w.damage_array[index("blast")] , 3 ) };
+			index++;
+		}
+		if( w.damage_array[index("radiation")] != 0) {
+			table_string[index] = new String[] { "radiation", format_double( w.beam_multishot * w.damage_array[index("radiation")] , 3 ) };
+			index++;
+		}
+		if( w.damage_array[index("gas")] != 0) {
+			table_string[index] = new String[] { "gas", format_double( w.beam_multishot * w.damage_array[index("gas")] , 3 ) };
+			index++;
+		}
+		if( w.damage_array[index("magnetic")] != 0) {
+			table_string[index] = new String[] { "magnetic", format_double( w.beam_multishot * w.damage_array[index("magnetic")] , 3 ) };
+			index++;
+		}
+		if( w.damage_array[index("viral")] != 0) {
+			table_string[index] = new String[] { "viral", format_double( w.beam_multishot * w.damage_array[index("viral")] , 3 ) };
+			index++;
+		}
+		if( w.damage_array[index("corrosive")] != 0) {
+			table_string[index] = new String[] { "corrosive", format_double( w.beam_multishot * w.damage_array[index("corrosive")] , 3 ) };
+			index++;
+		}
+		table_string[index] = new String[] {"", ""};
+		index++;
+		
+		table_string[index] = new String[] {"Critical Chance", format_double(w.critChance,3)};
+		index++;
+		table_string[index] = new String[] {"Critical Damage", format_double(w.critMultiplier, 3)};
+		index++;
+		table_string[index] = new String[] {"Pellets", format_double(w.pellet,3)};
+		index++;
+		table_string[index] = new String[] {"Status", format_double(w.status,3)};
+		index++;
+		
+		table_string[index] = new String[] {"", ""};
+		index++;
+		
+		
+		table_string[index] = new String[] {"Reload", format_double(w.reload, 2)};
+		index++;
+		table_string[index] = new String[] {"Fire Rate", format_double(w.fireRate, 2)};
+		index++;
+		table_string[index] = new String[] {"Magazine", String.format("%,d",(w.magazine))};
+		index++;
+		table_string[index] = new String[] {"Ammo", String.format("%,d",(w.ammo))};
+		index++;
+		table_string[index] = new String[] {"Ammo Cost", format_double(w.ammoCost,2)};
+		index++;
+		
+		for(int i = index; i< 24;i++) {
+			table_string[i] = new String[] {"",""};
+		}
+		
+		return table_string;
+	}
+	
+	
+	void update_table_item(TableItem t, String s, double val) {
+		if(val > 0) {
+			t.setText(new String[] {s, format_double(val, 3)});
+		}else {
+			t.setText(new String[] {"", ""});
+		}
+			
+		
+	}
+	String format_double(double d, int sig_fig) {
+		BigDecimal bd = new BigDecimal(d);
+		bd = bd.round(new MathContext(sig_fig));
+		double rounded = bd.doubleValue();
+		return Double.toString(rounded);
+	}
+	
+	
 	static double parse_double_textbox(String s) {
 	    String[] arrSplit = s.split("\\s");
 	    double tot = 0;

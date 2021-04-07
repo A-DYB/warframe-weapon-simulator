@@ -7,6 +7,8 @@ import re
 
 def main():
     melee_data = get_wfcd_melee()
+    secondary_data = get_wfcd_secondary()
+    primary_data = get_wfcd_primary()
 
     response = requests.get('http://content.warframe.com/PublicExport/index_en.txt.lzma')
     endpoint = fix()
@@ -30,6 +32,13 @@ def main():
                 data[wep['name']]["ammoCost"] = 0.5
         except:
             pass
+        '''
+        try:
+            if "CHARGE" in wep["trigger"]:
+                print(wep["name"])
+        except:
+            pass
+        '''
 
     for melee in melee_data:
         name = melee['name']
@@ -37,7 +46,27 @@ def main():
         try:
             data[name]['type'] = melee['type']
         except:
-            print("Key error: ", name)
+            print("Melee item key error: ~", name,"~")
+    for primary in primary_data:
+        name = primary['name']
+        name = name.replace(" ", "").upper()
+        name = name.strip()
+        try:
+            data[name]['ammo'] = primary['ammo']
+        except:
+            #print("Primary item key error: ~", name,"~")
+            pass
+
+    for secondary in secondary_data:
+        name = secondary['name']
+        name = name.replace(" ", "").upper()
+        name = name.strip()
+        try:
+            data[name]['ammo'] = secondary['ammo']
+        except:
+            #print("Secondary item key error: ~", name,"~")
+            pass
+    
 
     fill_in_the_blanks(data)
 
@@ -119,7 +148,6 @@ def fill_in_the_blanks(data):
     data["NUKOR"]["damageRamp"] = {'min':0.3}
     #OCUCOR
     data["OCUCOR"]["damageRamp"] = {'min':0.2}
-
     #PHAGE
     data["PHAGE"]["damageRamp"] = {'min':0.7}
     #PHANTASMA
@@ -138,11 +166,46 @@ def fill_in_the_blanks(data):
     data["SYNOIDGAMMACOR"]["damageRamp"] = {'min':0.3}
     #VERGLAS
     data["VERGLAS"]["damageRamp"] = {'min':0.2}
+
+    ### CHARGE WEAPONS
+    data["BALLISTICAPRIME"]["chargeTime"] = 0.8
+    data["BALLISTICA"]["chargeTime"] = 1
+    data["DREAD"]["chargeTime"] = 0.5
+    data["PARISPRIME"]["chargeTime"] = 0.5
+    data["PARIS"]["chargeTime"] = 0.5     
+    data["PROBOSCISCERNOS"]["chargeTime"] = 0.7
+    data["CERNOSPRIME"]["chargeTime"] = 0.5
+    data["DAIKYU"]["chargeTime"] = 1
+    data["CERNOS"]["chargeTime"] = 0.5
+    data["VELOCITUS"]["chargeTime"] = 1
+    data["CORVAS"]["chargeTime"] = 0.5
+    data["RAKTABALLISTICA"]["chargeTime"] = 1
+    data["RAKTACERNOS"]["chargeTime"] = 0.25
+    data["MK1-PARIS"]["chargeTime"] = 0.5
+    data["MUTALISTCERNOS"]["chargeTime"] = 0.5
+    data["JAVLOK"]["chargeTime"] = 0.3
+    data["MITER"]["chargeTime"] = 0.75
+    data["DRAKGOON"]["chargeTime"] = 0.5
+    data["KUVADRAKGOON"]["chargeTime"] = 0.3
+    data["KUVABRAMMA"]["chargeTime"] = 0.4
+    data["PRISMAANGSTRUM"]["chargeTime"] = 0.2
+    data["ANGSTRUM"]["chargeTime"] = 0.5
+    data["STATICOR"]["chargeTime"] = 1
+    data["FERROX"]["chargeTime"] = 0.5
+    data["OPTICOR"]["chargeTime"] = 2
+    data["OPTICORVANDAL"]["chargeTime"] = 0.6
+    data["LENZ"]["chargeTime"] = 1.2
+    data["LANKA"]["chargeTime"] = 1
+    data["OGRIS"]["chargeTime"] = 0.3
+    data["VULCAX"]["chargeTime"] = 1
+    data["ArtemisBow"]["chargeTime"] = 1
+    data["ARTEMISBOWPRIME"]["chargeTime"] = 1
+    data["BALEFIRECHARGER"]["chargeTime"] = 2
     
     #QUANTA
     new_damage = [0] * 20
     new_damage[5] = 100
-    data["QUANTA"]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'criticalChance': 0.05, 'criticalMultiplier': 1.5, 'procChance': 0.26, 'fireRate': 4, 'ammoCost': 10}
+    data["QUANTA"]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'criticalChance': 0.05, 'criticalMultiplier': 1.5, 'procChance': 0.26, 'fireRate': 4, 'ammoCost': 10, 'trigger': 'SEMI'}
     data["QUANTA"]['OtherFireModes']['AltFire']['SecondaryEffects'] = {}
     new_damage = [0] * 20
     new_damage[7] = 150
@@ -154,7 +217,7 @@ def fill_in_the_blanks(data):
     #QUANTAVANDAL
     new_damage = [0] * 20
     new_damage[5] = 100
-    data["QUANTAVANDAL"]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'criticalChance': 0.05, 'criticalMultiplier': 1.5, 'procChance': 0.26, 'fireRate': 4, 'ammoCost': 10}
+    data["QUANTAVANDAL"]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'criticalChance': 0.05, 'criticalMultiplier': 1.5, 'procChance': 0.26, 'fireRate': 4, 'ammoCost': 10, 'trigger': 'SEMI'}
     data["QUANTAVANDAL"]['OtherFireModes']['AltFire']['SecondaryEffects'] = {}
     new_damage = [0] * 20
     new_damage[7] = 150
@@ -177,33 +240,34 @@ def fill_in_the_blanks(data):
     new_damage[0] = 24.5
     new_damage[1] = 6.3
     new_damage[2] = 26.2
-    data["ARGONAK"]['OtherFireModes']['FullAuto'] = {'damagePerShot': new_damage, 'criticalChance': 0.09, 'criticalMultiplier': 1.5, 'procChance': 0.27, 'fireRate': 6}
+    data["ARGONAK"]['OtherFireModes']['FullAuto'] = {'damagePerShot': new_damage, 'criticalChance': 0.09, 'criticalMultiplier': 1.5, 'procChance': 0.27, 'fireRate': 6, 'trigger': 'AUTO'}
 
     #BATTACOR
     new_damage = [0] * 20
     new_damage[8] = 208
-    data["BATTACOR"]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'criticalChance': 0.34, 'criticalMultiplier': 3, 'procChance': 0.08, 'fireRate': 5, 'chargeRate': 0.4}
+    data["BATTACOR"]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'criticalChance': 0.34, 'criticalMultiplier': 3, 'procChance': 0.08, 'fireRate': 5, 'chargeRate': 0.4, 'trigger': 'CHARGE'}
     data["BATTACOR"]['OtherFireModes']['AltFire']['SecondaryEffects'] = {}
     data["BATTACOR"]['OtherFireModes']['AltFire']['SecondaryEffects']['AOE'] = {'damagePerShot': new_damage, 'falloff': 0.4}
 
     #BASMU
     new_damage = [0] * 20
     new_damage[5] = 12
-    data["BASMU"]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'criticalChance': 0.02, 'criticalMultiplier': 4.8, 'procChance': 0.3, 'fireRate': 12, 'multishot': 2}
+    data["BASMU"]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'criticalChance': 0.02, 'criticalMultiplier': 4.8, 'procChance': 0.3, 'fireRate': 12, 'multishot': 2, 'trigger': 'HELD'}
+    data["BASMU"]['OtherFireModes']['AltFire']["damageRamp"] = {'min':0.2}
     
     #BUBONICO
     new_damage = [0] * 20
     new_damage[0] = 9
-    data["BASMU"]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'criticalChance': 0.03, 'criticalMultiplier': 3.5, 'procChance': 0.57, 'fireRate': 3.37, 'multishot': 1, 'trigger': 'BURST'}
-    data["BASMU"]['OtherFireModes']['AltFire']['SecondaryEffects'] = {}
+    data["BUBONICO"]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'criticalChance': 0.03, 'criticalMultiplier': 3.5, 'procChance': 0.57, 'fireRate': 3.37, 'multishot': 1, 'trigger': 'BURST'}
+    data["BUBONICO"]['OtherFireModes']['AltFire']['SecondaryEffects'] = {}
     new_damage = [0] * 20
     new_damage[11] = 143
-    data["BASMU"]['OtherFireModes']['AltFire']['SecondaryEffects']['AOE'] = {'damagePerShot': new_damage, 'falloff': 0.5, 'radius': 7}
+    data["BUBONICO"]['OtherFireModes']['AltFire']['SecondaryEffects']['AOE'] = {'damagePerShot': new_damage, 'falloff': 0.5, 'radius': 7}
 
     #CORINTH
     new_damage = [0] * 20
     new_damage[0] = 100
-    data["CORINTH"]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'criticalChance': 0.04, 'criticalMultiplier': 1.6, 'procChance': 0.28, 'fireRate': 1.17, 'multishot': 1}
+    data["CORINTH"]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'criticalChance': 0.04, 'criticalMultiplier': 1.6, 'procChance': 0.28, 'fireRate': 1.17, 'multishot': 1, 'trigger': 'SEMI'}
     data["CORINTH"]['OtherFireModes']['AltFire']['SecondaryEffects'] = {}
     new_damage = [0] * 20
     new_damage[index('blast')] = 404
@@ -212,7 +276,7 @@ def fill_in_the_blanks(data):
     #CORINTHPRIME
     new_damage = [0] * 20
     new_damage[0] = 100
-    data["CORINTHPRIME"]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'criticalChance': 0.04, 'criticalMultiplier': 1.6, 'procChance': 0.5, 'fireRate': 0.667, 'multishot': 1, 'ammoCost': 4}
+    data["CORINTHPRIME"]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'criticalChance': 0.04, 'criticalMultiplier': 1.6, 'procChance': 0.5, 'fireRate': 0.667, 'multishot': 1, 'ammoCost': 4, 'trigger': 'SEMI'}
     data["CORINTHPRIME"]['OtherFireModes']['AltFire']['SecondaryEffects'] = {}
     new_damage = [0] * 20
     new_damage[index('blast')] = 2200
@@ -257,7 +321,7 @@ def fill_in_the_blanks(data):
     data["KOMOREX"]['OtherFireModes']['Zoom']['SecondaryEffects']['AOE'] = {'damagePerShot': new_damage, 'criticalChance': 0.16, 'criticalMultiplier': 2.1, 'procChance': 0.35, 'fireRate': 1.5, 'multishot': 1, 'trigger': 'SEMI', 'ammoCost': 1, 'radius': 3.5, 'falloff': 0.4}
     
     #NAGANTAKA
-    data["PANTHERA"]['OtherFireModes']['AltFire'] = {'fireRate': 5.81}
+    data["NAGANTAKA"]['OtherFireModes']['AltFire'] = {'fireRate': 5.81}
     
     #PANTHERA
     new_damage = [0] * 20
@@ -298,7 +362,7 @@ def fill_in_the_blanks(data):
     #STAHLTA
     new_damage = [0] * 20
     new_damage[index('radiation')] = 1200
-    data["QUELLOR"]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'chargeTime': 1, 'criticalChance': 0.4, 'criticalMultiplier': 3, 'procChance': 0.32, 'fireRate': 1, 'multishot': 1, 'trigger': 'CHARGE', 'ammoCost': 1, 'radius': 7.2, 'falloff': 0.7}
+    data["STAHLTA"]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'chargeTime': 1, 'criticalChance': 0.4, 'criticalMultiplier': 3, 'procChance': 0.32, 'fireRate': 1, 'multishot': 1, 'trigger': 'CHARGE', 'ammoCost': 1, 'radius': 7.2, 'falloff': 0.7}
     
     #STRADAVAR
     new_damage = [0] * 20
@@ -442,5 +506,16 @@ def get_wfcd_melee():
     data = url.read().decode()
     data = json.loads(data)
     return data
+def get_wfcd_secondary():
+    url = urllib.request.urlopen("https://raw.githubusercontent.com/WFCD/warframe-items/master/data/json/Secondary.json") 
+    data = url.read().decode()
+    data = json.loads(data)
+    return data
+def get_wfcd_primary():
+    url = urllib.request.urlopen("https://raw.githubusercontent.com/WFCD/warframe-items/master/data/json/Primary.json") 
+    data = url.read().decode()
+    data = json.loads(data)
+    return data
+
 if __name__ == '__main__':
     main()
