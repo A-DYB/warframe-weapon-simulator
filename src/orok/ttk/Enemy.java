@@ -33,6 +33,7 @@ public class Enemy {
 	public boolean shattering_impact;
 	public boolean amalgam_shattering_impact;
 	public boolean demolyst;
+	public boolean acolyte;
 	
 	public double[] shield_multipliers = new double[20];
 	public double[] health_multipliers = new double[20];
@@ -96,6 +97,10 @@ public class Enemy {
 		reset(armorReduct);
 		
 		set_bypass_multipliers();
+		
+		if(name.contains("Acolyte")) {
+			acolyte = true;
+		}
 	}
 	
 	public class Dot {
@@ -106,6 +111,7 @@ public class Enemy {
 		
 		int identifier;
 		boolean heat_active;
+		int count;
 		double base_life;
 		int tick;
 		/*
@@ -458,14 +464,18 @@ public class Enemy {
 		}
 		
 		
-		double shield_dr = demolyst_dr(proc, total_shield_damage * current_weapon.fire_rate_non_melee * current_weapon.multishot_mods * current_weapon.multishot_scalar);
-		double health_dr = demolyst_dr(proc, (total_health_damage + shield_multipliers[6]*damage[6]) * current_weapon.fire_rate_non_melee * current_weapon.multishot_scalar * current_weapon.multishot_mods);
-		//System.out.printf("Damage: %f, ",total_health_damage*crit_multiplier);
+		//double shield_dr = get_dr(proc, total_shield_damage * current_weapon.fire_rate_non_melee * current_weapon.multishot_mods * current_weapon.multishot_scalar);
+		//double health_dr = get_dr(proc, (total_health_damage + shield_multipliers[6]*damage[6]) * current_weapon.fire_rate_non_melee * current_weapon.multishot_scalar * current_weapon.multishot_mods);
+		double shield_dr = get_dr(proc, total_shield_damage , current_weapon.fire_rate_non_melee * current_weapon.multishot_mods * current_weapon.multishot_scalar);
+		double health_dr = get_dr(proc, (total_health_damage + shield_multipliers[6]*damage[6]) , current_weapon.fire_rate_non_melee * current_weapon.multishot_scalar * current_weapon.multishot_mods);
+				
+		System.out.printf("Damage: %f, ",total_shield_damage);
 		
 		total_health_damage = total_health_damage * crit_multiplier * health_dr;
 		total_shield_damage = total_shield_damage * crit_multiplier * shield_dr;
 		
 		//System.out.printf("R-Damage: %f, DR: %f, Crit Mult: %f, Proc: %b\n",total_health_damage, health_dr, crit_multiplier, proc );
+		System.out.printf("Health Damage: %f, Shield Damage: %f,Crit Mult: %f, Proc: %b\n",total_health_damage,total_shield_damage,crit_multiplier, proc);
 		
 		
 		health -= total_health_damage  ;
@@ -479,8 +489,11 @@ public class Enemy {
 			else {
 				total_health_damage = array_multiply_sum(damage, health_multipliers) * viralMult;
 			}
-			double overflow_dr = demolyst_dr(proc, frac * total_health_damage * 0.05 * current_weapon.fire_rate_non_melee * current_weapon.multishot_mods * current_weapon.multishot_scalar / crit_multiplier);
+			//double overflow_dr = get_dr(proc, frac * total_health_damage * 0.05 * current_weapon.fire_rate_non_melee * current_weapon.multishot_mods * current_weapon.multishot_scalar / crit_multiplier);
+			double overflow_dr = get_dr(proc, frac * total_health_damage * 0.05 / crit_multiplier , current_weapon.fire_rate_non_melee * current_weapon.multishot_mods * current_weapon.multishot_scalar );
+			
 			System.out.printf("	frac: %f, health damage: %f, overflow dr: %f\n",frac,total_health_damage,overflow_dr);
+			
 			
 			health -= frac * total_health_damage * 0.05 * overflow_dr; 
 			shield = 0;
@@ -517,14 +530,14 @@ public class Enemy {
 		}
 		
 		
-		double shield_dr = demolyst_dr(false, total_shield_damage * wep.fire_rate_non_melee * wep.multishot_mods * wep.multishot_scalar);
-		double health_dr = demolyst_dr(false, (total_health_damage + shield_multipliers[6]*damage[6]) * wep.fire_rate_non_melee * wep.multishot_scalar * wep.multishot_mods);
+		double shield_dr = get_dr(false, total_shield_damage , wep.fire_rate_non_melee * wep.multishot_mods * wep.multishot_scalar);
+		double health_dr = get_dr(false, (total_health_damage + shield_multipliers[6]*damage[6]) , wep.fire_rate_non_melee * wep.multishot_scalar * wep.multishot_mods);
 		//System.out.printf("Damage: %f, ",total_health_damage*crit_multiplier);
 		
 		total_health_damage = total_health_damage * health_dr;
 		total_shield_damage = total_shield_damage * shield_dr;
 		
-		//System.out.printf("R-Damage: %f, DR: %f, Crit Mult: %f, Proc: %b\n",total_health_damage, health_dr, crit_multiplier, proc);
+		//System.out.printf("Health Damage: %f, Shield Damage: %f\n",total_health_damage,total_shield_damage);
 		
 		double [] res = { total_health_damage, total_shield_damage };
 		
@@ -574,10 +587,132 @@ public class Enemy {
 		
 	}
 	
+	public double get_dr(boolean proc, double base, double dps_multiplier) {
+		double dr = 1;
+		base = base * dps_multiplier;
+		if(acolyte) {
+			if(proc) {
+				if(shield > 0) {
+					if(base<2000*0.6) {
+						dr=2.5;
+					}else if(base>=1200 && base <3000) {
+						dr=(base*2+600)/base;
+					}else if(base>=3000 && base <9000) {
+						dr=(base*1.333333333+2600)/base;
+					}else if(base>=9000) {
+						dr=(base*0+14600)/base;
+					}
+				}
+				else if(armor > 0) {
+					if(base<8000*0.5) {
+						dr=0.375/0.5;
+					}else if(base>=8000*0.5 && base <20000*0.5) {
+						dr=(base*0.3/0.5+600)/base;
+					}else if(base>=20000*0.5 && base <60000*0.5) {
+						dr=(base*0.2/0.5+2600)/base;
+					}else if(base>=60000*0.5) {
+						dr=(base*0+14600)/base;
+					}
+				}
+				else {
+					if(base<8000*0.5) {
+						dr=0.375/0.5;
+					}else if(base>=8000*0.5 && base <20000*0.5) {
+						dr=(base*0.3/0.5+600)/base;
+					}else if(base>=20000*0.5 && base <60000*0.5) {
+						dr=(base*0.2/0.5+2600)/base;
+					}else if(base>=60000*0.5) {
+						dr=(base*0+14600)/base;
+					}
+				}
+			}else {
+				if(shield > 0) {
+					if(base<2000) {
+						dr=1.5;
+					}else if(base>=2000 && base <5000) {
+						dr=(base*1.2+600)/base;
+					}else if(base>=5000 && base <15000) {
+						dr=(base*0.8+2600)/base;
+					}else if(base>=15000) {
+						dr=(base*0+14600)/base;
+					}
+				}
+				else if(armor > 0) {
+					if(base<8000) {
+						dr=0.375;
+					}else if(base>=8000 && base <20000) {
+						dr=(base*0.3+600)/base;
+					}else if(base>=20000 && base <60000) {
+						dr=(base*0.2+2600)/base;
+					}else if(base>=60000) {
+						dr=(base*0+14600)/base;
+					}
+				}
+				else {
+					if(base<8000) {
+						dr=0.375;
+					}else if(base>=8000 && base <20000) {
+						dr=(base*0.3+600)/base;
+					}else if(base>=20000 && base <60000) {
+						dr=(base*0.2+2600)/base;
+					}else if(base>=60000) {
+						dr=(base*0+14600)/base;
+					}
+					/*
+					if(base<13000) {
+						dr = 3037.5/13000.0;
+					}else if(base>=13000 && base <32000) {
+						dr=(base*0.18 75+600)/base;
+					}else if(base>=32000 && base <96000) {
+						dr=(base*0.125+2600)/base;
+					}else if(base>=96000) {
+						dr=(base*0+14600)/base;
+					}
+					*/
+				}
+			}
+
+		}
+		else if(demolyst) {
+			if(proc) {
+				if(base<1562.5) {
+					dr=0.64;
+				}else if(base>=1562.5 && base <3906.25) {
+					dr=(base*0.512+200)/base;
+				}else if(base>=3906.25 && base <7812.5) {
+					dr=(base*0.448+450)/base;
+				}else if(base>=7812.5 && base <15625) {
+					dr=(base*0.256+1950)/base;
+				}else if(base>=15625 && base <31250) {
+					dr=(base*0.128+3950)/base;
+				}else if(base>=31250) {
+					dr=(base*0.064+5950)/base;
+				}
+			}else {
+				if(base<1250) {
+					dr=0.8;
+				}else if(base>=1250 && base <3125) {
+					dr=(base*0.64+200)/base;
+				}else if(base>=3125 && base <6250) {
+					dr=(base*0.56+450)/base;
+				}else if(base>=6250 && base <12500) {
+					dr=(base*0.32+1950)/base;
+				}else if(base>=12500 && base <25000) {
+					dr=(base*0.16+3950)/base;
+				}else if(base>=25000) {
+					dr=(base*0.08+5950)/base;
+				}
+
+			}
+		}
+		
+		return dr;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public void getEnemy(String enemy) {
 
-        // parsing file 
+        // parsing file 136
         Object obj = null;
 		try {
 			obj = new JSONParser().parse(new FileReader("enemy.json"));
@@ -657,8 +792,13 @@ public class Enemy {
 		
 	}
 
-	public void applyProc(Weapon weapon, double critM, int millis, double random, boolean force_slash) {
+	public void applyProc(Weapon weapon,boolean crit, double critM, int millis, double random, boolean force_slash) {
 		//NOTE : VIRAL SHOULD ONLY BE APPLIED WHEN APPLYING DAMAGE
+		
+		if(acolyte && crit) {
+			critM = (critM-1)*2+1;
+		}
+		
 		double [] proc_damage;
 		if(force_slash) {
 			proc_damage = new double[20];
@@ -777,10 +917,24 @@ public class Enemy {
 		else if((random -= weapon.heatChance) < 0 ){	//heat Proc
 			proc_damage[3] = weapon.heatDOT * weapon.getMultiplier() * critM;
 			
+			
 			if(heatDot.heat_active) {
-				heatDot.setDamage( array_add( proc_damage, heatDot.getDamage() ) );
-				heatDot.setLife(6000* status_duration);
-				heatDot.setOffset(millis + heatDot.getLife());
+				if(acolyte) {
+					if(heatDot.count < 4) {
+						heatDot.count ++;
+						heatDot.setDamage( array_add( proc_damage, heatDot.getDamage() ) );
+						heatDot.setLife(6000* status_duration);
+						heatDot.setOffset(millis + heatDot.getLife());
+						
+					}else {
+						heatDot.setLife(6000* status_duration);
+					}
+				}else {
+					heatDot.setDamage( array_add( proc_damage, heatDot.getDamage() ) );
+					heatDot.setLife(6000* status_duration);
+					heatDot.setOffset(millis + heatDot.getLife());
+				}
+				
 				//heat_offset = millis + 1000;
 			}
 			else {
@@ -836,6 +990,68 @@ public class Enemy {
 					
 		}
 		
+		//limit # of procs active if acolyte
+		proc_limiter();
+		
+	}
+	private void proc_limiter() {
+		if(acolyte) {
+			int sz = slQ.size();
+			int rem = sz -4 ;
+			if(rem > 0) {
+				for(int i =0;i<rem;i++) {
+					slQ.removeFirst();
+				}
+			}
+			
+			sz = toxQ.size();
+			rem = sz -4 ;
+			if(rem > 0) {
+				for(int i =0;i<rem;i++) {
+					toxQ.removeFirst();
+				}
+			}
+			
+			sz = gasQ.size();
+			rem = sz -4 ;
+			if(rem > 0) {
+				for(int i =0;i<rem;i++) {
+					gasQ.removeFirst();
+				}
+			}
+			
+			sz = magneticQ.size();
+			rem = sz -4 ;
+			if(rem > 0) {
+				for(int i =0;i<rem;i++) {
+					magneticQ.removeFirst();
+				}
+			}
+			
+			sz = corrosiveQ.size();
+			rem = sz -4 ;
+			if(rem > 0) {
+				for(int i =0;i<rem;i++) {
+					corrosiveQ.removeFirst();
+				}
+			}
+			
+			sz = viralQ.size();
+			rem = sz -4 ;
+			if(rem > 0) {
+				for(int i =0;i<rem;i++) {
+					viralQ.removeFirst();
+				}
+			}
+			
+			sz = elecQ.size();
+			rem = sz -4 ;
+			if(rem > 0) {
+				for(int i =0;i<rem;i++) {
+					elecQ.removeFirst();
+				}
+			}
+		}
 	}
 	
 	public void reset(double armorReduct) {

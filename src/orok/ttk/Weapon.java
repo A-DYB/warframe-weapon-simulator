@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.json.simple.JSONArray;
@@ -16,6 +17,7 @@ import org.json.simple.parser.ParseException;
 public class Weapon {
 	
 	public String name;
+	public String original_name;
 	public double critChance;
 	public double critMultiplier;
 	public double fireRate;
@@ -93,12 +95,16 @@ public class Weapon {
 	public double quanta = 1;
 	double fire_rate_non_melee = 1;
 	String shot_type;
+	double embed_delay;
+	boolean is_secondary_effect = false;
+	String effect_name = "Main";
 	
 	public Firing_offsets fo;
 	
-	public Weapon(String name) {
-		
-		//this.name = MainGUI.weaponListCombo.getText();
+	public List<Weapon> secondary_effects = new ArrayList<Weapon>();  
+	
+	public Weapon(String name, boolean set_sec_eff) {
+		this.original_name = name;
 		
 		if(name.contentEquals("Custom Build Tab")) {
 			this.name = MainGUI.weaponListCombo.getText();			
@@ -117,10 +123,9 @@ public class Weapon {
 			int move_index = MainGUI.move_combo.indexOf( move_set );
 	        MainGUI.stance_combo.select(stance_index);
 	        MainGUI.move_combo.select(move_index);
-	        
-			setupCustomBuild();
 
-		}else {
+		}
+		else {
 			//go look for name in build 
 			this.name = name;
 			try {
@@ -135,18 +140,13 @@ public class Weapon {
 			int move_index = MainGUI.move_combo.indexOf( move_set );
 	        MainGUI.stance_combo.select(stance_index);
 	        MainGUI.move_combo.select(move_index);
-	        
-			//setupCustomBuild();
-			//this.name = MainGUI.weaponListCombo.getText();
-			
 		}
-		//MainGUI.populate_stance_combo(this);
-		
-		
-		fo = new Firing_offsets();
 		setupCustomBuild();
+		fo = new Firing_offsets();
 		
-		//setup_base_array();
+		if(set_sec_eff) {
+			set_secondary_effects();
+		}
 	}
 	
 	public class Firing_offsets{
@@ -158,18 +158,6 @@ public class Weapon {
 			size = (int)Math.round(magazine/ammoCost);
 			fire_offset = new double[size];
 			
-			/*
-			if(shot_type.equals("CHARGE")) {
-				for(int i = 0; i<size; i++) {
-					fire_offset[i] = (1/fireRate)*(i+1);
-				}
-			}
-			else {
-				for(int i = 0; i<size; i++) {
-					fire_offset[i] = (1/fireRate)*i;
-				}
-			}
-			*/
 			setup_fire_offset(0);
 		}
 		public void increment() {
@@ -184,12 +172,14 @@ public class Weapon {
 				current_time = fire_offset[index-1];
 				index = 0;
 				
-				/*
-				for(int i = 0; i<size; i++) {
-					fire_offset[i] = current_time + reload + (1/fireRate)*i;
+				if(is_secondary_effect) {
+					//reload from perspective of primary fire (-embed), embed offset is included in current time
+					setup_fire_offset(current_time + reload - embed_delay);
 				}
-				*/
-				setup_fire_offset(current_time + reload);
+				else {
+					setup_fire_offset(current_time + reload);
+				}
+				
 				
 				//set beam ramp multiplier
 				//change beam ramp base from when reload ends
@@ -202,7 +192,6 @@ public class Weapon {
 				
 			}
 			
-			
 		}
 		public double get_event_time() {
 			return fire_offset[index];
@@ -213,24 +202,17 @@ public class Weapon {
 			size = (int)Math.round(magazine/ammoCost);
 			fire_offset = new double[size];
 			
-			
-			/*
-			for(int i = 0; i<size; i++) {
-				fire_offset[i] = (1/fireRate)*i;
-
-			}
-			*/
 			setup_fire_offset(0);
 		}
 		private void setup_fire_offset(double base_offset) {
 			if(shot_type.equals("CHARGE")) {
 				for(int i = 0; i<size; i++) {
-					fire_offset[i] = base_offset +(1/fireRate)*(i+1);
+					fire_offset[i] = embed_delay + base_offset +(1/fireRate)*(i+1);
 				}
 			}
 			else {
 				for(int i = 0; i<size; i++) {
-					fire_offset[i] = base_offset + (1/fireRate)*i;
+					fire_offset[i] = embed_delay + base_offset + (1/fireRate)*i;
 				}
 			}
 		}
@@ -363,6 +345,7 @@ public class Weapon {
 		base_ammo = ((Number)selectedWep.getOrDefault("ammo", 540 )).intValue();
 		base_magazine = ((Number)selectedWep.getOrDefault("magazineSize", 100)).intValue();
 		shot_type = (String)selectedWep.getOrDefault("trigger", "AUTO");
+		embed_delay = ((Number)selectedWep.getOrDefault("embedDelay", 0)).doubleValue();
         
         //swap in stats of selected firemode
         if(!MainGUI.fireModeCombo.getText().contentEquals("Primary") && !MainGUI.fireModeCombo.getText().contentEquals("")) {
@@ -394,6 +377,7 @@ public class Weapon {
     		base_ammo = ((Number)selectedWep.getOrDefault("ammo", base_ammo )).intValue();
     		base_magazine = ((Number)selectedWep.getOrDefault("magazineSize", base_magazine)).intValue();
     		shot_type = (String)selectedWep.getOrDefault("trigger", shot_type);
+    		embed_delay = ((Number)selectedWep.getOrDefault("embedDelay", embed_delay)).doubleValue();
         }
         
         if(shot_type.equals("HELD")) {
@@ -402,9 +386,115 @@ public class Weapon {
         	beam_ramp_multiplier = beam_ramp_base;
         }
         
+        
 
+	}
+	@SuppressWarnings("unchecked")
+	public void set_secondary_effects(){
+		// Do not call in constructor of Weapon
+		secondary_effects.clear();
+		// parsing file 
+        Object obj = null;
+		try {
+			obj = new JSONParser().parse(new FileReader("weapons.json"));
+		} catch (IOException | ParseException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} 
+          
+        // typecasting obj to JSONObject 
+        JSONObject jo = (JSONObject) obj; 
+          
+        // getting address 
+        Map<String,Object> weapons = (Map<String,Object>)jo;
+        Map<String,Object> selectedWep = (Map<String,Object>)weapons.get(this.name);;
+
+        if(!MainGUI.fireModeCombo.getText().contentEquals("Primary") && selectedWep.get("OtherFireModes") != null) {
+			selectedWep = (Map<String, Object>) selectedWep.get("OtherFireModes");
+        	selectedWep = (Map<String, Object>) selectedWep.get(MainGUI.fireModeCombo.getText());
+		}
+		//Get secondary effects
+        // getting address 
+        if(selectedWep.get("SecondaryEffects") != null) {
+            Map<String,Object> sec_eff = (Map<String,Object>)selectedWep.get("SecondaryEffects"); 
+            Iterator<Map.Entry<String,Object>> itr1 = sec_eff.entrySet().iterator(); 
+            
+            while (itr1.hasNext()) { 
+                Map.Entry<String,Object> pair = itr1.next();
+                Map<String,Object> val = (Map<String, Object>) pair.getValue();
+                Weapon se = new Weapon(this.original_name, false);
+                se.is_secondary_effect = true;
+                se.effect_name = (String)pair.getKey();
+
+                se.base_pellet = ((Number)val.getOrDefault("multishot", se.base_pellet)).doubleValue();
+        		if(base_pellet > 1 ) {
+        			multishot_scalar = se.base_pellet/2;
+        		}
+        		JSONArray jsonArray2 = (JSONArray)val.get("damagePerShot"); 
+
+        		// Extract numbers from JSON array.
+        		se.base_damage_array = fillData(jsonArray2);
+
+        		se.totBaseDMG =  array_sum(se.damage_array);
+        		
+        		se.base_crit_chance = ((Number)val.getOrDefault("criticalChance", se.base_crit_chance)).doubleValue();
+        		se.base_crit_multiplier = ((Number)val.getOrDefault("criticalMultiplier", se.base_crit_multiplier)).doubleValue();
+        		
+        		if(val.get("chargeTime") != null) {
+        			se.base_fireRate = 1/((Number)val.get("chargeTime")).doubleValue();
+        		}else
+        			se.base_fireRate = ((Number)val.getOrDefault("fireRate", se.base_fireRate)).doubleValue();
+        		
+        		se.ammoCost = ((Number)val.getOrDefault("ammoCost", se.ammoCost)).doubleValue();
+        		se.base_status = ((Number)val.getOrDefault("procChance", se.base_status)).doubleValue();
+        		se.base_reload = ((Number)val.getOrDefault("reloadTime", se.base_reload)).doubleValue();
+        		se.base_ammo = ((Number)val.getOrDefault("ammo", se.base_ammo )).intValue();
+        		se.base_magazine = ((Number)val.getOrDefault("magazineSize", se.base_magazine)).intValue();
+        		se.shot_type = (String)val.getOrDefault("trigger", se.shot_type);
+        		se.embed_delay = ((Number)val.getOrDefault("embedDelay", se.embed_delay)).doubleValue();
+        		
+        		se.setupCustomBuild();
+                
+                secondary_effects.add(se);
+            } 
+            //System.out.printf("done adding SE");
+        }
+        //MainGUI.secondary_effects_combo.add("Primary effect");
+        MainGUI.secondary_effects_combo.removeAll();
+        MainGUI.secondary_effects_combo.add("Primary effect");
+        MainGUI.secondary_effects_combo.select(0);
+        
+        for(int i = 0; i < secondary_effects.size(); i++) {
+        	MainGUI.secondary_effects_combo.add(secondary_effects.get(i).effect_name);
+		}
+	}
+	public Weapon get_next_effect() {
+		int mindex = 0;
+		double mintime = 1000000000;
+		double curtime;
+		Weapon res = null;
 		
-
+		for(int i=0; i< secondary_effects.size();i++) {
+			curtime = secondary_effects.get(i).fo.get_event_time();
+			if(curtime < mintime){
+				mintime = curtime;
+				mindex = i;
+			}
+		}
+		
+		if(this.fo.get_event_time() < mintime) {
+			res = this;
+		}
+		else {
+			res = secondary_effects.get(mindex);
+		}
+		
+		return res;
+	}
+	public void reset_secondary_effects() {
+		for(int i=0; i< secondary_effects.size();i++) {
+			secondary_effects.get(i).fo.reset();
+		}
 	}
 	@SuppressWarnings("unchecked")
 	private void getBuildStats(String name) throws FileNotFoundException, IOException, ParseException {
@@ -476,7 +566,7 @@ public class Weapon {
 		double general_mult = MainGUI.parse_double_multiply_textbox(s);
 		
 		double combined_multipliers = bane_dmg * general_mult;
-		//TODO
+		
 		//setup base damages
 		damage_array = array_scale(base_damage_array, damage_mods * combined_multipliers);
         

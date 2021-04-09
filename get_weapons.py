@@ -245,7 +245,7 @@ def fill_in_the_blanks(data):
     #BATTACOR
     new_damage = [0] * 20
     new_damage[8] = 208
-    data["BATTACOR"]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'criticalChance': 0.34, 'criticalMultiplier': 3, 'procChance': 0.08, 'fireRate': 5, 'chargeRate': 0.4, 'trigger': 'CHARGE'}
+    data["BATTACOR"]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'criticalChance': 0.34, 'criticalMultiplier': 3, 'procChance': 0.08, 'fireRate': 5, 'chargeTime': 0.4, 'trigger': 'CHARGE'}
     data["BATTACOR"]['OtherFireModes']['AltFire']['SecondaryEffects'] = {}
     data["BATTACOR"]['OtherFireModes']['AltFire']['SecondaryEffects']['AOE'] = {'damagePerShot': new_damage, 'falloff': 0.4}
 
@@ -361,9 +361,16 @@ def fill_in_the_blanks(data):
     
     #STAHLTA
     new_damage = [0] * 20
-    new_damage[index('radiation')] = 1200
-    data["STAHLTA"]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'chargeTime': 1, 'criticalChance': 0.4, 'criticalMultiplier': 3, 'procChance': 0.32, 'fireRate': 1, 'multishot': 1, 'trigger': 'CHARGE', 'ammoCost': 1, 'radius': 7.2, 'falloff': 0.7}
+    new_damage[index('impact')] = 120
+    new_damage[index('puncture')] = 180
+    new_damage[index('slash')] = 300
+    data["STAHLTA"]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'chargeTime': 1.6, 'criticalChance': 0.4, 'criticalMultiplier': 3, 'procChance': 0.32, 'fireRate': 0.666666, 'multishot': 1, 'trigger': 'CHARGE','ammoCost': 20}
     
+    new_damage = [0] * 20
+    new_damage[index('radiation')] = 1200
+    data["STAHLTA"]['OtherFireModes']['AltFire']['SecondaryEffects'] = {}
+    data["STAHLTA"]['OtherFireModes']['AltFire']['SecondaryEffects']['AOE'] = {'damagePerShot': new_damage, 'radius': 7.2, 'falloff': 0.7, 'embedDelay': 0.4}
+
     #STRADAVAR
     new_damage = [0] * 20
     new_damage[index('impact')] = 7.5
