@@ -22,14 +22,6 @@ Simulations are only allowed to run until 20 seconds for performance reasons.
 
 -Add enemy specific DR functionality
 
-## Known issues
-~~-Status duration not fully set up~~
-
--DR for toxin damage against shielded demolyst (inconsistent in-game anyways)
-
--Heat armor regeneration not working correctly
-
--Higher crit tiers for acolytes not fully understood
 
 ## Things that may not be added (too weapon specific)
 -Spool up weapon functionality
