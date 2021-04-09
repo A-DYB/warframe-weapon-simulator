@@ -29,6 +29,8 @@ Simulations are only allowed to run until 20 seconds for performance reasons.
 
 -Heat armor regeneration not working correctly
 
+-Higher crit tiers for acolytes not fully understood
+
 ## Things that may not be added (too weapon specific)
 -Spool up weapon functionality
 
