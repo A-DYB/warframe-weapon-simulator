@@ -492,7 +492,7 @@ public class Enemy {
 			//double overflow_dr = get_dr(proc, frac * total_health_damage * 0.05 * current_weapon.fire_rate_non_melee * current_weapon.multishot_mods * current_weapon.multishot_scalar / crit_multiplier);
 			double overflow_dr = get_dr(proc, frac * total_health_damage * 0.05 / crit_multiplier , current_weapon.fire_rate_non_melee * current_weapon.multishot_mods * current_weapon.multishot_scalar );
 			
-			System.out.printf("	frac: %f, health damage: %f, overflow dr: %f\n",frac,total_health_damage,overflow_dr);
+			//System.out.printf("	frac: %f, health damage: %f, overflow dr: %f\n",frac,total_health_damage,overflow_dr);
 			
 			
 			health -= frac * total_health_damage * 0.05 * overflow_dr; 
