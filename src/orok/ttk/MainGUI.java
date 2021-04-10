@@ -2959,6 +2959,7 @@ public class MainGUI {
 		
 		enemy.setHealth(enemy.getHealthRemaining()*enemy.health_scale);
 		enemy.setArmor(enemy.getArmorRemaining()*enemy.armor_scale);
+		enemy.scaled_armor = enemy.getArmorRemaining();
 		enemy.setShield(enemy.getShieldRemaining()*enemy.shield_scale);
 		
 		enemy.resist(Double.parseDouble(resist_spinner.getText()));
@@ -2978,7 +2979,6 @@ public class MainGUI {
 		if(enemy.acolyte) {
 			weapon.critMultiplier = (weapon.critMultiplier-1)*0.5+1;
 			weapon.viralChance = 0;
-			weapon.corrosiveChance = 0;
 		}
 			
 		

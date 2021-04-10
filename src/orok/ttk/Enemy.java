@@ -34,6 +34,7 @@ public class Enemy {
 	public boolean amalgam_shattering_impact;
 	public boolean demolyst;
 	public boolean acolyte;
+	public int proc_limit;
 	
 	public double[] shield_multipliers = new double[20];
 	public double[] health_multipliers = new double[20];
@@ -49,9 +50,13 @@ public class Enemy {
 	double heat_armor_reduction = 1;
 	
 	private double armor;
+	public double scaled_armor;
 	private double shield;
 	private double health;
 	private boolean armorGone;
+	
+	double corrosive_reduction;
+	double heat_reduction;
 	
 	public double totTrueDotDmg;
 	public double totToxDotDmg;
@@ -100,6 +105,7 @@ public class Enemy {
 		
 		if(name.contains("Acolyte")) {
 			acolyte = true;
+			proc_limit = 4;
 		}
 	}
 	
@@ -307,14 +313,15 @@ public class Enemy {
 
 				int size = corrosiveQ.size();
 				
+				//armorScale(modifiedBaseArmor, level, baseLevel)*armorReduct*getCorrosiveReduction()*getHeatArmorReduction();
+				
 				if(size<=0) {
+					armor = armorScale(modifiedBaseArmor, level, baseLevel) * armorReduct * getHeatArmorReduction();
 				}
-				else if(size<=10 && size > 1) {
-					armor= armor*(1-((size-1)*0.06+0.2))/(1-((size)*0.06+0.2));
+				else if(size<=10) {
+					armor= armorScale(modifiedBaseArmor, level, baseLevel) * armorReduct * getHeatArmorReduction()*(1-((size)*0.06+0.2));
 				}
-				else if(size == 1) {
-					armor = armor/(1-0.2);
-				}		
+						
 
 			}
 			//heat armor strip
@@ -324,7 +331,7 @@ public class Enemy {
 				double cur_strip = get_heat_armor_strip(tick);
 				heat_armor_reduction = cur_strip;
 				
-				armor = armor*cur_strip/prev_strip;
+				armor = armorScale(modifiedBaseArmor, level, baseLevel) * armorReduct * getCorrosiveReduction() * cur_strip;
 				
 				this.decLife((int) (500* status_duration));
 				if(heat_dot_armor_reduction.getLife() <= 0) {
@@ -340,27 +347,30 @@ public class Enemy {
 			}
 			//heat armor regen
 			else if(identifier == 16) {
-				double prev_strip = get_heat_armor_strip(tick);
-				tick --;
-				double cur_strip = get_heat_armor_strip(tick);
-				heat_armor_reduction = cur_strip;
-				
-				armor = armor*cur_strip/prev_strip;
-				
-				heat_dot_armor_regeneration.decLife((int) (1500* status_duration));
-				if(heat_dot_armor_regeneration.getLife() <= 0) {
-					heat_dot_armor_regeneration.reset();
-				}
-				else {
-					heat_dot_armor_regeneration.setOffset(heat_dot_armor_regeneration.getOffset() + 1500* status_duration);
+				if(!heatDot.heat_active) {
+					double prev_strip = get_heat_armor_strip(tick);
+					tick --;
+					double cur_strip = get_heat_armor_strip(tick);
+					heat_armor_reduction = cur_strip;
 					
+					armor = armorScale(modifiedBaseArmor, level, baseLevel) * armorReduct * getCorrosiveReduction() * cur_strip;
+					
+					heat_dot_armor_regeneration.decLife((int) (1500* status_duration));
+					if(heat_dot_armor_regeneration.getLife() <= 0) {
+						heat_dot_armor_regeneration.reset();
+					}
+					else {
+						heat_dot_armor_regeneration.setOffset(heat_dot_armor_regeneration.getOffset() + 1500* status_duration);
+						
+					}
 				}
+
 			}
 			
 		}
 		public double get_heat_armor_strip(int index) {
 			double strip = 1;
-			if(index == 0) {
+			if(index <= 0) {
 				strip = 1;
 			}
 			else if(index == 1) {
@@ -469,13 +479,12 @@ public class Enemy {
 		double shield_dr = get_dr(proc, total_shield_damage , current_weapon.fire_rate_non_melee * current_weapon.multishot_mods * current_weapon.multishot_scalar);
 		double health_dr = get_dr(proc, (total_health_damage + shield_multipliers[6]*damage[6]) , current_weapon.fire_rate_non_melee * current_weapon.multishot_scalar * current_weapon.multishot_mods);
 				
-		System.out.printf("Damage: %f, ",total_shield_damage);
+		//System.out.printf("Damage: %f, ",total_shield_damage);
 		
 		total_health_damage = total_health_damage * crit_multiplier * health_dr;
 		total_shield_damage = total_shield_damage * crit_multiplier * shield_dr;
 		
-		//System.out.printf("R-Damage: %f, DR: %f, Crit Mult: %f, Proc: %b\n",total_health_damage, health_dr, crit_multiplier, proc );
-		System.out.printf("Health Damage: %f, Shield Damage: %f,Crit Mult: %f, Proc: %b\n",total_health_damage,total_shield_damage,crit_multiplier, proc);
+		//System.out.printf("Health Damage: %f, Shield Damage: %f,Crit Mult: %f, Proc: %b\n",total_health_damage,total_shield_damage,crit_multiplier, proc);
 		
 		
 		health -= total_health_damage  ;
@@ -804,7 +813,9 @@ public class Enemy {
 			proc_damage = new double[20];
 			proc_damage[14] = weapon.slashDOT * weapon.getMultiplier() * critM;
 			Dot p = new Dot(millis+1000 ,6000 * status_duration ,proc_damage, 2);
-			slQ.addLast(p);
+			//slQ.addLast(p);
+			limit_add_last(slQ, p);
+			
 		}
 		
 		if(weapon.toxicLash) {
@@ -812,14 +823,17 @@ public class Enemy {
 			proc_damage[6] = weapon.toxicLashPercent * weapon.getTotalDamage() * weapon.getMultiplier() * critM / 2;
 			
 			Dot p = new Dot(millis+1000,6000* status_duration, proc_damage, 6); // affected by bane 3x, affected by elemental mods too
-			toxQ.addLast(p);
+			//toxQ.addLast(p);
+			limit_add_last(toxQ, p);
+			
 		}
 		
 		if(weapon.getHunter() && Math.random() < 0.3) {
 			proc_damage = new double[20];
 			proc_damage[14] = weapon.slashDOT * weapon.getMultiplier() * critM;
 			Dot p = new Dot(millis+1000 ,6000* status_duration ,proc_damage, 2);
-			slQ.addLast(p);
+			//slQ.addLast(p);
+			limit_add_last(slQ, p);
 		}
 		
 		//handle status above 100%
@@ -841,12 +855,15 @@ public class Enemy {
 		if( (random -= weapon.slashChance) < 0) {
 			proc_damage[14] = weapon.slashDOT * weapon.getMultiplier() * critM;
 			Dot p = new Dot(millis+1000 ,6000* status_duration ,proc_damage, 2);
-			slQ.addLast(p);
+			//slQ.addLast(p);
+			limit_add_last(slQ, p);
+			
 		}
 		else if((random -= weapon.toxinChance) < 0){	
 			proc_damage[6] = weapon.toxinDOT*weapon.getMultiplier()*critM;
 			Dot p = new Dot(millis+1000 ,6000* status_duration ,proc_damage, 6);
-			toxQ.addLast(p);
+			//toxQ.addLast(p);
+			limit_add_last(toxQ, p);
 		}
 		else if((random -= weapon.gasChance) < 0) {																
 			proc_damage[9] = weapon.gasDOT*weapon.getMultiplier()*critM;
@@ -855,7 +872,8 @@ public class Enemy {
 			}
 			
 			Dot p = new Dot(millis + 6000* status_duration,6000* status_duration,proc_damage ,9);
-			gasQ.addLast(p);
+			//gasQ.addLast(p);
+			limit_add_last(gasQ, p);
 
 			if(gasQ.size()>=10) {
 				gasQ.removeFirst();
@@ -867,24 +885,16 @@ public class Enemy {
 			
 			int size = corrosiveQ.size();
 			
-			if(size<=0) {
-				armor = armor*(1-0.2-0.06);
-				corrosiveQ.addLast(p);
-			}
-			else if(size<10) {
-				//p.setDamage(0.2+size*0.06);
-				armor = armor*( (1-((size+1)*0.06+0.2)) /(1-(size*0.06+0.2)) );
-				
-				corrosiveQ.addLast(p);
+			if(size<10) {
+				armor = armorScale(modifiedBaseArmor, level, baseLevel)*armorReduct*getHeatArmorReduction() * (1-((size+1)*0.06+0.20));
+				//corrosiveQ.addLast(p);
+				limit_add_last(corrosiveQ, p);
 			}
 			else if(size >= 10) {
-				//p.setDamage(0.8);
-				
 				corrosiveQ.removeFirst();
 				corrosiveQ.addLast(p);
 			}
 				
-
 			if(armor <= 1 && !armorGone) {
 				armorGone = true;
 				armor = 0;
@@ -899,19 +909,21 @@ public class Enemy {
 			if(size<=0) {
 				//p.setDamage(2);
 				viralMult = 2;
-				viralQ.addLast(p);
+				//viralQ.addLast(p);
 			}
 			else if(size<10) {
 				//p.setDamage(2+size*0.25);
 				viralMult = 2+size*0.25;
-				viralQ.addLast(p);
+				//viralQ.addLast(p);
 			}
 			else if(size >= 10) {
 				//p.setDamage(4.25);
 				
 				viralQ.removeFirst();
-				viralQ.addLast(p);
-			}									
+				//viralQ.addLast(p);
+			}	
+			
+			limit_add_last(viralQ, p);
 		}	
 		
 		else if((random -= weapon.heatChance) < 0 ){	//heat Proc
@@ -960,19 +972,20 @@ public class Enemy {
 			if(size<=0) {
 				//p.setDamage(2);
 				magneticMult =2;
-				magneticQ.addLast(p);
+				//magneticQ.addLast(p);
 			}
 			else if(size<10) {
 				//p.setDamage(2+size*0.25);
 				magneticMult = 2+size*0.25;
-				magneticQ.addLast(p);
+				//magneticQ.addLast(p);
 			}
 			else if(size >= 10) {
 				//p.setDamage(4.25);
 				
 				magneticQ.removeFirst();
-				magneticQ.addLast(p);
+				//magneticQ.addLast(p);
 			}
+			limit_add_last(magneticQ, p);
 		}
 		else if((random -= weapon.electricityChance) < 0 ) {
 			Dot p;
@@ -986,21 +999,22 @@ public class Enemy {
 			}
 
 			
-			elecQ.addLast(p);
+			//elecQ.addLast(p);
+			limit_add_last(elecQ, p);
 					
 		}
 		
 		//limit # of procs active if acolyte
-		proc_limiter();
+		//proc_limiter();
 		
 	}
 	private void proc_limiter() {
 		if(acolyte) {
 			int sz = slQ.size();
-			int rem = sz -4 ;
+			int rem = sz - 4 ;
 			if(rem > 0) {
 				for(int i =0;i<rem;i++) {
-					slQ.removeFirst();
+					slQ.removeLast();
 				}
 			}
 			
@@ -1008,7 +1022,7 @@ public class Enemy {
 			rem = sz -4 ;
 			if(rem > 0) {
 				for(int i =0;i<rem;i++) {
-					toxQ.removeFirst();
+					toxQ.removeLast();
 				}
 			}
 			
@@ -1016,7 +1030,7 @@ public class Enemy {
 			rem = sz -4 ;
 			if(rem > 0) {
 				for(int i =0;i<rem;i++) {
-					gasQ.removeFirst();
+					gasQ.removeLast();
 				}
 			}
 			
@@ -1024,7 +1038,7 @@ public class Enemy {
 			rem = sz -4 ;
 			if(rem > 0) {
 				for(int i =0;i<rem;i++) {
-					magneticQ.removeFirst();
+					magneticQ.removeLast();
 				}
 			}
 			
@@ -1032,7 +1046,7 @@ public class Enemy {
 			rem = sz -4 ;
 			if(rem > 0) {
 				for(int i =0;i<rem;i++) {
-					corrosiveQ.removeFirst();
+					corrosiveQ.removeLast();
 				}
 			}
 			
@@ -1040,7 +1054,7 @@ public class Enemy {
 			rem = sz -4 ;
 			if(rem > 0) {
 				for(int i =0;i<rem;i++) {
-					viralQ.removeFirst();
+					viralQ.removeLast();
 				}
 			}
 			
@@ -1048,10 +1062,23 @@ public class Enemy {
 			rem = sz -4 ;
 			if(rem > 0) {
 				for(int i =0;i<rem;i++) {
-					elecQ.removeFirst();
+					elecQ.removeLast();
 				}
 			}
 		}
+	}
+	public void limit_add_last(Deque<Dot> q, Dot e) {
+		if(proc_limit >0 ) {
+			
+			if(q.size() - proc_limit <= 0) {
+				q.addLast(e);
+			}
+			
+		}
+		else {
+			q.addLast(e);
+		}
+			
 	}
 	
 	public void reset(double armorReduct) {
@@ -1065,9 +1092,10 @@ public class Enemy {
 		elecQ.clear();
 
 		
-		health  = heathScale(baseHealth,level,baseLevel);
-		armor  = armorScale(baseArmor,level,baseLevel) * armorReduct;
-		shield = shieldScale(baseShield,level,baseLevel);
+		health  = heathScale(baseHealth,level,baseLevel)*health_scale;
+		armor  = armorScale(baseArmor,level,baseLevel) * armorReduct * armor_scale;
+		scaled_armor = armor;
+		shield = shieldScale(baseShield,level,baseLevel) * shield_scale;
 		
 		electricity_offset = 1000000;
 		gas_offset = 1000000;
@@ -1101,9 +1129,6 @@ public class Enemy {
 		}
 		else if(size<=10 && size > 1) {
 			reduc= 1-((size)*0.06+0.2);
-		}
-		else if(size == 1) {
-			reduc = 0.8;
 		}
 		return reduc;
 	}
