@@ -50,6 +50,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import orok.ttk.Enemy.Dot;
+import org.eclipse.wb.swt.SWTResourceManager;
 
 public class MainGUI {
 
@@ -257,8 +258,9 @@ public class MainGUI {
 	 */
 	protected void createContents() {
 		shell = new Shell();
+		shell.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
 		shell.setSize(823, 950);
-		shell.setText("Pocket Simulacrum v0.3.1");
+		shell.setText("Pocket Simulacrum v0.3.2");
 		shell.setLayout(null);
 		
 		try {
@@ -270,8 +272,10 @@ public class MainGUI {
 		} catch (ParseException e1) {
 			e1.printStackTrace();
 		} 
+
 		
 		CTabFolder tabFolder = new CTabFolder(shell, SWT.BORDER);
+		tabFolder.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_DARK_SHADOW));
 		tabFolder.setBounds(0, 0, 469, 901);
 		formToolkit.adapt(tabFolder);
 		formToolkit.paintBordersFor(tabFolder);
@@ -281,6 +285,7 @@ public class MainGUI {
 		tbtmSimulation.setText("Simulation");
 		
 		Composite composite = new Composite(tabFolder, SWT.NONE);
+		composite.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
 		tbtmSimulation.setControl(composite);
 		formToolkit.paintBordersFor(composite);
 		composite.setLayout(new GridLayout(7, false));
@@ -295,7 +300,7 @@ public class MainGUI {
 				if(combo_is_populated) {
 					String name = enemy_combo.getText();
 					//default_weapon.setupCustomBuild();
-					default_enemy = new Enemy(name,Double.parseDouble(lvl_spinner.getText()), (100-Double.valueOf(armor_strip_spinner.getText()))/100.0 , default_weapon);
+					default_enemy = new Enemy(name,Double.parseDouble(lvl_spinner.getText()), ( 100 - Double.parseDouble(armor_strip_spinner.getText()) )/100.0 , default_weapon);
 					parseSettings(default_weapon, default_enemy);
 					
 					update_enemy_table(default_enemy);
@@ -418,6 +423,8 @@ public class MainGUI {
 		formToolkit.adapt(lblSep_1, true, true);
 		
 		lblHpScale = new Label(composite, SWT.NONE);
+		lblHpScale.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
+		lblHpScale.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
 		formToolkit.adapt(lblHpScale, true, true);
 		lblHpScale.setText("HP scale");
 		
@@ -432,7 +439,7 @@ public class MainGUI {
 				if(combo_is_populated && gui_setup) {
 					String name = enemy_combo.getText();
 					default_weapon.setupCustomBuild();
-					default_enemy = new Enemy(name,Double.parseDouble(lvl_spinner.getText()), (100-Double.valueOf(armor_strip_spinner.getText()))/100.0 , default_weapon);
+					default_enemy = new Enemy(name,Double.parseDouble(lvl_spinner.getText()), (100 - Double.parseDouble(armor_strip_spinner.getText()))/100.0 , default_weapon);
 					parseSettings(default_weapon, default_enemy);
 					
 					update_enemy_table(default_enemy);
@@ -466,7 +473,7 @@ public class MainGUI {
 					String name = enemy_combo.getText();
 					
 					default_weapon.setupCustomBuild();
-					default_enemy = new Enemy(name,Double.parseDouble(lvl_spinner.getText()), (100-Double.valueOf(armor_strip_spinner.getText()))/100.0 , default_weapon);
+					default_enemy = new Enemy(name,Double.parseDouble(lvl_spinner.getText()), (100-Double.parseDouble(armor_strip_spinner.getText()))/100.0 , default_weapon);
 					parseSettings(default_weapon, default_enemy);
 					
 					update_enemy_table(default_enemy);
@@ -500,7 +507,7 @@ public class MainGUI {
 					String name = enemy_combo.getText();
 					
 					default_weapon.setupCustomBuild();
-					default_enemy = new Enemy(name,Double.parseDouble(lvl_spinner.getText()), (100-Double.valueOf(armor_strip_spinner.getText()))/100.0 , default_weapon);
+					default_enemy = new Enemy(name,Double.parseDouble(lvl_spinner.getText()), (100-Double.parseDouble(armor_strip_spinner.getText()))/100.0 , default_weapon);
 					parseSettings(default_weapon, default_enemy);
 					
 					update_enemy_table(default_enemy);
@@ -545,7 +552,7 @@ public class MainGUI {
 					String name = enemy_combo.getText();
 					
 					default_weapon.setupCustomBuild();
-					default_enemy = new Enemy(name,Double.parseDouble(lvl_spinner.getText()), (100-Double.valueOf(armor_strip_spinner.getText()))/100.0 , default_weapon);
+					default_enemy = new Enemy(name,Double.parseDouble(lvl_spinner.getText()), (100-Double.parseDouble(armor_strip_spinner.getText()))/100.0 , default_weapon);
 					parseSettings(default_weapon, default_enemy);
 					
 					update_enemy_table(default_enemy);
@@ -779,7 +786,9 @@ public class MainGUI {
 		btnGraph.setText("Graph");
 		
 		txtSeriesName = new Text(composite, SWT.BORDER);
-		txtSeriesName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		GridData gd_txtSeriesName = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+		gd_txtSeriesName.widthHint = 82;
+		txtSeriesName.setLayoutData(gd_txtSeriesName);
 		formToolkit.adapt(txtSeriesName, true, true);
 		
 
@@ -1730,7 +1739,7 @@ public class MainGUI {
 					name += "0"; // append character if name exists
 		        }
 		        
-				double pellet = Double.valueOf(pelletESpinner.getSelection());
+				double pellet = Double.parseDouble(pelletESpinner.getText());
 				JSONArray dmg = new JSONArray();
 				dmg.add((double)iESpinner.getSelection()/Math.pow(10, iESpinner.getDigits()));
 				dmg.add((double)pESpinner.getSelection()/Math.pow(10, pESpinner.getDigits()));
@@ -2266,6 +2275,7 @@ public class MainGUI {
 		new Label(composite_3, SWT.NONE);
 		
 		weapon_table = new Table(shell, SWT.BORDER | SWT.FULL_SELECTION);
+		weapon_table.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		weapon_table.setBounds(486, 35, 305, 738);
 		formToolkit.adapt(weapon_table);
 		formToolkit.paintBordersFor(weapon_table);
@@ -3283,6 +3293,7 @@ public class MainGUI {
         btnShatteringImpact.setSelection( false );
           
 	}
+
 	public static int index(String s) {
 	    if (s.equals("impact"))
 	        return 0;
