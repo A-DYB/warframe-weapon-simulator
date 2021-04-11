@@ -316,10 +316,10 @@ public class Enemy {
 				//armorScale(modifiedBaseArmor, level, baseLevel)*armorReduct*getCorrosiveReduction()*getHeatArmorReduction();
 				
 				if(size<=0) {
-					armor = armorScale(modifiedBaseArmor, level, baseLevel) * armorReduct * getHeatArmorReduction();
+					armor = armorScale(modifiedBaseArmor, level, baseLevel) * armorReduct * armor_scale * getHeatArmorReduction();
 				}
 				else if(size<=10) {
-					armor= armorScale(modifiedBaseArmor, level, baseLevel) * armorReduct * getHeatArmorReduction()*(1-((size)*0.06+0.2));
+					armor= armorScale(modifiedBaseArmor, level, baseLevel) * armorReduct * armor_scale * getHeatArmorReduction()*(1-((size)*0.06+0.2));
 				}
 						
 
@@ -331,7 +331,7 @@ public class Enemy {
 				double cur_strip = get_heat_armor_strip(tick);
 				heat_armor_reduction = cur_strip;
 				
-				armor = armorScale(modifiedBaseArmor, level, baseLevel) * armorReduct * getCorrosiveReduction() * cur_strip;
+				armor = armorScale(modifiedBaseArmor, level, baseLevel) * armorReduct * armor_scale * getCorrosiveReduction() * cur_strip;
 				
 				this.decLife((int) (500* status_duration));
 				if(heat_dot_armor_reduction.getLife() <= 0) {
@@ -353,7 +353,7 @@ public class Enemy {
 					double cur_strip = get_heat_armor_strip(tick);
 					heat_armor_reduction = cur_strip;
 					
-					armor = armorScale(modifiedBaseArmor, level, baseLevel) * armorReduct * getCorrosiveReduction() * cur_strip;
+					armor = armorScale(modifiedBaseArmor, level, baseLevel) * armorReduct * armor_scale * getCorrosiveReduction() * cur_strip;
 					
 					heat_dot_armor_regeneration.decLife((int) (1500* status_duration));
 					if(heat_dot_armor_regeneration.getLife() <= 0) {
@@ -886,7 +886,7 @@ public class Enemy {
 			int size = corrosiveQ.size();
 			
 			if(size<10) {
-				armor = armorScale(modifiedBaseArmor, level, baseLevel)*armorReduct*getHeatArmorReduction() * (1-((size+1)*0.06+0.20));
+				armor = armorScale(modifiedBaseArmor, level, baseLevel) * armorReduct * armor_scale * getHeatArmorReduction() * (1-((size+1)*0.06+0.20));
 				//corrosiveQ.addLast(p);
 				limit_add_last(corrosiveQ, p);
 			}

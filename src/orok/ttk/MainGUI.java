@@ -66,7 +66,7 @@ public class MainGUI {
 	private Label v_time_label;
 	private Label v_shots_label;
 	
-	private NumberFormat format = NumberFormat.getInstance(Locale.getDefault());
+	private static NumberFormat format = NumberFormat.getInstance(Locale.getDefault());
 
 	private XYSeries series;
 	private XYSeries armor_series;
@@ -3202,7 +3202,7 @@ public class MainGUI {
 	    for (int i=0; i < arrSplit.length; i++)
 	    {
 	      if( isNumeric(arrSplit[i]) ) {
-	    	  tot += Double.parseDouble(arrSplit[i]);
+	    	  tot += string_to_double(arrSplit[i]);
 	      }
 	    }
 	    return tot;
@@ -3333,7 +3333,7 @@ public class MainGUI {
 	    return 0;
 	}
 	
-	public double string_to_double(String s) {
+	public static double string_to_double(String s) {
 		Number number = null;
 		try {
 			number = format.parse(s);
