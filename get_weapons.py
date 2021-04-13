@@ -203,7 +203,19 @@ def fill_in_the_blanks(data):
     data["ArtemisBow"]["chargeTime"] = 1
     data["ARTEMISBOWPRIME"]["chargeTime"] = 1
     data["BALEFIRECHARGER"]["chargeTime"] = 2
+    data["EPITAPH"]["chargeTime"] = 0.36
     
+    #EPITAPH
+    new_damage = [0] * 20
+    new_damage[index('impact')] = 40
+    new_damage[index('puncture')] = 30
+    new_damage[index('slash')] = 30
+    data["EPITAPH"]['OtherFireModes']['QuickShot'] = {'damagePerShot': new_damage, 'fireRate': 1.5, 'ammoCost': 1, 'trigger': 'SEMI'}
+    data["EPITAPH"]['OtherFireModes']['QuickShot']['SecondaryEffects'] = {}
+    new_damage = [0] * 20
+    new_damage[index('blast')] = 20
+    data["EPITAPH"]['OtherFireModes']['QuickShot']['SecondaryEffects']['AOE'] = {'damagePerShot': new_damage, 'radius': 8, 'falloff': 0.8}
+
     #QUANTA
     new_damage = [0] * 20
     new_damage[5] = 100
