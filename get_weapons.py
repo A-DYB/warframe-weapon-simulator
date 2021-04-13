@@ -120,6 +120,8 @@ def fill_in_the_blanks(data):
     data["CONVECTRIX"]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'fireRate': 4, 'ammoCost': 0.5}
     data["CONVECTRIX"]['OtherFireModes']['AltFire']["damageRamp"] = {'min':0.8}
     data["CONVECTRIX"]['OtherFireModes']['AltFire']['SecondaryEffects'] = {}
+    #ARTAX
+    data["ARTAX"]["damageRamp"] = {'min':0.2}
     #CORTEGE
     data["CORTEGE"]["damageRamp"] = {'min':0.2}
     #CRYOTRA

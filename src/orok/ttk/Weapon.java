@@ -135,6 +135,8 @@ public class Weapon {
 			} catch (IOException | ParseException e) {
 				e.printStackTrace();
 			}
+			if(!this.stance.equals("None"))
+				MainGUI.setup_move_combo(this.stance);
 			MainGUI.populate_stance_combo(this);
 			int stance_index = MainGUI.stance_combo.indexOf( stance );
 			int move_index = MainGUI.move_combo.indexOf( move_set );
@@ -342,7 +344,13 @@ public class Weapon {
 		ammoCost = ((Number)selectedWep.getOrDefault("ammoCost", 1 )).doubleValue();
 		base_status = ((Number)selectedWep.getOrDefault("procChance", 0)).doubleValue();
 		base_reload = ((Number)selectedWep.getOrDefault("reloadTime", 0 )).doubleValue();
-		base_ammo = ((Number)selectedWep.getOrDefault("ammo", 540 )).intValue();
+		try {
+			base_ammo = ((Number)selectedWep.getOrDefault("ammo", 540 )).intValue();
+		}
+		catch(Exception e){
+			base_ammo = 10000000;
+		}
+		
 		base_magazine = ((Number)selectedWep.getOrDefault("magazineSize", 100)).intValue();
 		shot_type = (String)selectedWep.getOrDefault("trigger", "AUTO");
 		embed_delay = ((Number)selectedWep.getOrDefault("embedDelay", 0)).doubleValue();

@@ -304,7 +304,7 @@ public class MainGUI {
 				if(combo_is_populated) {
 					String name = enemy_combo.getText();
 					//default_weapon.setupCustomBuild();
-					default_enemy = new Enemy(name,string_to_double(lvl_spinner.getText()), ( 100 - string_to_double(armor_strip_spinner.getText()) )/100.0 , default_weapon);
+					default_enemy = new Enemy(name,string_to_double(lvl_spinner.getText()), ( 100 - spinner_to_double(armor_strip_spinner) )/100.0 , default_weapon);
 					parseSettings(default_weapon, default_enemy);
 					
 					update_enemy_table(default_enemy);
@@ -331,6 +331,13 @@ public class MainGUI {
 		weaponCombo.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
+				
+				move_combo.removeAll();
+				stance_procs.clear();
+				stance_procs.add(0);
+				stance_multipliers.clear();
+				stance_multipliers.add(1.0);
+				
 				String name = weaponCombo.getText();
 				if(!name.equals("Custom Build Tab")) {
 					btnRemoveBuild.setEnabled(true);
@@ -346,6 +353,7 @@ public class MainGUI {
 				
 				if(stance_name != null && !stance_name.equals("None")) {
 					//System.out.println(stance_name);
+					setup_move_combo(stance_combo.getText());
 					parse_stance(stance_name);
 				}
 				
@@ -443,7 +451,7 @@ public class MainGUI {
 				if(combo_is_populated && gui_setup) {
 					String name = enemy_combo.getText();
 					default_weapon.setupCustomBuild();
-					default_enemy = new Enemy(name,string_to_double(lvl_spinner.getText()), (100 - string_to_double(armor_strip_spinner.getText()))/100.0 , default_weapon);
+					default_enemy = new Enemy(name,string_to_double(lvl_spinner.getText()), (100 - spinner_to_double(armor_strip_spinner))/100.0 , default_weapon);
 					parseSettings(default_weapon, default_enemy);
 					
 					update_enemy_table(default_enemy);
@@ -477,7 +485,7 @@ public class MainGUI {
 					String name = enemy_combo.getText();
 					
 					default_weapon.setupCustomBuild();
-					default_enemy = new Enemy(name,string_to_double(lvl_spinner.getText()), (100-string_to_double(armor_strip_spinner.getText()))/100.0 , default_weapon);
+					default_enemy = new Enemy(name,string_to_double(lvl_spinner.getText()), (100-spinner_to_double(armor_strip_spinner))/100.0 , default_weapon);
 					parseSettings(default_weapon, default_enemy);
 					
 					update_enemy_table(default_enemy);
@@ -511,7 +519,7 @@ public class MainGUI {
 					String name = enemy_combo.getText();
 					
 					default_weapon.setupCustomBuild();
-					default_enemy = new Enemy(name,string_to_double(lvl_spinner.getText()), (100-string_to_double(armor_strip_spinner.getText()))/100.0 , default_weapon);
+					default_enemy = new Enemy(name,string_to_double(lvl_spinner.getText()), (100-spinner_to_double(armor_strip_spinner))/100.0 , default_weapon);
 					parseSettings(default_weapon, default_enemy);
 					
 					update_enemy_table(default_enemy);
@@ -556,7 +564,7 @@ public class MainGUI {
 					String name = enemy_combo.getText();
 					
 					default_weapon.setupCustomBuild();
-					default_enemy = new Enemy(name,string_to_double(lvl_spinner.getText()), (100-string_to_double(armor_strip_spinner.getText()))/100.0 , default_weapon);
+					default_enemy = new Enemy(name,string_to_double(lvl_spinner.getText()), (100-spinner_to_double(armor_strip_spinner))/100.0 , default_weapon);
 					parseSettings(default_weapon, default_enemy);
 					
 					update_enemy_table(default_enemy);
@@ -1743,7 +1751,8 @@ public class MainGUI {
 					name += "0"; // append character if name exists
 		        }
 		        
-				double pellet = string_to_double(pelletESpinner.getText());
+				//double pellet = string_to_double(pelletESpinner.getText());
+		        double pellet = (double)pelletESpinner.getSelection()/Math.pow(10, pelletESpinner.getDigits());
 				JSONArray dmg = new JSONArray();
 				dmg.add((double)iESpinner.getSelection()/Math.pow(10, iESpinner.getDigits()));
 				dmg.add((double)pESpinner.getSelection()/Math.pow(10, pESpinner.getDigits()));
@@ -2492,7 +2501,7 @@ public class MainGUI {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void setup_move_combo(String stance_name) {
+	static void setup_move_combo(String stance_name) {
 		ArrayList<String> moveList = new ArrayList<String>();
 		move_combo.removeAll();
 		Object s_obj = null;
@@ -2967,16 +2976,17 @@ public class MainGUI {
 		if(btnFullMagnetic.getSelection())
 			enemy.setMagneticMult(4.25);
 		
-		enemy.health_scale= string_to_double(health_scale_spinner.getText());
-		enemy.armor_scale= string_to_double(armor_scale_spinner.getText());
-		enemy.shield_scale= string_to_double(shield_scale_spinner.getText());
+		enemy.health_scale= spinner_to_double(health_scale_spinner);
+		enemy.armor_scale= spinner_to_double(armor_scale_spinner);
+		enemy.shield_scale= spinner_to_double(shield_scale_spinner);
+		
 		
 		enemy.setHealth(enemy.getHealthRemaining()*enemy.health_scale);
 		enemy.setArmor(enemy.getArmorRemaining()*enemy.armor_scale);
 		enemy.scaled_armor = enemy.getArmorRemaining();
 		enemy.setShield(enemy.getShieldRemaining()*enemy.shield_scale);
 		
-		enemy.resist(string_to_double(resist_spinner.getText()));
+		enemy.resist(spinner_to_double(resist_spinner));
 		
 		boolean hunterMunitions = btnHunterMunitions.getSelection();
 		enemy.shattering_impact = btnShatteringImpact.getSelection();
@@ -3339,8 +3349,16 @@ public class MainGUI {
 			number = format.parse(s);
 		} catch (java.text.ParseException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
+			if(isNumeric(s))
+				return Double.parseDouble(s);
+			else
+				e.printStackTrace();
+			
 		}
 		return number.doubleValue();
+	}
+	public double spinner_to_double(Spinner s) {
+		return (double)(s.getSelection()/Math.pow(10, s.getDigits()));
 	}
 }
