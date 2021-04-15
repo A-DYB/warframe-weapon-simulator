@@ -24,6 +24,9 @@ def main():
     weapon_list = data["ExportWeapons"]
     data = {}
     for wep in weapon_list:
+        if wep['totalDamage'] == 0:
+            #weapon does 0 damage, skip
+            continue
         data[wep['name']] = wep
         data[wep['name']]['OtherFireModes'] = {}
         data[wep['name']]['SecondaryEffects'] = {}
@@ -200,9 +203,9 @@ def fill_in_the_blanks(data):
     data["LANKA"]["chargeTime"] = 1
     data["OGRIS"]["chargeTime"] = 0.3
     data["VULCAX"]["chargeTime"] = 1
-    data["ArtemisBow"]["chargeTime"] = 1
-    data["ARTEMISBOWPRIME"]["chargeTime"] = 1
-    data["BALEFIRECHARGER"]["chargeTime"] = 2
+    #data["ArtemisBow"]["chargeTime"] = 1
+    #data["ARTEMISBOWPRIME"]["chargeTime"] = 1
+    #data["BALEFIRECHARGER"]["chargeTime"] = 2
     data["EPITAPH"]["chargeTime"] = 0.36
     
     #EPITAPH

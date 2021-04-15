@@ -353,7 +353,7 @@ public class MainGUI {
 				
 				if(stance_name != null && !stance_name.equals("None")) {
 					//System.out.println(stance_name);
-					setup_move_combo(stance_combo.getText());
+					setup_move_combo(stance_combo.getText(), default_weapon);
 					parse_stance(stance_name);
 				}
 				
@@ -930,7 +930,7 @@ public class MainGUI {
 			public void widgetSelected(SelectionEvent e) {
 				String name = "Custom Build Tab";
 				
-				set_up_fire_mode_combo();
+				set_up_fire_mode_combo(default_weapon);
 				
 					
 				default_weapon = new Weapon(name, true);
@@ -1000,7 +1000,7 @@ public class MainGUI {
 					default_weapon.setupCustomBuild();
 					update_weapon_table(default_weapon);
 				}else {
-					setup_move_combo(stance_combo.getText());
+					setup_move_combo(stance_combo.getText(), default_weapon);
 					parse_stance(stance_combo.getText());
 					default_weapon.setupCustomBuild();
 					update_weapon_table(default_weapon);
@@ -1018,6 +1018,7 @@ public class MainGUI {
 		move_combo.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
+				//System.out.println(move_combo.getText());
 				if(stance_combo.getText().equals("None")) {
 					
 					default_weapon.setupCustomBuild();
@@ -2013,7 +2014,7 @@ public class MainGUI {
 		
 		//weaponCombo.add("Custom Build Tab");
 		
-		populate_weapon_combo(weaponListCombo);
+		populate_weapon_combo(weaponListCombo, default_weapon);
 		populate_enemy_combo(enemy_combo);
 		//populateCombo(enemy_combo, weaponListCombo,weaponCombo);
 		
@@ -2220,7 +2221,10 @@ public class MainGUI {
 		        mods.put("Puncture", puncture_mod_text.getText());
 		        mods.put("Slash", slash_mod_text.getText());
 		        mods.put("StatusDuration", status_duration_mod_text.getText());
+		        
 		        mods.put("GeneralMultiplier", general_multiplier_mod_text.getText());
+		        mods.put("AdditiveCriticalDamage", additive_crit_damage_text.getText());
+		        
 		        mods.put("HunterMunitions", btnHunterMunitions.getSelection());
 		        mods.put("ShatteringImpact", btnShatteringImpact.getSelection());
 		        mods.put("AmalgamShatteringImpact", btnAmalgamShatImp.getSelection());
@@ -2239,6 +2243,7 @@ public class MainGUI {
 		        weapon_config.put("FireMode", fireModeCombo.getText());
 		        weapon_config.put("Stance", stance_combo.getText());
 		        weapon_config.put("MoveSet", move_combo.getText());
+		        //weapon_config.put("MoveSet", move_combo.getText());
 		        
 		        JSONObject container = new JSONObject();
 		        container.put("Mods", mods);
@@ -2400,7 +2405,7 @@ public class MainGUI {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void populate_weapon_combo(Combo weaponListCombo) {
+	private void populate_weapon_combo(Combo weaponListCombo, Weapon dw) {
 		weaponListCombo.removeAll();
 		
 		ArrayList<String> init_wL = new ArrayList<String>();
@@ -2452,7 +2457,15 @@ public class MainGUI {
 	        for(int i =0;i<attackModes.size();i++) {
 	        	fireModeCombo.add(attackModes.get(i));
 	        }
-			fireModeCombo.select(0);
+	        int fm_index = 0;
+	        try {
+	        	fm_index = MainGUI.fireModeCombo.indexOf( dw.fire_mode );
+	        }
+	        catch(Exception e) {
+	        	fm_index = 0;
+	        }
+	        fireModeCombo.select(fm_index);
+			//fireModeCombo.select(0);
         }
 	}
 	private void populate_build_combo(Combo weaponCombo) {
@@ -2501,7 +2514,7 @@ public class MainGUI {
 	}
 
 	@SuppressWarnings("unchecked")
-	static void setup_move_combo(String stance_name) {
+	static void setup_move_combo(String stance_name, Weapon dw) {
 		ArrayList<String> moveList = new ArrayList<String>();
 		move_combo.removeAll();
 		Object s_obj = null;
@@ -2521,7 +2534,8 @@ public class MainGUI {
 		for(int i =0; i<moveList.size();i++) {
 			move_combo.add(moveList.get(i));
 		}
-		move_combo.select(0);
+		int move_index = move_combo.indexOf( dw.move_set );
+		move_combo.select(move_index);
 	}
 	
 	private void parse_stance(String stance_name) {
@@ -3131,7 +3145,7 @@ public class MainGUI {
 		}
 		
 		if( w.damage_array[index("blast")] != 0) {
-			table_string[index] = new String[] { "blast", format_double( w.beam_multishot * w.damage_array[index("blast")] , 3 ) };
+			table_string[index] = new String[] { "blast", format_double( w.beam_multishot * w.damage_array[index("blast")] , 1 ) };
 			index++;
 		}
 		if( w.damage_array[index("radiation")] != 0) {
@@ -3188,6 +3202,9 @@ public class MainGUI {
 		return table_string;
 	}
 	
+	static int integerDigits(BigDecimal n) {
+		return (n.signum() == 0) ? 1 : ( n.precision() - n.scale());
+	}
 	
 	void update_table_item(TableItem t, String s, double val) {
 		if(val > 0) {
@@ -3199,7 +3216,9 @@ public class MainGUI {
 		
 	}
 	String format_double(double d, int sig_fig) {
+		
 		BigDecimal bd = new BigDecimal(d);
+		sig_fig = integerDigits(bd) + 2;
 		bd = bd.round(new MathContext(sig_fig));
 		double rounded = bd.doubleValue();
 		return Double.toString(rounded);
@@ -3242,7 +3261,7 @@ public class MainGUI {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static void set_up_fire_mode_combo() {
+	public static void set_up_fire_mode_combo(Weapon dw) {
 		fireModeCombo.removeAll();
 		fireModeCombo.add("Primary");
 		
@@ -3269,7 +3288,14 @@ public class MainGUI {
 	        for(int i =0;i<attackModes.size();i++) {
 	        	fireModeCombo.add(attackModes.get(i));
 	        }
-			fireModeCombo.select(0);
+	        int fm_index = 0;
+	        try {
+	        	fm_index = fireModeCombo.indexOf( dw.fire_mode );
+	        }
+	        catch(Exception e) {
+	        	fm_index = 0;
+	        }
+	        fireModeCombo.select(fm_index);
         }
 	}
 	
@@ -3293,6 +3319,7 @@ public class MainGUI {
         slash_mod_text.setText( "0.0" );
         status_duration_mod_text.setText( "0.0" );
         general_multiplier_mod_text.setText("1.0");
+        additive_crit_damage_text.setText("0.0");
         
         btnCorrosive.setSelection( false );
         btnMagnetic.setSelection( false );

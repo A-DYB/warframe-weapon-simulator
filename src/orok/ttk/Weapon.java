@@ -32,6 +32,7 @@ public class Weapon {
 	String sub_class;
 	String stance = "None";
 	String move_set = "Neutral";
+	String fire_mode = "Primary";
 	
 	//base stats
 	public double base_crit_chance;
@@ -109,15 +110,14 @@ public class Weapon {
 		if(name.contentEquals("Custom Build Tab")) {
 			this.name = MainGUI.weaponListCombo.getText();			
 				
+
 			try {
 				getStats(this.name);
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (ParseException e) {
+			} catch (IOException | ParseException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+
 			MainGUI.populate_stance_combo(this);
 			int stance_index = MainGUI.stance_combo.indexOf( stance );
 			int move_index = MainGUI.move_combo.indexOf( move_set );
@@ -136,7 +136,7 @@ public class Weapon {
 				e.printStackTrace();
 			}
 			if(!this.stance.equals("None"))
-				MainGUI.setup_move_combo(this.stance);
+				MainGUI.setup_move_combo(this.stance, this);
 			MainGUI.populate_stance_combo(this);
 			int stance_index = MainGUI.stance_combo.indexOf( stance );
 			int move_index = MainGUI.move_combo.indexOf( move_set );
@@ -536,11 +536,14 @@ public class Weapon {
         MainGUI.puncture_mod_text.setText( (String)mods.getOrDefault("Puncture", "0.0") );
         MainGUI.slash_mod_text.setText( (String)mods.getOrDefault("Slash", "0.0") );
         MainGUI.status_duration_mod_text.setText( (String)mods.getOrDefault("StatusDuration", "0.0") );
+        
         MainGUI.general_multiplier_mod_text.setText( (String)mods.getOrDefault("GeneralMultiplier", "1.0") );
+        MainGUI.additive_crit_damage_text.setText( (String)mods.getOrDefault("AdditiveCriticalDamage", "1.0") );
+        
         MainGUI.btnHunterMunitions.setSelection( (Boolean)mods.getOrDefault("HunterMunitions", false) );
         MainGUI.btnShatteringImpact.setSelection( (Boolean)mods.getOrDefault("ShatteringImpact", false) );
         MainGUI.btnAmalgamShatImp.setSelection( (Boolean)mods.getOrDefault("AmalgamShatteringImpact", false) );
-        MainGUI.btnPrimedchamber.setSelection( (Boolean)mods.getOrDefault("PrimedChamber", false) );
+        MainGUI.btnPrimedchamber.setSelection( (Boolean)mods.getOrDefault("PrimedChamber", false) );        
         
         MainGUI.btnCorrosive.setSelection( (Boolean)elem_comb.getOrDefault("Corrosive", false) );
         MainGUI.btnMagnetic.setSelection( (Boolean)elem_comb.getOrDefault("Magnetic", false) );
@@ -553,10 +556,15 @@ public class Weapon {
         int index = MainGUI.weaponListCombo.indexOf( wep_name );
         MainGUI.weaponListCombo.select(index);
         
+        String fm = (String)weap_conf.getOrDefault("FireMode", "Primary");
+        int fm_index = MainGUI.fireModeCombo.indexOf( fm );
+        MainGUI.fireModeCombo.select(fm_index);
+        this.fire_mode = fm;
+        
         stance = (String)weap_conf.getOrDefault("Stance", "None");
         move_set = (String)weap_conf.getOrDefault("MoveSet", "Neutral");
  
-        MainGUI.set_up_fire_mode_combo();
+        MainGUI.set_up_fire_mode_combo(this);
         
         this.name = wep_name;
         
@@ -725,7 +733,9 @@ public class Weapon {
 	public void quantize() {
 		int l = damage_array.length;
 		for(int i=0;i<l;i++) {
+			//System.out.printf("q: %f, d/q: %f, rounded: %d, res: %f\n",quanta, damage_array[i]/quanta,Math.round(damage_array[i]/quanta),Math.round(damage_array[i]/quanta)*quanta );
 			damage_array[i] = Math.round(damage_array[i]/quanta)*quanta;
+			
 		}
 		
 	}
