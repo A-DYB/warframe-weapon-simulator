@@ -1,0 +1,154 @@
+{
+	"Rifle": {
+		"Buff": {
+			"Multishot": 90,
+			"Damage": 164.9997,
+			"Physical Damage": 119.997,
+			"Critical Chance": 149.994,
+			"Critical Damage": 119.997,
+			"Elemental Damage": 90,
+			"Status Chance": 90,
+			"Status Duration": 99.99,
+			"Damage to Faction": 45,
+			"Fire Rate": 60.03,
+			"Magazine Capacity": 49.995,
+			"Ammo Maximum": 49.95,
+			"Reload Speed": 49.995
+		},
+		"Curse": {
+			"Multishot": true,
+			"Damage": true,
+			"Physical Damage": true,
+			"Critical Chance": true,
+			"Critical Damage": true,
+			"Elemental Damage": false,
+			"Status Chance": true,
+			"Status Duration": true,
+			"Damage to Faction": true,
+			"Fire Rate": true,
+			"Magazine Capacity": true,
+			"Ammo Maximum": true,
+			"Reload Speed": true
+		}
+	},
+	"Pistol": {
+		"Buff": {
+			"Multishot": 119.7,
+			"Damage": 219.6,
+			"Physical Damage": 119.997,
+			"Critical Chance": 149.994,
+			"Critical Damage": 90,
+			"Elemental Damage": 90,
+			"Status Chance": 90,
+			"Status Duration": 99.99,
+			"Damage to Faction": 45,
+			"Fire Rate": 74.7,
+			"Magazine Capacity": 49.995,
+			"Ammo Maximum": 90,
+			"Reload Speed": 49.995
+		},
+		"Curse": {
+			"Multishot": true,
+			"Damage": true,
+			"Physical Damage": true,
+			"Critical Chance": true,
+			"Critical Damage": true,
+			"Elemental Damage": false,
+			"Status Chance": true,
+			"Status Duration": true,
+			"Damage to Faction": true,
+			"Fire Rate": true,
+			"Magazine Capacity": true,
+			"Ammo Maximum": true,
+			"Reload Speed": true
+		}
+	},
+	"Melee": {
+		"Buff": {
+			"Damage": 164.70000000000003,
+			"Physical Damage": 119.7,
+			"Critical Chance": 180,
+			"Critical Damage": 90,
+			"Elemental Damage": 90,
+			"Status Chance": 90,
+			"Status Duration": 99.99,
+			"Damage to Faction": 45,
+			"Fire Rate": 54.9
+		},
+		"Curse": {
+			"Damage": false,
+			"Physical Damage": true,
+			"Critical Chance": true,
+			"Critical Damage": true,
+			"Elemental Damage": false,
+			"Status Chance": true,
+			"Status Duration": true,
+			"Damage to Faction": true,
+			"Fire Rate": true
+		}
+	},
+	"Shotgun": {
+		"Buff": {
+			"Multishot": 119.7,
+			"Damage": 164.70000000000003,
+			"Physical Damage": 119.997,
+			"Critical Chance": 90,
+			"Critical Damage": 90,
+			"Elemental Damage": 90,
+			"Status Chance": 90,
+			"Status Duration": 99.99,
+			"Damage to Faction": 45,
+			"Fire Rate": 90,
+			"Magazine Capacity": 49.995,
+			"Ammo Maximum": 90,
+			"Reload Speed": 49.995
+		},
+		"Curse": {
+			"Multishot": true,
+			"Damage": true,
+			"Physical Damage": true,
+			"Critical Chance": true,
+			"Critical Damage": true,
+			"Elemental Damage": false,
+			"Status Chance": true,
+			"Status Duration": true,
+			"Damage to Faction": true,
+			"Fire Rate": true,
+			"Magazine Capacity": true,
+			"Ammo Maximum": true,
+			"Reload Speed": true
+		}
+	},
+	"Archgun": {
+		"Buff": {
+			"Multishot": 60.300000000000007,
+			"Damage": 99.9,
+			"Physical Damage": 90,
+			"Critical Chance": 99.9,
+			"Critical Damage": 80.1,
+			"Elemental Damage": 119.7,
+			"Status Chance": 60.300000000000007,
+			"Status Duration": 99.99,
+			"Damage to Faction": 45,
+			"Fire Rate": 60.03,
+			"Magazine Capacity": 60.300000000000007,
+			"Ammo Maximum": 99.9,
+			"Reload Speed": 99.9
+		},
+		"Curse": {
+			"Multishot": true,
+			"Damage": true,
+			"Physical Damage": true,
+			"Critical Chance": true,
+			"Critical Damage": true,
+			"Elemental Damage": false,
+			"Status Chance": true,
+			"Status Duration": true,
+			"Damage to Faction": true,
+			"Fire Rate": true,
+			"Magazine Capacity": true,
+			"Ammo Maximum": true,
+			"Reload Speed": true
+		}
+	}
+}

@@ -407,7 +407,7 @@ public class Weapon {
 	@SuppressWarnings("unchecked")
 	private void get_riven_stats() throws FileNotFoundException, IOException, ParseException {
 		// parsing file 
-        Object obj = new JSONParser().parse(new FileReader("semlar_riven.json")); 
+        Object obj = new JSONParser().parse(new FileReader("riven_stats.json")); 
           
         // typecasting obj to JSONObject 
         JSONObject jo = (JSONObject) obj; 
