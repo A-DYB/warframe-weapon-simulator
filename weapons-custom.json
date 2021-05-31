@@ -1,1 +1,733 @@
-{"STAHLTA alt":{"Mods":{"Impact":"0.0","AmalgamShatteringImpact":false,"PrimedChamber":false,"StatusDuration":"0.0","Cold":"0.0","HunterMunitions":false,"StatusChance":"0.0","GeneralMultiplier":"1.0","Bane":"0.0","FireRate":"90","ShatteringImpact":false,"CriticalDamage":"120","Toxin":"90","Heat":"0.0","CriticalChance":"150","Electricity":"90","Reload":"0.0","Slash":"0.0","Puncture":"0.0","Damage":"165","Multishot":"90 60","Magazine":"0.0"},"WeaponConfig":{"Stance":"None","FireMode":"AltFire","MoveSet":"","WeaponName":"STAHLTA"},"ElementalCombo":{"Magnetic":false,"Corrosive":true,"Radiation":false,"Viral":false,"Gas":false,"Blast":false}},"STAHLTA":{"Mods":{"Impact":"0.0","AmalgamShatteringImpact":false,"PrimedChamber":false,"StatusDuration":"0.0","Cold":"165","HunterMunitions":false,"StatusChance":"0.0","GeneralMultiplier":"1.0","Bane":"0.0","FireRate":"90","ShatteringImpact":false,"CriticalDamage":"120","Toxin":"90","Heat":"0.0","CriticalChance":"150","Electricity":"90","Reload":"0.0","Slash":"0.0","Puncture":"0.0","Damage":"165 -15","Multishot":"90","Magazine":"0.0"},"WeaponConfig":{"Stance":"None","FireMode":"AltFire","MoveSet":"","WeaponName":"STAHLTA"},"ElementalCombo":{"Magnetic":false,"Corrosive":false,"Radiation":false,"Viral":false,"Gas":false,"Blast":false}},"VECTISPRIME":{"Mods":{"Impact":"0.0","AmalgamShatteringImpact":false,"PrimedChamber":false,"StatusDuration":"0.0","Cold":"0.0","HunterMunitions":false,"StatusChance":"0.0","GeneralMultiplier":"2","Bane":"0.0","FireRate":"60","ShatteringImpact":false,"CriticalDamage":"0.0","Toxin":"90","Heat":"0.0","CriticalChance":"0.0","Electricity":"90","Reload":"0.0","Slash":"0.0","Puncture":"0.0","Damage":"165","Multishot":"60 90","Magazine":"0.0"},"WeaponConfig":{"Stance":"None","FireMode":"Primary","MoveSet":"","WeaponName":"VECTISPRIME"},"ElementalCombo":{"Magnetic":false,"Corrosive":true,"Radiation":false,"Viral":false,"Gas":false,"Blast":false}},"SYNAPSE":{"Mods":{"Impact":"0.0","AmalgamShatteringImpact":false,"PrimedChamber":false,"StatusDuration":"0.0","Cold":"60","HunterMunitions":false,"StatusChance":"0.0","GeneralMultiplier":"1.0","Bane":"0.0","FireRate":"79.1","ShatteringImpact":false,"CriticalDamage":"120","Toxin":"60","Heat":"0.0","CriticalChance":"150 169.7 150","Electricity":"109.6","Reload":"0.0","Slash":"0.0","Puncture":"0.0","Damage":"165","Multishot":"90","Magazine":"0.0"},"WeaponConfig":{"Stance":"None","FireMode":"Primary","MoveSet":"","WeaponName":"SYNAPSE"},"ElementalCombo":{"Magnetic":false,"Corrosive":false,"Radiation":false,"Viral":true,"Gas":false,"Blast":false}},"Build Name block":{"Mods":{"Impact":"0.0","AmalgamShatteringImpact":false,"PrimedChamber":false,"StatusDuration":"0.0","Cold":"0.0","HunterMunitions":false,"StatusChance":"0.0","GeneralMultiplier":"1.0","Bane":"0.0","FireRate":"0.0","ShatteringImpact":false,"CriticalDamage":"0.0","Toxin":"0.0","Heat":"0.0","CriticalChance":"0.0","Electricity":"0.0","Reload":"0.0","Slash":"0.0","Puncture":"0.0","Damage":"0.0","Multishot":"0.0","Magazine":"0.0"},"WeaponConfig":{"Stance":"SovereignOutcast","FireMode":"Primary","MoveSet":"Block","WeaponName":"KRONENPRIME"},"ElementalCombo":{"Magnetic":false,"Corrosive":false,"Radiation":false,"Viral":false,"Gas":false,"Blast":false}},"acd test":{"Mods":{"Impact":"0.0","AmalgamShatteringImpact":false,"PrimedChamber":false,"StatusDuration":"0.0","Cold":"0.0","HunterMunitions":false,"StatusChance":"0.0","GeneralMultiplier":"1.0 2 3","Bane":"0.0","FireRate":"0.0","ShatteringImpact":false,"CriticalDamage":"0.0","Toxin":"0.0","Heat":"0.0","CriticalChance":"0.0","Electricity":"0.0","Reload":"0.0","Slash":"0.0","Puncture":"0.0","AdditiveCriticalDamage":"5 1 2","Damage":"0.0","Multishot":"0.0","Magazine":"0.0"},"WeaponConfig":{"Stance":"None","FireMode":"Primary","MoveSet":"","WeaponName":"<ARCHWING>AGKUZA"},"ElementalCombo":{"Magnetic":false,"Corrosive":false,"Radiation":false,"Viral":false,"Gas":false,"Blast":false}},"KRONENPRIMEtest":{"Mods":{"Impact":"0.0","AmalgamShatteringImpact":false,"PrimedChamber":false,"StatusDuration":"0.0","Cold":"0.0","HunterMunitions":false,"StatusChance":"0.0","GeneralMultiplier":"1.0","Bane":"0.0","FireRate":"0.0","ShatteringImpact":false,"CriticalDamage":"0.0","Toxin":"0.0","Heat":"0.0","CriticalChance":"0.0","Electricity":"0.0","Reload":"0.0","Slash":"0.0","Puncture":"0.0","Damage":"0.0","Multishot":"0.0","Magazine":"0.0"},"WeaponConfig":{"Stance":"SovereignOutcast","FireMode":"Primary","MoveSet":"Neutral","WeaponName":"KRONENPRIME"},"ElementalCombo":{"Magnetic":false,"Corrosive":false,"Radiation":false,"Viral":false,"Gas":false,"Blast":false}},"alt fire save test":{"Mods":{"Impact":"0.0","AmalgamShatteringImpact":false,"PrimedChamber":false,"StatusDuration":"0.0","Cold":"0.0","HunterMunitions":false,"StatusChance":"0.0","GeneralMultiplier":"1.0","Bane":"0.0","FireRate":"0.0","ShatteringImpact":false,"CriticalDamage":"0.0","Toxin":"0.0","Heat":"0.0","CriticalChance":"0.0","Electricity":"0.0","Reload":"0.0","Slash":"0.0","Puncture":"0.0","Damage":"0.0","Multishot":"0.0","Magazine":"0.0"},"WeaponConfig":{"Stance":"None","FireMode":"AltFire","MoveSet":"","WeaponName":"QUANTAVANDAL"},"ElementalCombo":{"Magnetic":false,"Corrosive":false,"Radiation":false,"Viral":false,"Gas":false,"Blast":false}},"slasher":{"Mods":{"Impact":"0.0","AmalgamShatteringImpact":false,"PrimedChamber":false,"StatusDuration":"0.0","Cold":"0.0","HunterMunitions":false,"StatusChance":"90","GeneralMultiplier":"2","Bane":"0.0","FireRate":"60","ShatteringImpact":false,"CriticalDamage":"0.0","Toxin":"0","Heat":"0.0","CriticalChance":"0.0","Electricity":"0","Reload":"0.0","Slash":"120","Puncture":"0.0","Damage":"165","Multishot":"60 90","Magazine":"0.0"},"WeaponConfig":{"Stance":"None","FireMode":"Primary","MoveSet":"","WeaponName":"VECTISPRIME"},"ElementalCombo":{"Magnetic":false,"Corrosive":false,"Radiation":false,"Viral":false,"Gas":false,"Blast":false}},"DREAD test":{"Mods":{"Impact":"0.0","AmalgamShatteringImpact":false,"PrimedChamber":false,"StatusDuration":"0.0","Cold":"0.0","HunterMunitions":false,"StatusChance":"0.0","GeneralMultiplier":"1.0","Bane":"0.0","FireRate":"-50","ShatteringImpact":false,"CriticalDamage":"120","Toxin":"0.0","Heat":"90","CriticalChance":"150","Electricity":"90","Reload":"0.0","Slash":"0.0","Puncture":"0.0","Damage":"165","Multishot":"90","Magazine":"0.0"},"WeaponConfig":{"Stance":"None","FireMode":"Primary","MoveSet":"","WeaponName":"DREAD"},"ElementalCombo":{"Magnetic":false,"Corrosive":false,"Radiation":true,"Viral":false,"Gas":false,"Blast":false}},"QUANTAVANDAL":{"Mods":{"Impact":"0.0","AmalgamShatteringImpact":false,"PrimedChamber":false,"StatusDuration":"0.0","Cold":"60","HunterMunitions":false,"StatusChance":"60 15","GeneralMultiplier":"1.0","Bane":"45","FireRate":"90","ShatteringImpact":false,"CriticalDamage":"120","Toxin":"15","Heat":"0","CriticalChance":"150","Electricity":"90","Reload":"0.0","Slash":"0.0","Puncture":"0.0","Damage":"180 -15","Multishot":"90","Magazine":"0.0"},"WeaponConfig":{"Stance":"None","FireMode":"Primary","MoveSet":"","WeaponName":"QUANTAVANDAL"},"ElementalCombo":{"Magnetic":false,"Corrosive":false,"Radiation":false,"Viral":true,"Gas":false,"Blast":false}},"Quanta Vandal Test setup":{"Mods":{"Impact":"0.0","AmalgamShatteringImpact":false,"PrimedChamber":false,"StatusDuration":"0.0","Cold":"0.0","HunterMunitions":false,"StatusChance":"60","GeneralMultiplier":"1.0","Bane":"0.0","FireRate":"90","ShatteringImpact":false,"CriticalDamage":"120","Toxin":"0.0","Heat":"0.0","CriticalChance":"150","Electricity":"90 60","Reload":"0.0","Slash":"0.0","Puncture":"0.0","Damage":"165 -15","Multishot":"0.0","Magazine":"0.0"},"WeaponConfig":{"Stance":"None","FireMode":"Primary","MoveSet":"","WeaponName":"QUANTAVANDAL"},"ElementalCombo":{"Magnetic":false,"Corrosive":false,"Radiation":false,"Viral":false,"Gas":false,"Blast":false}}}
+{
+	"KNELL acolyte riven": {
+		"Mods": {
+			"Impact": "0.0",
+			"AmalgamShatteringImpact": false,
+			"PrimedChamber": false,
+			"StatusDuration": "0.0",
+			"Cold": "0.0",
+			"HunterMunitions": false,
+			"StatusChance": "0.0",
+			"GeneralMultiplier": "1.0",
+			"Bane": "0.0",
+			"FireRate": "90 60                     95",
+			"ShatteringImpact": false,
+			"CriticalDamage": "110.0                      ",
+			"Toxin": "90                           ",
+			"Heat": "0.0",
+			"CriticalChance": "187                        ",
+			"Electricity": "90",
+			"Reload": "0.0",
+			"Slash": "0.0",
+			"Puncture": "0.0",
+			"AdditiveCriticalDamage": "1.5",
+			"Damage": "-15 220                     280",
+			"Multishot": "120 60                    150",
+			"Magazine": "1000000"
+		},
+		"WeaponConfig": {
+			"Stance": "None",
+			"FireMode": "Primary",
+			"MoveSet": "",
+			"WeaponName": "Knell"
+		},
+		"ElementalCombo": {
+			"Magnetic": false,
+			"Corrosive": true,
+			"Radiation": false,
+			"Viral": false,
+			"Gas": false,
+			"Blast": false
+		}
+	},
+	"STAHLTA": {
+		"Mods": {
+			"Impact": "0.0",
+			"AmalgamShatteringImpact": false,
+			"PrimedChamber": false,
+			"StatusDuration": "0.0",
+			"Cold": "165",
+			"HunterMunitions": false,
+			"StatusChance": "0.0",
+			"GeneralMultiplier": "1.0",
+			"Bane": "0.0",
+			"FireRate": "90",
+			"ShatteringImpact": false,
+			"CriticalDamage": "120",
+			"Toxin": "90",
+			"Heat": "0.0",
+			"CriticalChance": "150",
+			"Electricity": "90",
+			"Reload": "0.0",
+			"Slash": "0.0",
+			"Puncture": "0.0",
+			"Damage": "165 -15",
+			"Multishot": "90",
+			"Magazine": "0.0"
+		},
+		"WeaponConfig": {
+			"Stance": "None",
+			"FireMode": "AltFire",
+			"MoveSet": "",
+			"WeaponName": "Stahlta"
+		},
+		"ElementalCombo": {
+			"Magnetic": false,
+			"Corrosive": false,
+			"Radiation": false,
+			"Viral": false,
+			"Gas": false,
+			"Blast": false
+		}
+	},
+	"SYNAPSE": {
+		"Mods": {
+			"Impact": "0.0",
+			"AmalgamShatteringImpact": false,
+			"PrimedChamber": false,
+			"StatusDuration": "0.0",
+			"Cold": "60",
+			"HunterMunitions": false,
+			"StatusChance": "0.0",
+			"GeneralMultiplier": "1.0",
+			"Bane": "0.0",
+			"FireRate": "79.1",
+			"ShatteringImpact": false,
+			"CriticalDamage": "120",
+			"Toxin": "60",
+			"Heat": "0.0",
+			"CriticalChance": "150 169.7 150",
+			"Electricity": "109.6",
+			"Reload": "0.0",
+			"Slash": "0.0",
+			"Puncture": "0.0",
+			"Damage": "165",
+			"Multishot": "90",
+			"Magazine": "0.0"
+		},
+		"WeaponConfig": {
+			"Stance": "None",
+			"FireMode": "Primary",
+			"MoveSet": "",
+			"WeaponName": "Synapse"
+		},
+		"ElementalCombo": {
+			"Magnetic": false,
+			"Corrosive": false,
+			"Radiation": false,
+			"Viral": true,
+			"Gas": false,
+			"Blast": false
+		}
+	},
+	"KNELL": {
+		"Mods": {
+			"Impact": "0.0",
+			"AmalgamShatteringImpact": false,
+			"PrimedChamber": false,
+			"StatusDuration": "0.0",
+			"Cold": "0.0",
+			"HunterMunitions": false,
+			"StatusChance": "1200",
+			"GeneralMultiplier": "1.0",
+			"Bane": "0.0",
+			"FireRate": "60 90 72",
+			"ShatteringImpact": false,
+			"CriticalDamage": "0.0",
+			"Toxin": "113.5",
+			"Heat": "0.0",
+			"CriticalChance": "187",
+			"Electricity": "90",
+			"Reload": "0.0",
+			"Slash": "0.0",
+			"Puncture": "0.0",
+			"AdditiveCriticalDamage": "1.5",
+			"Damage": "245 220 -15",
+			"Multishot": "120 60",
+			"Magazine": "0.0"
+		},
+		"WeaponConfig": {
+			"Stance": "None",
+			"FireMode": "Primary",
+			"MoveSet": "",
+			"WeaponName": "Knell"
+		},
+		"ElementalCombo": {
+			"Magnetic": false,
+			"Corrosive": true,
+			"Radiation": false,
+			"Viral": false,
+			"Gas": false,
+			"Blast": false
+		}
+	},
+	"KARYST": {
+		"Mods": {
+			"Impact": "0.0",
+			"AmalgamShatteringImpact": true,
+			"PrimedChamber": false,
+			"StatusDuration": "-98.7",
+			"Cold": "0.0",
+			"HunterMunitions": false,
+			"StatusChance": "60 60 90",
+			"GeneralMultiplier": "1.0",
+			"Bane": "0.0",
+			"FireRate": "276.25",
+			"ShatteringImpact": true,
+			"CriticalDamage": "0.0",
+			"Toxin": "60",
+			"Heat": "60",
+			"CriticalChance": "0.0",
+			"Electricity": "125.3",
+			"Reload": "0.0",
+			"Slash": "0.0",
+			"Puncture": "0.0",
+			"AdditiveCriticalDamage": "0.0",
+			"Damage": "0.0",
+			"Multishot": "0.0",
+			"Magazine": "0.0"
+		},
+		"WeaponConfig": {
+			"Stance": "PointedWind",
+			"FireMode": "Primary",
+			"MoveSet": "Neutral",
+			"WeaponName": "Karyst"
+		},
+		"ElementalCombo": {
+			"Magnetic": false,
+			"Corrosive": false,
+			"Radiation": false,
+			"Viral": false,
+			"Gas": true,
+			"Blast": false
+		}
+	},
+	"slasher": {
+		"Mods": {
+			"Impact": "0.0",
+			"AmalgamShatteringImpact": false,
+			"PrimedChamber": false,
+			"StatusDuration": "0.0",
+			"Cold": "0.0",
+			"HunterMunitions": false,
+			"StatusChance": "90",
+			"GeneralMultiplier": "2",
+			"Bane": "0.0",
+			"FireRate": "60",
+			"ShatteringImpact": false,
+			"CriticalDamage": "0.0",
+			"Toxin": "0",
+			"Heat": "0.0",
+			"CriticalChance": "0.0",
+			"Electricity": "0",
+			"Reload": "0.0",
+			"Slash": "120",
+			"Puncture": "0.0",
+			"Damage": "165",
+			"Multishot": "60 90",
+			"Magazine": "0.0"
+		},
+		"WeaponConfig": {
+			"Stance": "None",
+			"FireMode": "Primary",
+			"MoveSet": "",
+			"WeaponName": "Vectis Prime"
+		},
+		"ElementalCombo": {
+			"Magnetic": false,
+			"Corrosive": false,
+			"Radiation": false,
+			"Viral": false,
+			"Gas": false,
+			"Blast": false
+		}
+	},
+	"DREAD test": {
+		"Mods": {
+			"Impact": "0.0",
+			"AmalgamShatteringImpact": false,
+			"PrimedChamber": false,
+			"StatusDuration": "0.0",
+			"Cold": "0.0",
+			"HunterMunitions": false,
+			"StatusChance": "0.0",
+			"GeneralMultiplier": "1.0",
+			"Bane": "0.0",
+			"FireRate": "-50",
+			"ShatteringImpact": false,
+			"CriticalDamage": "120",
+			"Toxin": "0.0",
+			"Heat": "90",
+			"CriticalChance": "150",
+			"Electricity": "90",
+			"Reload": "0.0",
+			"Slash": "0.0",
+			"Puncture": "0.0",
+			"Damage": "165",
+			"Multishot": "90",
+			"Magazine": "0.0"
+		},
+		"WeaponConfig": {
+			"Stance": "None",
+			"FireMode": "Primary",
+			"MoveSet": "",
+			"WeaponName": "Dread"
+		},
+		"ElementalCombo": {
+			"Magnetic": false,
+			"Corrosive": false,
+			"Radiation": true,
+			"Viral": false,
+			"Gas": false,
+			"Blast": false
+		}
+	},
+	"Quanta Vandal Test setup": {
+		"Mods": {
+			"Impact": "0.0",
+			"AmalgamShatteringImpact": false,
+			"PrimedChamber": false,
+			"StatusDuration": "0.0",
+			"Cold": "0.0",
+			"HunterMunitions": false,
+			"StatusChance": "60",
+			"GeneralMultiplier": "1.0",
+			"Bane": "0.0",
+			"FireRate": "90",
+			"ShatteringImpact": false,
+			"CriticalDamage": "120",
+			"Toxin": "0.0",
+			"Heat": "0.0",
+			"CriticalChance": "150",
+			"Electricity": "90 60",
+			"Reload": "0.0",
+			"Slash": "0.0",
+			"Puncture": "0.0",
+			"Damage": "165 -15",
+			"Multishot": "0.0",
+			"Magazine": "0.0"
+		},
+		"WeaponConfig": {
+			"Stance": "None",
+			"FireMode": "Primary",
+			"MoveSet": "",
+			"WeaponName": "Quanta Vandal"
+		},
+		"ElementalCombo": {
+			"Magnetic": false,
+			"Corrosive": false,
+			"Radiation": false,
+			"Viral": false,
+			"Gas": false,
+			"Blast": false
+		}
+	},
+	"Volnus Prime": {
+		"Mods": {
+			"Impact": " 0.0",
+			"AmalgamShatteringImpact": false,
+			"PrimedChamber": false,
+			"StatusDuration": " 0.0",
+			"Cold": " 0.0",
+			"HunterMunitions": false,
+			"StatusChance": " 440",
+			"GeneralMultiplier": "1.0",
+			"Bane": " 55",
+			"FireRate": " 55",
+			"BerserkFireRate": "75",
+			"ShatteringImpact": false,
+			"CriticalDamage": " 90",
+			"Toxin": " 0.0",
+			"Heat": " 0.0",
+			"CriticalChance": " 660",
+			"Electricity": " 0.0",
+			"Reload": " 0.0",
+			"Slash": " 0.0",
+			"Puncture": " 0.0",
+			"AdditiveCriticalDamage": "0.0",
+			"Damage": " 960",
+			"Multishot": " 0",
+			"Magazine": " 0.0"
+		},
+		"WeaponConfig": {
+			"Stance": "CrushingRuin",
+			"FireMode": "Primary",
+			"MoveSet": "Neutral",
+			"WeaponName": "Volnus Prime"
+		},
+		"ElementalCombo": {
+			"Magnetic": false,
+			"Corrosive": false,
+			"Radiation": false,
+			"Viral": false,
+			"Gas": false,
+			"Blast": false
+		}
+	},
+	"STAHLTA alt": {
+		"Mods": {
+			"Impact": "0.0",
+			"AmalgamShatteringImpact": false,
+			"PrimedChamber": false,
+			"StatusDuration": "0.0",
+			"Cold": "0.0",
+			"HunterMunitions": false,
+			"StatusChance": "0.0",
+			"GeneralMultiplier": "1.0",
+			"Bane": "0.0",
+			"FireRate": "90",
+			"ShatteringImpact": false,
+			"CriticalDamage": "120",
+			"Toxin": "90",
+			"Heat": "0.0",
+			"CriticalChance": "150",
+			"Electricity": "90",
+			"Reload": "0.0",
+			"Slash": "0.0",
+			"Puncture": "0.0",
+			"Damage": "165",
+			"Multishot": "90 60",
+			"Magazine": "0.0"
+		},
+		"WeaponConfig": {
+			"Stance": "None",
+			"FireMode": "AltFire",
+			"MoveSet": "",
+			"WeaponName": "Stahlta"
+		},
+		"ElementalCombo": {
+			"Magnetic": false,
+			"Corrosive": true,
+			"Radiation": false,
+			"Viral": false,
+			"Gas": false,
+			"Blast": false
+		}
+	},
+	"VECTISPRIME": {
+		"Mods": {
+			"Impact": "0.0",
+			"AmalgamShatteringImpact": false,
+			"PrimedChamber": false,
+			"StatusDuration": "0.0",
+			"Cold": "0.0",
+			"HunterMunitions": false,
+			"StatusChance": "0.0",
+			"GeneralMultiplier": "2",
+			"Bane": "0.0",
+			"FireRate": "60",
+			"ShatteringImpact": false,
+			"CriticalDamage": "0.0",
+			"Toxin": "90",
+			"Heat": "0.0",
+			"CriticalChance": "0.0",
+			"Electricity": "90",
+			"Reload": "0.0",
+			"Slash": "0.0",
+			"Puncture": "0.0",
+			"Damage": "165",
+			"Multishot": "60 90",
+			"Magazine": "0.0"
+		},
+		"WeaponConfig": {
+			"Stance": "None",
+			"FireMode": "Primary",
+			"MoveSet": "",
+			"WeaponName": "Vectis Prime"
+		},
+		"ElementalCombo": {
+			"Magnetic": false,
+			"Corrosive": true,
+			"Radiation": false,
+			"Viral": false,
+			"Gas": false,
+			"Blast": false
+		}
+	},
+	"Build Name block": {
+		"Mods": {
+			"Impact": "0.0",
+			"AmalgamShatteringImpact": false,
+			"PrimedChamber": false,
+			"StatusDuration": "0.0",
+			"Cold": "0.0",
+			"HunterMunitions": false,
+			"StatusChance": "0.0",
+			"GeneralMultiplier": "1.0",
+			"Bane": "0.0",
+			"FireRate": "0.0",
+			"ShatteringImpact": false,
+			"CriticalDamage": "0.0",
+			"Toxin": "0.0",
+			"Heat": "0.0",
+			"CriticalChance": "0.0",
+			"Electricity": "0.0",
+			"Reload": "0.0",
+			"Slash": "0.0",
+			"Puncture": "0.0",
+			"Damage": "0.0",
+			"Multishot": "0.0",
+			"Magazine": "0.0"
+		},
+		"WeaponConfig": {
+			"Stance": "SovereignOutcast",
+			"FireMode": "Primary",
+			"MoveSet": "Block",
+			"WeaponName": "Kronen Prime"
+		},
+		"ElementalCombo": {
+			"Magnetic": false,
+			"Corrosive": false,
+			"Radiation": false,
+			"Viral": false,
+			"Gas": false,
+			"Blast": false
+		}
+	},
+	"SYNAPSE0": {
+		"Mods": {
+			"Impact": "0.0",
+			"AmalgamShatteringImpact": false,
+			"PrimedChamber": false,
+			"StatusDuration": "0.0",
+			"Cold": "0.0",
+			"HunterMunitions": false,
+			"StatusChance": "0.0",
+			"GeneralMultiplier": "1.0",
+			"Bane": "0.0",
+			"FireRate": "45 79.1",
+			"BerserkFireRate": "0.0",
+			"ShatteringImpact": false,
+			"CriticalDamage": "0.0",
+			"Toxin": "109.6",
+			"Heat": "0.0",
+			"CriticalChance": "150 169.7",
+			"Electricity": "90",
+			"Reload": "0.0",
+			"Slash": "0.0",
+			"Puncture": "0.0",
+			"AdditiveCriticalDamage": "0.0",
+			"Damage": "165",
+			"Multishot": "0.0",
+			"Magazine": "0.0"
+		},
+		"WeaponConfig": {
+			"Stance": "None",
+			"FireMode": "Primary",
+			"MoveSet": "",
+			"WeaponName": "Synapse"
+		},
+		"ElementalCombo": {
+			"Magnetic": false,
+			"Corrosive": true,
+			"Radiation": false,
+			"Viral": false,
+			"Gas": false,
+			"Blast": false
+		}
+	},
+	"alt fire save test": {
+		"Mods": {
+			"Impact": "0.0",
+			"AmalgamShatteringImpact": false,
+			"PrimedChamber": false,
+			"StatusDuration": "0.0",
+			"Cold": "0.0",
+			"HunterMunitions": false,
+			"StatusChance": "0.0",
+			"GeneralMultiplier": "1.0",
+			"Bane": "0.0",
+			"FireRate": "0.0",
+			"ShatteringImpact": false,
+			"CriticalDamage": "0.0",
+			"Toxin": "0.0",
+			"Heat": "0.0",
+			"CriticalChance": "0.0",
+			"Electricity": "0.0",
+			"Reload": "0.0",
+			"Slash": "0.0",
+			"Puncture": "0.0",
+			"Damage": "0.0",
+			"Multishot": "0.0",
+			"Magazine": "0.0"
+		},
+		"WeaponConfig": {
+			"Stance": "None",
+			"FireMode": "AltFire",
+			"MoveSet": "",
+			"WeaponName": "Quanta Vandal"
+		},
+		"ElementalCombo": {
+			"Magnetic": false,
+			"Corrosive": false,
+			"Radiation": false,
+			"Viral": false,
+			"Gas": false,
+			"Blast": false
+		}
+	},
+	"KUVABRAKK acolyte riven": {
+		"Mods": {
+			"Impact": "0.0",
+			"AmalgamShatteringImpact": false,
+			"PrimedChamber": false,
+			"StatusDuration": "0.0",
+			"Cold": "0.0",
+			"HunterMunitions": false,
+			"StatusChance": "0.0",
+			"GeneralMultiplier": "1.0",
+			"Bane": "0.0",
+			"FireRate": "60",
+			"ShatteringImpact": false,
+			"CriticalDamage": "110              80",
+			"Toxin": "90",
+			"Heat": "0.0",
+			"CriticalChance": "187            ",
+			"Electricity": "90",
+			"Reload": "88",
+			"Slash": "0.0",
+			"Puncture": "0.0",
+			"AdditiveCriticalDamage": "0.0",
+			"Damage": "220           200",
+			"Multishot": "120 60         110",
+			"Magazine": "0.0"
+		},
+		"WeaponConfig": {
+			"Stance": "None",
+			"FireMode": "Primary",
+			"MoveSet": "",
+			"WeaponName": "Kuva Brakk"
+		},
+		"ElementalCombo": {
+			"Magnetic": false,
+			"Corrosive": true,
+			"Radiation": false,
+			"Viral": false,
+			"Gas": false,
+			"Blast": false
+		}
+	},
+	"Knell COrr": {
+		"Mods": {
+			"Impact": "0.0",
+			"AmalgamShatteringImpact": false,
+			"PrimedChamber": false,
+			"StatusDuration": "0.0",
+			"Cold": "0.0",
+			"HunterMunitions": false,
+			"StatusChance": "1200",
+			"GeneralMultiplier": "1.0",
+			"Bane": "0.0",
+			"FireRate": "60 90",
+			"BerserkFireRate": "0.0",
+			"ShatteringImpact": false,
+			"CriticalDamage": "110",
+			"Toxin": "0",
+			"Heat": "0.0",
+			"CriticalChance": "187",
+			"Electricity": "90",
+			"Reload": "0.0",
+			"Slash": "0.0 ",
+			"Puncture": "0.0 ",
+			"AdditiveCriticalDamage": "1.5",
+			"Damage": "220 -15",
+			"Multishot": "120 60",
+			"Magazine": "100000"
+		},
+		"WeaponConfig": {
+			"Stance": "None",
+			"FireMode": "Primary",
+			"MoveSet": "",
+			"WeaponName": "Knell"
+		},
+		"ElementalCombo": {
+			"Magnetic": false,
+			"Corrosive": true,
+			"Radiation": false,
+			"Viral": false,
+			"Gas": false,
+			"Blast": false
+		}
+	},
+	"kronen demolisher": {
+		"Mods": {
+			"Impact": "0.0",
+			"AmalgamShatteringImpact": false,
+			"PrimedChamber": false,
+			"StatusDuration": "0.0",
+			"Cold": "0.0",
+			"HunterMunitions": false,
+			"StatusChance": "440",
+			"GeneralMultiplier": "1.0",
+			"Bane": "55",
+			"FireRate": "275",
+			"ShatteringImpact": true,
+			"CriticalDamage": "0",
+			"Toxin": "165",
+			"Heat": "0.0",
+			"CriticalChance": "660",
+			"Electricity": "0.0",
+			"Reload": "0.0",
+			"Slash": "0.0",
+			"Puncture": "0.0",
+			"AdditiveCriticalDamage": "1.0",
+			"Damage": "940",
+			"Multishot": "0.0",
+			"Magazine": "0.0"
+		},
+		"WeaponConfig": {
+			"Stance": "SovereignOutcast",
+			"FireMode": "Primary",
+			"MoveSet": "Neutral",
+			"WeaponName": "Kronen Prime"
+		},
+		"ElementalCombo": {
+			"Magnetic": false,
+			"Corrosive": false,
+			"Radiation": false,
+			"Viral": false,
+			"Gas": false,
+			"Blast": false
+		}
+	},
+	"QUANTAVANDAL": {
+		"Mods": {
+			"Impact": "0.0",
+			"AmalgamShatteringImpact": false,
+			"PrimedChamber": false,
+			"StatusDuration": "0.0",
+			"Cold": "60",
+			"HunterMunitions": false,
+			"StatusChance": "60 15",
+			"GeneralMultiplier": "1.0",
+			"Bane": "45",
+			"FireRate": "90",
+			"ShatteringImpact": false,
+			"CriticalDamage": "120",
+			"Toxin": "15",
+			"Heat": "0",
+			"CriticalChance": "150",
+			"Electricity": "90",
+			"Reload": "0.0",
+			"Slash": "0.0",
+			"Puncture": "0.0",
+			"Damage": "180 -15",
+			"Multishot": "90",
+			"Magazine": "0.0"
+		},
+		"WeaponConfig": {
+			"Stance": "None",
+			"FireMode": "Primary",
+			"MoveSet": "",
+			"WeaponName": "Quanta Vandal"
+		},
+		"ElementalCombo": {
+			"Magnetic": false,
+			"Corrosive": false,
+			"Radiation": false,
+			"Viral": true,
+			"Gas": false,
+			"Blast": false
+		}
+	}
+}

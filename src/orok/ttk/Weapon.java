@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -30,9 +31,11 @@ public class Weapon {
 	double additive_crit_damage;
 	String weapon_class;
 	String sub_class;
+	String riven_type;
 	String stance = "None";
 	String move_set = "Neutral";
 	String fire_mode = "Primary";
+	double disposition = 1;
 	
 	//base stats
 	public double base_crit_chance;
@@ -46,6 +49,11 @@ public class Weapon {
 	
 	public double[] damage_array = new double[20];
 	public double[] base_damage_array = new double[20];
+	
+	public double[] riven_stats = new double[17];
+	public double[] negative_riven_stats = new double[17];
+	public boolean[] riven_curse_possibility = new boolean[18];
+	public boolean[] riven_buff_possibility = {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true};
 	
 	//chances
 	public double slashChance;
@@ -81,8 +89,8 @@ public class Weapon {
 	int msPerShot;
 	
 	int reload_ms;
-	int critTier;
-	double highCC;
+	int high_crit_tier;
+	double high_crit_tier_chance;
 	double multiShotChance;
 	double multishot_mods = 1;
 	double multishot_scalar = 1;
@@ -101,6 +109,9 @@ public class Weapon {
 	String effect_name = "Main";
 	
 	public Firing_offsets fo;
+	public Crit crit_inst;
+	
+	private Random random_crit = new Random();
 	
 	public List<Weapon> secondary_effects = new ArrayList<Weapon>();  
 	
@@ -123,6 +134,7 @@ public class Weapon {
 			int move_index = MainGUI.move_combo.indexOf( move_set );
 	        MainGUI.stance_combo.select(stance_index);
 	        MainGUI.move_combo.select(move_index);
+			
 
 		}
 		else {
@@ -145,10 +157,101 @@ public class Weapon {
 		}
 		setupCustomBuild();
 		fo = new Firing_offsets();
+		crit_inst = new Crit();
 		
 		if(set_sec_eff) {
 			set_secondary_effects();
 		}
+		
+		try {
+			get_riven_stats();
+		} catch (IOException | ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public class Crit {
+		private double tier_increment;
+		private double tier_one_cd;
+		private double tot_crit_m;
+
+		public Crit() {
+			this.tot_crit_m = critMultiplier + additive_crit_damage;
+		}
+		
+		public double get_critical_multiplier(int crit_tier, Enemy enemy, boolean headshot) {
+			double headshot_mult = 1;
+			if(headshot) {
+				headshot_mult = 2;
+			}
+			if(enemy.eidolon)
+				this.tot_crit_m = (critMultiplier + additive_crit_damage) * 2;
+			else
+				this.tot_crit_m = critMultiplier + additive_crit_damage;
+			
+			double cd = 1;
+			tier_increment = (this.tot_crit_m) * headshot_mult - 1;
+			tier_one_cd = this.tot_crit_m * headshot_mult;
+			
+			
+			//Setup tier increment and tier one crit mult for acolyte
+			if(enemy.acolyte) {
+				tier_increment = 0.75 * (this.tot_crit_m - 1);
+				tier_one_cd = (this.tot_crit_m - 1) * 0.5 + 1;
+			}
+			
+			//no crit
+			if(crit_tier == 0) {
+				cd = headshot_mult;
+			}
+			//yellow crit
+			else if(crit_tier == 1) {
+				cd = tier_one_cd * headshot_mult;
+			}
+			//High tier crit
+			else {
+				cd = (1 + tier_increment * (crit_tier)) * headshot_mult;
+			}
+			return cd;
+		}
+		//Roll crit and return crit multiplier
+		public double roll_crit(double crit_roll, Enemy enemy, boolean headshot) {
+			//double crit_roll = random_crit.nextDouble();
+			double cm = 1;
+			
+			//High tier crit
+			if(crit_roll - high_crit_tier_chance <= 0) {
+				cm = get_critical_multiplier(high_crit_tier, enemy, headshot);
+			}
+			//Low tier crit
+			else if(high_crit_tier > 1){
+				cm = get_critical_multiplier(high_crit_tier - 1, enemy, headshot);
+			}
+			//No crit
+			else {
+				cm = get_critical_multiplier(0, enemy, headshot);
+			}
+			
+			return cm;
+		}
+		public int get_tier(double crit_roll) {
+			int tier = 0;
+			//High tier crit
+			if(crit_roll - high_crit_tier_chance <= 0) {
+				tier = high_crit_tier;
+			}
+			//Low tier crit
+			else if(high_crit_tier > 1){
+				tier = high_crit_tier - 1;
+			}
+			//No crit
+			else {
+				tier = 0;
+			}
+			
+			return tier;
+		}
+		
 	}
 	
 	public class Firing_offsets{
@@ -300,6 +403,105 @@ public class Weapon {
 		
 		return buildList;
 	}
+	
+	@SuppressWarnings("unchecked")
+	private void get_riven_stats() throws FileNotFoundException, IOException, ParseException {
+		// parsing file 
+        Object obj = new JSONParser().parse(new FileReader("semlar_riven.json")); 
+          
+        // typecasting obj to JSONObject 
+        JSONObject jo = (JSONObject) obj; 
+          
+        // getting address 
+        Map<String,Object> cats = (Map<String,Object>)jo;
+        Map<String,Object> st = (Map<String, Object>) cats.getOrDefault(this.riven_type, (Map<String, Object>) cats.get("Rifle"));
+        Map<String,Object> type_buffs = (Map<String, Object>) st.get("Buff");
+        Map<String,Object> type_curse = (Map<String, Object>) st.get("Curse");
+        try {
+	        riven_stats[0] =  ((Number)type_buffs.getOrDefault("Damage", 0.0)).doubleValue() * disposition * 1.1 * 0.947;
+	        //System.out.println(((Number)type_buffs.getOrDefault("Damage", 0.0)).doubleValue());
+	        riven_stats[1] =  ((Number)type_buffs.getOrDefault("Damage to Faction", 0.0)).doubleValue() * disposition * 1.1 * 0.947;
+	        riven_stats[2] =  ((Number)type_buffs.getOrDefault("Critical Chance", 0.0)).doubleValue()* disposition * 1.1 * 0.947;
+	        riven_stats[3] =  ((Number)type_buffs.getOrDefault("Critical Damage", 0.0)).doubleValue()* disposition * 1.1 * 0.947;
+	        riven_stats[4] =  ((Number)type_buffs.getOrDefault("Multishot", 0.0)).doubleValue()* disposition * 1.1 * 0.947;
+	        riven_stats[5] =  ((Number)type_buffs.getOrDefault("Status Chance", 0.0)).doubleValue()* disposition * 1.1 * 0.947;
+	        riven_stats[6] =  ((Number)type_buffs.getOrDefault("Elemental Damage", 0.0)).doubleValue()* disposition * 1.1 * 0.947;
+	        riven_stats[7] =  ((Number)type_buffs.getOrDefault("Elemental Damage", 0.0)).doubleValue()* disposition * 1.1 * 0.947;
+	        riven_stats[8] =  ((Number)type_buffs.getOrDefault("Elemental Damage", 0.0)).doubleValue()* disposition * 1.1 * 0.947;
+	        riven_stats[9] =  ((Number)type_buffs.getOrDefault("Elemental Damage", 0.0)).doubleValue()* disposition * 1.1 * 0.947;
+	        riven_stats[10] =  ((Number)type_buffs.getOrDefault("Fire Rate", 0.0)).doubleValue()* disposition * 1.1 * 0.947;
+	        riven_stats[11] =  ((Number)type_buffs.getOrDefault("Magazine Capacity", 0.0)).doubleValue()* disposition * 1.1 * 0.947;
+	        riven_stats[12] =  ((Number)type_buffs.getOrDefault("Reload Speed", 0.0)).doubleValue()* disposition * 1.1 * 0.947;
+	        riven_stats[13] =  ((Number)type_buffs.getOrDefault("Physical Damage", 0.0)).doubleValue()* disposition * 1.1 * 0.947;
+	        riven_stats[14] =  ((Number)type_buffs.getOrDefault("Physical Damage", 0.0)).doubleValue()* disposition * 1.1 * 0.947;
+	        riven_stats[15] =  ((Number)type_buffs.getOrDefault("Physical Damage", 0.0)).doubleValue()* disposition * 1.1 * 0.947;
+	        riven_stats[16] =  ((Number)type_buffs.getOrDefault("Status Duration", 0.0)).doubleValue()* disposition * 1.1 * 0.947;
+	        
+	        negative_riven_stats[0] =  -((Number)type_buffs.getOrDefault("Damage", 0.0)).doubleValue() * disposition * 1.1 * 0.7575;
+	        //System.out.println(-((Number)type_buffs.getOrDefault("Damage", 0.0)).doubleValue());
+	        negative_riven_stats[1] =  -((Number)type_buffs.getOrDefault("Damage to Faction", 0.0)).doubleValue() * disposition * 1.1 * 0.7575;
+	        negative_riven_stats[2] =  -((Number)type_buffs.getOrDefault("Critical Chance", 0.0)).doubleValue()* disposition * 1.1 * 0.7575;
+	        negative_riven_stats[3] =  -((Number)type_buffs.getOrDefault("Critical Damage", 0.0)).doubleValue()* disposition * 1.1 * 0.7575;
+	        negative_riven_stats[4] =  -((Number)type_buffs.getOrDefault("Multishot", 0.0)).doubleValue()* disposition * 1.1 * 0.7575;
+	        negative_riven_stats[5] =  -((Number)type_buffs.getOrDefault("Status Chance", 0.0)).doubleValue()* disposition * 1.1 * 0.7575;
+	        negative_riven_stats[6] =  -((Number)type_buffs.getOrDefault("Elemental Damage", 0.0)).doubleValue()* disposition * 1.1 * 0.7575;
+	        negative_riven_stats[7] =  -((Number)type_buffs.getOrDefault("Elemental Damage", 0.0)).doubleValue()* disposition * 1.1 * 0.7575;
+	        negative_riven_stats[8] =  -((Number)type_buffs.getOrDefault("Elemental Damage", 0.0)).doubleValue()* disposition * 1.1 * 0.7575;
+	        negative_riven_stats[9] =  -((Number)type_buffs.getOrDefault("Elemental Damage", 0.0)).doubleValue()* disposition * 1.1 * 0.7575;
+	        negative_riven_stats[10] =  -((Number)type_buffs.getOrDefault("Fire Rate", 0.0)).doubleValue()* disposition * 1.1 * 0.7575;
+	        negative_riven_stats[11] =  -((Number)type_buffs.getOrDefault("Magazine Capacity", 0.0)).doubleValue()* disposition * 1.1 * 0.7575;
+	        negative_riven_stats[12] =  -((Number)type_buffs.getOrDefault("Reload Speed", 0.0)).doubleValue()* disposition * 1.1 * 0.7575;
+	        negative_riven_stats[13] =  -((Number)type_buffs.getOrDefault("Physical Damage", 0.0)).doubleValue()* disposition * 1.1 * 0.7575;
+	        negative_riven_stats[14] =  -((Number)type_buffs.getOrDefault("Physical Damage", 0.0)).doubleValue()* disposition * 1.1 * 0.7575;
+	        negative_riven_stats[15] =  -((Number)type_buffs.getOrDefault("Physical Damage", 0.0)).doubleValue()* disposition * 1.1 * 0.7575;
+	        negative_riven_stats[16] =  -((Number)type_buffs.getOrDefault("Status Duration", 0.0)).doubleValue()* disposition * 1.1 * 0.7575;
+	        
+	        riven_curse_possibility[0] =  ((Boolean)type_curse.getOrDefault("Damage", false)).booleanValue();
+	        riven_curse_possibility[1] =  ((Boolean)type_curse.getOrDefault("Damage to Faction", false)).booleanValue() ;
+	        riven_curse_possibility[2] =  ((Boolean)type_curse.getOrDefault("Critical Chance", false)).booleanValue();
+	        riven_curse_possibility[3] =  ((Boolean)type_curse.getOrDefault("Critical Damage", false)).booleanValue();
+	        riven_curse_possibility[4] =  ((Boolean)type_curse.getOrDefault("Multishot", false)).booleanValue();
+	        riven_curse_possibility[5] =  ((Boolean)type_curse.getOrDefault("Status Chance", true)).booleanValue();
+	        riven_curse_possibility[6] =  ((Boolean)type_curse.getOrDefault("Elemental Damage", false)).booleanValue();
+	        riven_curse_possibility[7] =  ((Boolean)type_curse.getOrDefault("Elemental Damage", false)).booleanValue();
+	        riven_curse_possibility[8] =  ((Boolean)type_curse.getOrDefault("Elemental Damage", false)).booleanValue();
+	        riven_curse_possibility[9] =  ((Boolean)type_curse.getOrDefault("Elemental Damage", false)).booleanValue();
+	        riven_curse_possibility[10] =  ((Boolean)type_curse.getOrDefault("Fire Rate", false)).booleanValue();
+	        riven_curse_possibility[11] =  ((Boolean)type_curse.getOrDefault("Magazine Capacity", false)).booleanValue();
+	        riven_curse_possibility[12] =  ((Boolean)type_curse.getOrDefault("Reload Speed", false)).booleanValue();
+	        riven_curse_possibility[13] =  ((Boolean)type_curse.getOrDefault("Physical Damage", false)).booleanValue();
+	        riven_curse_possibility[14] =  ((Boolean)type_curse.getOrDefault("Physical Damage", false)).booleanValue();
+	        riven_curse_possibility[15] =  ((Boolean)type_curse.getOrDefault("Physical Damage", false)).booleanValue();
+	        riven_curse_possibility[16] =  ((Boolean)type_curse.getOrDefault("Status Duration", false)).booleanValue();
+	        //harmless neg
+	        riven_curse_possibility[17] =  true;
+	        
+	        riven_buff_possibility[0] =  double_to_boolean(((Number)type_buffs.getOrDefault("Damage", 0)).doubleValue());
+	        riven_buff_possibility[1] =  double_to_boolean(((Number)type_buffs.getOrDefault("Damage to Faction", 0)).doubleValue()) ;
+	        riven_buff_possibility[2] =  double_to_boolean(((Number)type_buffs.getOrDefault("Critical Chance", 0)).doubleValue());
+	        riven_buff_possibility[3] =  double_to_boolean(((Number)type_buffs.getOrDefault("Critical Damage", 0)).doubleValue());
+	        riven_buff_possibility[4] =  double_to_boolean(((Number)type_buffs.getOrDefault("Multishot", 0)).doubleValue());
+	        riven_buff_possibility[5] =  double_to_boolean(((Number)type_buffs.getOrDefault("Status Chance", true)).doubleValue());
+	        riven_buff_possibility[6] =  double_to_boolean(((Number)type_buffs.getOrDefault("Elemental Damage", 0)).doubleValue());
+	        riven_buff_possibility[7] =  double_to_boolean(((Number)type_buffs.getOrDefault("Elemental Damage", 0)).doubleValue());
+	        riven_buff_possibility[8] =  double_to_boolean(((Number)type_buffs.getOrDefault("Elemental Damage", 0)).doubleValue());
+	        riven_buff_possibility[9] =  double_to_boolean(((Number)type_buffs.getOrDefault("Elemental Damage", 0)).doubleValue());
+	        riven_buff_possibility[10] =  double_to_boolean(((Number)type_buffs.getOrDefault("Fire Rate", 0)).doubleValue());
+	        riven_buff_possibility[11] =  double_to_boolean(((Number)type_buffs.getOrDefault("Magazine Capacity", 0)).doubleValue());
+	        riven_buff_possibility[12] =  double_to_boolean(((Number)type_buffs.getOrDefault("Reload Speed", 0)).doubleValue());
+	        riven_buff_possibility[13] =  double_to_boolean(((Number)type_buffs.getOrDefault("Physical Damage", 0)).doubleValue());
+	        riven_buff_possibility[14] =  double_to_boolean(((Number)type_buffs.getOrDefault("Physical Damage", 0)).doubleValue());
+	        riven_buff_possibility[15] =  double_to_boolean(((Number)type_buffs.getOrDefault("Physical Damage", 0)).doubleValue());
+	        riven_buff_possibility[16] =  double_to_boolean(((Number)type_buffs.getOrDefault("Status Duration", 0)).doubleValue());
+	        
+	        
+	        
+        }
+        catch(Exception e) {
+        	System.out.printf(this.weapon_class);
+        }
+               
+	}
 
 	@SuppressWarnings("unchecked")
 	private void getStats(String name) throws FileNotFoundException, IOException, ParseException {
@@ -318,8 +520,10 @@ public class Weapon {
         	selectedWep =(Map<String,Object>)weapons.get(MainGUI.weaponListCombo.getItem(0));
         	MainGUI.weaponListCombo.select(0);
         }
-        weapon_class = (String)selectedWep.get("productCategory");
-        sub_class = (String)selectedWep.get("type");
+        weapon_class = (String)selectedWep.getOrDefault("productCategory", "Amp");
+        sub_class = (String)selectedWep.getOrDefault("type","");
+        disposition = ((Number)selectedWep.getOrDefault("omegaAttenuation", 1.0)).doubleValue();
+        riven_type = (String)selectedWep.getOrDefault("rivenType", "Rifle");
         
         //first get stats of the primary fire
         base_pellet = ((Number)selectedWep.getOrDefault("multishot", 1.0)).doubleValue();
@@ -476,6 +680,10 @@ public class Weapon {
         	MainGUI.secondary_effects_combo.add(secondary_effects.get(i).effect_name);
 		}
 	}
+	/*
+	 * From the list of secondary effects, find the next scheduled event
+	 * 
+	 */
 	public Weapon get_next_effect() {
 		int mindex = 0;
 		double mintime = 1000000000;
@@ -530,6 +738,7 @@ public class Weapon {
         MainGUI.heat_mod_text.setText( (String)mods.getOrDefault("Heat", "0.0") );
         MainGUI.electricity_mod_text.setText( (String)mods.getOrDefault("Electricity", "0.0") );
         MainGUI.fire_rate_mod_text.setText( (String)mods.getOrDefault("FireRate", "0.0") );
+        MainGUI.multiplicative_firerate_mod_text.setText( (String)mods.getOrDefault("BerserkFireRate", "0.0") );
         MainGUI.magazine_mod_text.setText( (String)mods.getOrDefault("Magazine", "0.0") );
         MainGUI.reload_mod_text.setText( (String)mods.getOrDefault("Reload", "0.0") );
         MainGUI.impact_mod_text.setText( (String)mods.getOrDefault("Impact", "0.0") );
@@ -660,22 +869,24 @@ public class Weapon {
 		s = MainGUI.crit_damage_mod_text.getText();
 		critMultiplier = base_crit_multiplier *MainGUI.percent_to_double( MainGUI.parse_double_textbox(s), 1);
 		
+		double berserk = MainGUI.percent_to_double( MainGUI.parse_double_textbox(MainGUI.multiplicative_firerate_mod_text.getText()), 1);
 		if(!MainGUI.stance_combo.getText().equals("None") && MainGUI.melee_time!=0) {
 			s = MainGUI.fire_rate_mod_text.getText();
-			fireRate = base_fireRate * MainGUI.percent_to_double( MainGUI.parse_double_textbox(s), 1)/MainGUI.melee_time;
-			fire_rate_non_melee = base_fireRate *MainGUI.percent_to_double( MainGUI.parse_double_textbox(s), 1);
+			fireRate = base_fireRate * berserk * MainGUI.percent_to_double( MainGUI.parse_double_textbox(s), 1)/MainGUI.melee_time;
+			fire_rate_non_melee = base_fireRate * MainGUI.percent_to_double( MainGUI.parse_double_textbox(s), 1) * berserk;
 			//System.out.println(fireRate);
 			
 		}
 		else {
 			s = MainGUI.fire_rate_mod_text.getText();
+			
 			//Find more elegant way to handle melee fire rate
-			fireRate = base_fireRate * MainGUI.percent_to_double( MainGUI.parse_double_textbox(s), 1);
-			fire_rate_non_melee = base_fireRate *MainGUI.percent_to_double( MainGUI.parse_double_textbox(s), 1);		
+			fireRate = base_fireRate * MainGUI.percent_to_double( MainGUI.parse_double_textbox(s), 1) * berserk;
+			fire_rate_non_melee = base_fireRate * MainGUI.percent_to_double( MainGUI.parse_double_textbox(s), 1);		
 		}
 		
 		s = MainGUI.status_chance_mod_text.getText();
-		status = base_status *MainGUI.percent_to_double( MainGUI.parse_double_textbox(s), 1);
+		status = base_status * MainGUI.percent_to_double( MainGUI.parse_double_textbox(s), 1);
 		
 		s = MainGUI.multishot_mod_text.getText();
 		if(shot_type.equals("HELD")) {
@@ -719,10 +930,10 @@ public class Weapon {
 		quantize();
 		
 		reload_ms = (int) (reload * 1000 + 1);
-		critTier = (int)critChance + 1;
-		highCC = critChance % 1;
-		if (highCC == 0 && critChance != 0) // corrects modulo if cc is whole num, but realcritchance will stay 0 if cc is 0
-			highCC = 1;
+		high_crit_tier = (int)critChance + 1;
+		high_crit_tier_chance = critChance % 1;
+		if (high_crit_tier_chance == 0 && critChance != 0) // corrects modulo if cc is whole num, but realcritchance will stay 0 if cc is 0
+			high_crit_tier_chance = 1;
 		
 		msPerShot = (int) Math.round(1000 / fireRate);
 		multiShotChance = pellet % 1;
@@ -789,20 +1000,12 @@ public class Weapon {
 		this.reload_ms = reload_ms;
 	}
 
-	public int getCritTier() {
-		return critTier;
+	public int get_high_crit_tier() {
+		return high_crit_tier;
 	}
 
-	public void setCritTier(int critTier) {
-		this.critTier = critTier;
-	}
-
-	public double getHighCC() {
-		return highCC;
-	}
-
-	public void setHighCC(double highCC) {
-		this.highCC = highCC;
+	public double get_high_crit_tier_chance() {
+		return high_crit_tier_chance;
 	}
 
 	public double getMultiShotChance() {
@@ -880,6 +1083,13 @@ public class Weapon {
 	        return 14;
 	    System.out.printf("Invalid damage type name," );
 	    return 0;
+	}
+	public boolean double_to_boolean(double d) {
+		boolean res = false;
+		if (d != 0) {
+			res = true;
+		}
+		return res;
 	}
 
 }

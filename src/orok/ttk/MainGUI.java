@@ -16,6 +16,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 
+import javax.swing.ToolTipManager;
+
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.SWT;
@@ -26,6 +28,9 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.custom.CTabFolder;
@@ -36,23 +41,26 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartFrame;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.annotations.XYAnnotation;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
-
+import org.jfree.experimental.chart.swt.ChartComposite;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import orok.ttk.Enemy.Dot;
 import org.eclipse.wb.swt.SWTResourceManager;
+import org.eclipse.swt.custom.StyledText;
 
 public class MainGUI {
 
@@ -66,10 +74,17 @@ public class MainGUI {
 	private Label v_time_label;
 	private Label v_shots_label;
 	
+	/*
+	private ChartFrame frame;
+	private ChartFrame frameB;
+	private ChartFrame armor_frame;
+	*/
+	
 	private static NumberFormat format = NumberFormat.getInstance(Locale.getDefault());
 
-	private XYSeries series;
+	private XYSeries health_series;
 	private XYSeries armor_series;
+	private XYSeries shield_series;
 	private XYSeries scaleSeries;
 	private JFreeChart chart;
 	private Button btnHeadshots;
@@ -93,6 +108,8 @@ public class MainGUI {
 	public static Combo move_combo;
 	public static Combo secondary_effects_combo;
 	
+	public Combo enemy_combo;
+	
 	private boolean graph = false;
 	private boolean combo_is_populated = false;
 	private boolean ui_set_up = false;
@@ -104,7 +121,6 @@ public class MainGUI {
 	private int numSeries = 0;
 	
 	public static Object wep_obj = null;
-	private Button btnEidolon;
 	private Spinner bHealthSpinner;
 	private Spinner bShieldSpinner;
 	private Spinner bLevelSpinner;
@@ -128,8 +144,7 @@ public class MainGUI {
 	private Spinner mESpinner;
 	private Spinner rESpinner;
 	private Spinner viralESpinner;
-	private Spinner void1ESpinner;
-	private Spinner void2ESpinner;
+	private Spinner voidSpinner;
 	private Combo weaponCombo;
 	private Text txtBuildName;
 	private Label lblAbilitiesseparator;
@@ -172,12 +187,16 @@ public class MainGUI {
 	private static TableItem tableItem31 ;
 	private static TableItem tableItem32 ;
 	private static TableItem tableItem33 ;
+	private static TableItem tableItem34 ;
+	private static TableItem tableItem35 ;
+	private static TableItem tableItem36 ;
 	
 	private static TableItem tableItem_1;
 	private static TableItem tableItem_2;
 	private static TableItem tableItem_3;
 	
 	private static TableColumn tblclmnStat;
+	private static TableColumn tblclmnType;
 	
 	
 	private Random rMulti = new Random();
@@ -188,7 +207,7 @@ public class MainGUI {
 	public ArrayList<Double> stance_multipliers = new ArrayList<Double>();
 	public ArrayList<Integer> stance_procs = new ArrayList<Integer>();
 	static double melee_time=1;
-	private Button btnDemolyst;
+	private Button btnSteelPathModifiers;
 	private Text txtSeriesName;
 	private Spinner health_scale_spinner;
 	private Spinner armor_scale_spinner;
@@ -228,6 +247,32 @@ public class MainGUI {
 	private Weapon default_weapon;
 	private Enemy default_enemy;
 	static Text additive_crit_damage_text;
+	private StyledText styledText;
+	static Text multiplicative_firerate_mod_text;
+	private Label lblMultiplicativeFireRate;
+	private Button btnCheckButton0;
+	private Button btnCheckButton1;
+	private Button btnCheckButton2;
+	private Button btnCheckButton3;
+	private Button btnCheckButton4;
+	private Button btnCheckButton5;
+	private Button btnCheckButton6;
+	private Button btnCheckButton7;
+	private Button btnCheckButton8;
+	private Button btnCheckButton9;
+	private Button btnCheckButton10;
+	private Button btnCheckButton11;
+	private Button btnCheckButton12;
+	private Button btnCheckButton13;
+	private Button btnCheckButton14;
+	private Button btnCheckButton15;
+	private Button btnCheckButton16;
+	static Button debug_checkbutton;
+	public static org.eclipse.swt.widgets.List damage_list;
+	private Composite ch_composite_2;
+	private Composite ch_composite_3;
+	
+	final int STOP_COND = 20;
 
 	/**
 	 * Launch the application.
@@ -255,6 +300,11 @@ public class MainGUI {
 				display.sleep();
 			}
 		}
+		/*
+		frameB.dispose();
+		frame.dispose();
+		armor_frame.dispose();
+		*/
 	}
 
 	/**
@@ -263,9 +313,14 @@ public class MainGUI {
 	protected void createContents() {
 		shell = new Shell();
 		shell.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
-		shell.setSize(823, 950);
+		shell.setSize(1920, 1080);
 		shell.setText("Pocket Simulacrum v0.3.2");
 		shell.setLayout(null);
+		shell.setLocation(0, 0);
+		shell.setMaximized(true);
+		
+		//tooltip dont expire
+		ToolTipManager.sharedInstance().setDismissDelay(Integer.MAX_VALUE);
 		
 		try {
 			wep_obj = new JSONParser().parse(new FileReader("weapons.json"));
@@ -276,11 +331,10 @@ public class MainGUI {
 		} catch (ParseException e1) {
 			e1.printStackTrace();
 		} 
-
 		
 		CTabFolder tabFolder = new CTabFolder(shell, SWT.BORDER);
 		tabFolder.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_DARK_SHADOW));
-		tabFolder.setBounds(0, 0, 469, 901);
+		tabFolder.setBounds(23, 35, 545, 916);
 		formToolkit.adapt(tabFolder);
 		formToolkit.paintBordersFor(tabFolder);
 		tabFolder.setSelectionBackground(Display.getCurrent().getSystemColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT));
@@ -292,12 +346,30 @@ public class MainGUI {
 		composite.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
 		tbtmSimulation.setControl(composite);
 		formToolkit.paintBordersFor(composite);
-		composite.setLayout(new GridLayout(7, false));
+		composite.setLayout(new GridLayout(8, false));
+		
+		Composite ch_composite_1 = new Composite(shell, SWT.NONE);
+		ch_composite_1.setBounds(920, 35, 974, 438);
+		formToolkit.adapt(ch_composite_1);
+		formToolkit.paintBordersFor(ch_composite_1);
+		
+		/*
+		ch_composite_2 = new Composite(shell, SWT.NONE);
+		ch_composite_2.setBounds(900, 381, 974, 271);
+		formToolkit.adapt(ch_composite_2);
+		formToolkit.paintBordersFor(ch_composite_2);
+		*/
+		
+		ch_composite_3 = new Composite(shell, SWT.NONE);
+		ch_composite_3.setBounds(920, 479, 974, 472);
+		formToolkit.adapt(ch_composite_3);
+		formToolkit.paintBordersFor(ch_composite_3);
+		
 		
 		Label lblEnemy = formToolkit.createLabel(composite, "Enemy", SWT.NONE);
 		lblEnemy.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		
-		Combo enemy_combo = new Combo(composite, SWT.NONE);
+		enemy_combo = new Combo(composite, SWT.NONE);
 		enemy_combo.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -312,11 +384,12 @@ public class MainGUI {
 				}
 			}
 		});
-		GridData gd_enemy_combo = new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1);
+		GridData gd_enemy_combo = new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1);
 		gd_enemy_combo.widthHint = 236;
 		enemy_combo.setLayoutData(gd_enemy_combo);
 		formToolkit.adapt(enemy_combo);
 		formToolkit.paintBordersFor(enemy_combo);
+		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
@@ -332,6 +405,7 @@ public class MainGUI {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				
+				
 				move_combo.removeAll();
 				stance_procs.clear();
 				stance_procs.add(0);
@@ -341,8 +415,10 @@ public class MainGUI {
 				String name = weaponCombo.getText();
 				if(!name.equals("Custom Build Tab")) {
 					btnRemoveBuild.setEnabled(true);
+					txtSeriesName.setText(name);
 				}else {
 					btnRemoveBuild.setEnabled(false);
+					txtSeriesName.setText(weaponListCombo.getText());
 					//name = weaponListCombo.getText();
 				}
 				//parse_stance(stance_combo.getText());
@@ -369,8 +445,11 @@ public class MainGUI {
 		weaponCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
 		formToolkit.adapt(weaponCombo);
 		formToolkit.paintBordersFor(weaponCombo);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
 		
 		btnRemoveBuild = new Button(composite, SWT.NONE);
+		btnRemoveBuild.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		btnRemoveBuild.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -420,17 +499,24 @@ public class MainGUI {
 		stance_multipliers.add(1.0);
 		
 		Label lblSep = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
-		lblSep.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 7, 1));
+		lblSep.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 8, 1));
 		lblSep.setText("sep1");
 		formToolkit.adapt(lblSep, true, true);
+		new Label(composite, SWT.NONE);
 		
 		Label lblSettings = new Label(composite, SWT.NONE);
-		lblSettings.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 7, 1));
+		lblSettings.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
 		formToolkit.adapt(lblSettings, true, true);
 		lblSettings.setText("Settings");
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
 		
 		Label lblSep_1 = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
-		lblSep_1.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 7, 1));
+		lblSep_1.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 8, 1));
 		lblSep_1.setText("sep2");
 		formToolkit.adapt(lblSep_1, true, true);
 		
@@ -444,8 +530,8 @@ public class MainGUI {
 		GridData gd_health_scale_spinner = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
 		gd_health_scale_spinner.widthHint = 31;
 		health_scale_spinner.setLayoutData(gd_health_scale_spinner);
-		health_scale_spinner.setIncrement(5);
-		health_scale_spinner.setDigits(1);
+		health_scale_spinner.setIncrement(50);
+		health_scale_spinner.setDigits(2);
 		health_scale_spinner.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent arg0) {
 				if(combo_is_populated && gui_setup) {
@@ -460,10 +546,12 @@ public class MainGUI {
 
 			}
 		});
-		health_scale_spinner.setMaximum(50);
-		health_scale_spinner.setMinimum(10);
+		health_scale_spinner.setMaximum(500);
+		health_scale_spinner.setMinimum(1);
+		health_scale_spinner.setSelection(100);
 		formToolkit.adapt(health_scale_spinner);
 		formToolkit.paintBordersFor(health_scale_spinner);
+		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
@@ -478,7 +566,7 @@ public class MainGUI {
 		GridData gd_armor_scale_spinner = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
 		gd_armor_scale_spinner.widthHint = 30;
 		armor_scale_spinner.setLayoutData(gd_armor_scale_spinner);
-		armor_scale_spinner.setDigits(1);
+		armor_scale_spinner.setDigits(2);
 		armor_scale_spinner.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent arg0) {
 				if(combo_is_populated && gui_setup) {
@@ -493,11 +581,12 @@ public class MainGUI {
 				}
 			}
 		});
-		armor_scale_spinner.setIncrement(5);
-		armor_scale_spinner.setMaximum(50);
-		armor_scale_spinner.setMinimum(10);
+		armor_scale_spinner.setIncrement(50);
+		armor_scale_spinner.setMaximum(500);
+		armor_scale_spinner.setSelection(100);
 		formToolkit.adapt(armor_scale_spinner);
 		formToolkit.paintBordersFor(armor_scale_spinner);
+		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
@@ -512,7 +601,7 @@ public class MainGUI {
 		GridData gd_shield_scale_spinner = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
 		gd_shield_scale_spinner.widthHint = 31;
 		shield_scale_spinner.setLayoutData(gd_shield_scale_spinner);
-		shield_scale_spinner.setDigits(1);
+		shield_scale_spinner.setDigits(2);
 		shield_scale_spinner.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent arg0) {
 				if(combo_is_populated && gui_setup) {
@@ -527,11 +616,12 @@ public class MainGUI {
 				}
 			}
 		});
-		shield_scale_spinner.setMaximum(50);
-		shield_scale_spinner.setMinimum(10);
-		shield_scale_spinner.setIncrement(5);
+		shield_scale_spinner.setMaximum(500);
+		shield_scale_spinner.setSelection(100);
+		shield_scale_spinner.setIncrement(50);
 		formToolkit.adapt(shield_scale_spinner);
 		formToolkit.paintBordersFor(shield_scale_spinner);
+		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
@@ -555,13 +645,25 @@ public class MainGUI {
 		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
 		
-		btnDemolyst = new Button(composite, SWT.CHECK);
-		btnDemolyst.addSelectionListener(new SelectionAdapter() {
+		btnSteelPathModifiers = new Button(composite, SWT.CHECK);
+		btnSteelPathModifiers.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if(combo_is_populated && gui_setup) {
 					String name = enemy_combo.getText();
+					
+					if(btnSteelPathModifiers.getSelection()) {
+						health_scale_spinner.setSelection(250);
+						shield_scale_spinner.setSelection(250);
+						armor_scale_spinner.setSelection(250);
+					}
+					else {
+						health_scale_spinner.setSelection(100);
+						shield_scale_spinner.setSelection(100);
+						armor_scale_spinner.setSelection(100);
+					}
 					
 					default_weapon.setupCustomBuild();
 					default_enemy = new Enemy(name,string_to_double(lvl_spinner.getText()), (100-spinner_to_double(armor_strip_spinner))/100.0 , default_weapon);
@@ -572,8 +674,9 @@ public class MainGUI {
 				}
 			}
 		});
-		formToolkit.adapt(btnDemolyst, true, true);
-		btnDemolyst.setText("Demolyst");
+		formToolkit.adapt(btnSteelPathModifiers, true, true);
+		btnSteelPathModifiers.setText("Steel Path Modifiers");
+		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
@@ -582,7 +685,7 @@ public class MainGUI {
 		new Label(composite, SWT.NONE);
 		
 		lblAbilitiesseparator = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
-		lblAbilitiesseparator.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 7, 1));
+		lblAbilitiesseparator.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 8, 1));
 		lblAbilitiesseparator.setText("abilitiesSeparator");
 		formToolkit.adapt(lblAbilitiesseparator, true, true);
 		
@@ -623,10 +726,12 @@ public class MainGUI {
 		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
 		
 		btnHeadshots = new Button(composite, SWT.CHECK);
 		formToolkit.adapt(btnHeadshots, true, true);
 		btnHeadshots.setText("Headshots");
+		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
@@ -642,27 +747,52 @@ public class MainGUI {
 		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
 		
-		series = new XYSeries("Health + Shields");
-		XYSeriesCollection dataset = new XYSeriesCollection(series);
-		chart = ChartFactory.createXYLineChart("Single Simulation", "Time", "Health", dataset);
-		ChartFrame frame = new ChartFrame("chart",chart);
+		health_series = new XYSeries("Health");
+		armor_series = new XYSeries("Armor");
+		shield_series = new XYSeries("Shield");
+		XYSeriesCollection dataset = new XYSeriesCollection(health_series);
+		dataset.addSeries(shield_series);
+		dataset.addSeries(armor_series);
+		chart = ChartFactory.createXYLineChart("Single Simulation", "Time", "", dataset);
+		/*
+		frame = new ChartFrame("chart",chart);
 		frame.setAlwaysOnTop(false);
-		frame.setBounds(0, 0, 135, 240);
+		frame.setBounds(930, 0, 135, 240);
+		*/
 		
 		//armor graph
-		armor_series = new XYSeries("Armor");
+		/*
 		XYSeriesCollection armor_dataset = new XYSeriesCollection(armor_series);
 		JFreeChart armor_chart = ChartFactory.createXYLineChart("Armor Tracker", "Time", "Armor", armor_dataset);
-		ChartFrame armor_frame = new ChartFrame("chart", armor_chart);
-		armor_frame.setAlwaysOnTop(false);
-		armor_frame.setBounds(0, 480, 135, 240);
-		
+		*/
 		
 		XYSeriesCollection datasetB = new XYSeriesCollection(scaleSeries);
-		JFreeChart chartB = ChartFactory.createXYLineChart("Time to Kill", "Level", "TTK", datasetB);
-		ChartFrame frameB = new ChartFrame("chart",chartB);
+		JFreeChart chartB = ChartFactory.createXYLineChart("Scale Enemy", "Level", "TTK", datasetB);
+		/*
+		frameB = new ChartFrame("chart",chartB);
+		frameB.setBounds(930, 0, 135, 240);
+		*/
 		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		
+		ChartComposite chcomp_1 = new ChartComposite(ch_composite_1, SWT.NONE, chart, true);
+		chcomp_1.setBounds(10, 10, 954, 418);
+		formToolkit.adapt(chcomp_1);
+		formToolkit.paintBordersFor(chcomp_1);
+		
+		/*
+		ChartComposite chcomp_2 = new ChartComposite(ch_composite_2, SWT.NONE, armor_chart, true);
+		chcomp_2.setBounds(0, 0, 974, 271);
+		formToolkit.adapt(chcomp_2);
+		formToolkit.paintBordersFor(chcomp_2);
+		*/
+		
+		ChartComposite chcomp_3 = new ChartComposite(ch_composite_3, SWT.NONE, chartB, true);
+		
+		chcomp_3.setBounds(10, 10, 954, 452);
+		formToolkit.adapt(chcomp_3);
+		formToolkit.paintBordersFor(chcomp_3);
 		
 		btnFullMagnetic = new Button(composite, SWT.CHECK);
 		formToolkit.adapt(btnFullMagnetic, true, true);
@@ -694,9 +824,13 @@ public class MainGUI {
 		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
 		
 		btnSimulate = new Button(composite, SWT.NONE);
-		GridData gd_btnSimulate = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
+		GridData gd_btnSimulate = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
 		gd_btnSimulate.widthHint = 100;
 		btnSimulate.setLayoutData(gd_btnSimulate);
 		btnSimulate.addSelectionListener(new SelectionAdapter() {
@@ -737,7 +871,7 @@ public class MainGUI {
 				}
 			}
 		});
-		GridData gd_lvl_spinner = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
+		GridData gd_lvl_spinner = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 2);
 		gd_lvl_spinner.widthHint = 73;
 		lvl_spinner.setLayoutData(gd_lvl_spinner);
 		lvl_spinner.setIncrement(10);
@@ -752,22 +886,25 @@ public class MainGUI {
 		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
 		
 		btnGraph = new Button(composite, SWT.NONE);
-		GridData gd_btnGraph = new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1);
-		gd_btnGraph.widthHint = 101;
+		GridData gd_btnGraph = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+		gd_btnGraph.widthHint = 142;
 		btnGraph.setLayoutData(gd_btnGraph);
 		btnGraph.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				series.clear();	
+				health_series.clear();	
 				armor_series.clear();
+				shield_series.clear();
 				
 				XYPlot plot = (XYPlot) chart.getPlot();
-				XYPlot armor_plot = (XYPlot) armor_chart.getPlot();
+				//XYPlot armor_plot = (XYPlot) armor_chart.getPlot();
 				
 				plot.clearDomainMarkers();
-				armor_plot.clearDomainMarkers();
+				//armor_plot.clearDomainMarkers();
+				
 				
 				
 				
@@ -778,15 +915,16 @@ public class MainGUI {
 				double results[] = simulate(default_enemy,default_weapon,1);
 				graph = false;
 				
+				
+				/*
 				frame.setVisible(true);
 				frame.setSize(1000, 450);
 				
 				if(default_enemy.baseArmor > 0) {
 					armor_frame.setVisible(true);
-					
-					
 					armor_frame.setSize(1000, 450);
 				}
+				*/
 
 				time_label.setText(String.format("%.2f", results[0]) );
 				shots_label.setText(String.format("%.2f", results[1]) );
@@ -795,44 +933,24 @@ public class MainGUI {
 			}
 		});
 		formToolkit.adapt(btnGraph, true, true);
-		btnGraph.setText("Graph");
-		
-		txtSeriesName = new Text(composite, SWT.BORDER);
-		GridData gd_txtSeriesName = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
-		gd_txtSeriesName.widthHint = 82;
-		txtSeriesName.setLayoutData(gd_txtSeriesName);
-		formToolkit.adapt(txtSeriesName, true, true);
-		
-
-		
-		Button btnClearGraph = new Button(composite, SWT.NONE);
-		btnClearGraph.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				if(scaleSeries != null) {
-					scaleSeries.clear(); 
-				}
-				numSeries = 0;
-				datasetB.removeAllSeries();
-			}
-		});
-		formToolkit.adapt(btnClearGraph, true, true);
-		btnClearGraph.setText("Clear Graph");
+		btnGraph.setText("Graph One Simulation");
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
 		
 		btnScale = new Button(composite, SWT.NONE);
-		GridData gd_btnScale = new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1);
-		gd_btnScale.widthHint = 103;
+		GridData gd_btnScale = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
+		gd_btnScale.widthHint = 180;
 		btnScale.setLayoutData(gd_btnScale);
 		btnScale.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				int start_level = start_level_spinner.getSelection();
 				int end_level = end_level_spinner.getSelection();
-				
+				int increment = 25;
 				
 				
 				default_weapon.setupCustomBuild();
@@ -841,25 +959,31 @@ public class MainGUI {
 				scaleSeries = new XYSeries(numSeries+": "+txtSeriesName.getText());
 				datasetB.addSeries(scaleSeries);
 				
-				for(int i = start_level; i <= end_level; i += 25) {	
+				for(int i = start_level; i <= end_level+1; i += increment) {	
 					
 					default_weapon.setupCustomBuild();
 					default_enemy = new Enemy((String)enemy_combo.getText(),i, armorReduct,default_weapon);
 					double results[] = simulate(default_enemy,default_weapon,20);
+					if(results[0]>= STOP_COND) {
+						scaleSeries.add(i,STOP_COND);
+						break;	
+					}
 					scaleSeries.add(i, results[0]);
 					
+						
 				}
-				
+				/*
 				frameB.setVisible(true);
 				frameB.setSize(1000, 450);
+				*/
 				numSeries++;
 			}
 		});
 		formToolkit.adapt(btnScale, true, true);
-		btnScale.setText("Scale");
+		btnScale.setText("Graph Scaling Simulation");
 		
 		start_level_spinner = new Spinner(composite, SWT.BORDER);
-		GridData gd_start_level_spinner = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
+		GridData gd_start_level_spinner = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
 		gd_start_level_spinner.widthHint = 75;
 		start_level_spinner.setLayoutData(gd_start_level_spinner);
 		start_level_spinner.addModifyListener(new ModifyListener() {
@@ -883,7 +1007,7 @@ public class MainGUI {
 		formToolkit.paintBordersFor(start_level_spinner);
 		
 		end_level_spinner = new Spinner(composite, SWT.BORDER);
-		GridData gd_end_level_spinner = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
+		GridData gd_end_level_spinner = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
 		gd_end_level_spinner.widthHint = 61;
 		end_level_spinner.setLayoutData(gd_end_level_spinner);
 		end_level_spinner.addModifyListener(new ModifyListener() {
@@ -909,6 +1033,23 @@ public class MainGUI {
 		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
+		
+
+		
+		Button btnClearGraph = new Button(composite, SWT.NONE);
+		btnClearGraph.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		btnClearGraph.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if(scaleSeries != null) {
+					scaleSeries.clear(); 
+				}
+				numSeries = 0;
+				datasetB.removeAllSeries();
+			}
+		});
+		formToolkit.adapt(btnClearGraph, true, true);
+		btnClearGraph.setText("Clear Graph");
 		new Label(composite, SWT.NONE);
 		
 		CTabItem tbtmAddBuild = new CTabItem(tabFolder, SWT.NONE);
@@ -917,7 +1058,7 @@ public class MainGUI {
 		Composite composite_3 = new Composite(tabFolder, SWT.NONE);
 		tbtmAddBuild.setControl(composite_3);
 		formToolkit.paintBordersFor(composite_3);
-		composite_3.setLayout(new GridLayout(7, false));
+		composite_3.setLayout(new GridLayout(8, false));
 		
 		Label lblWeapon_1 = new Label(composite_3, SWT.NONE);
 		lblWeapon_1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
@@ -932,6 +1073,8 @@ public class MainGUI {
 				
 				set_up_fire_mode_combo(default_weapon);
 				
+
+				txtSeriesName.setText(weaponListCombo.getText());
 					
 				default_weapon = new Weapon(name, true);
 				
@@ -958,6 +1101,7 @@ public class MainGUI {
 		formToolkit.paintBordersFor(weaponListCombo);
 		new Label(composite_3, SWT.NONE);
 		new Label(composite_3, SWT.NONE);
+		new Label(composite_3, SWT.NONE);
 		
 		Label lblFireMode = new Label(composite_3, SWT.NONE);
 		lblFireMode.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
@@ -979,6 +1123,7 @@ public class MainGUI {
 		fireModeCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
 		formToolkit.adapt(fireModeCombo);
 		formToolkit.paintBordersFor(fireModeCombo);
+		new Label(composite_3, SWT.NONE);
 		new Label(composite_3, SWT.NONE);
 		new Label(composite_3, SWT.NONE);
 		
@@ -1048,6 +1193,8 @@ public class MainGUI {
 		new Label(composite_3, SWT.NONE);
 		new Label(composite_3, SWT.NONE);
 		new Label(composite_3, SWT.NONE);
+		new Label(composite_3, SWT.NONE);
+		new Label(composite_3, SWT.NONE);
 		
 		Label lblDamage = new Label(composite_3, SWT.NONE);
 		formToolkit.adapt(lblDamage, true, true);
@@ -1067,6 +1214,10 @@ public class MainGUI {
 		damage_mod_text.setText("0.0");
 		damage_mod_text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
 		formToolkit.adapt(damage_mod_text, true, true);
+		
+		btnCheckButton0 = new Button(composite_3, SWT.CHECK);
+		formToolkit.adapt(btnCheckButton0, true, true);
+		btnCheckButton0.setText("");
 		new Label(composite_3, SWT.NONE);
 		
 		Label label_1 = new Label(composite_3, SWT.NONE);
@@ -1089,6 +1240,10 @@ public class MainGUI {
 		bane_mod_text.setText("0.0");
 		bane_mod_text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
 		formToolkit.adapt(bane_mod_text, true, true);
+		
+		btnCheckButton1 = new Button(composite_3, SWT.CHECK);
+		formToolkit.adapt(btnCheckButton1, true, true);
+		btnCheckButton1.setText("");
 		new Label(composite_3, SWT.NONE);
 		
 		btnCorrosive = new Button(composite_3, SWT.CHECK);
@@ -1118,6 +1273,10 @@ public class MainGUI {
 		crit_chance_mod_text.setText("0.0");
 		crit_chance_mod_text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
 		formToolkit.adapt(crit_chance_mod_text, true, true);
+		
+		btnCheckButton2 = new Button(composite_3, SWT.CHECK);
+		formToolkit.adapt(btnCheckButton2, true, true);
+		btnCheckButton2.setText("");
 		new Label(composite_3, SWT.NONE);
 		
 		btnViral = new Button(composite_3, SWT.CHECK);
@@ -1147,6 +1306,10 @@ public class MainGUI {
 		crit_damage_mod_text.setText("0.0");
 		crit_damage_mod_text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
 		formToolkit.adapt(crit_damage_mod_text, true, true);
+		
+		btnCheckButton3 = new Button(composite_3, SWT.CHECK);
+		formToolkit.adapt(btnCheckButton3, true, true);
+		btnCheckButton3.setText("");
 		new Label(composite_3, SWT.NONE);
 		
 		btnRadiation = new Button(composite_3, SWT.CHECK);
@@ -1176,6 +1339,10 @@ public class MainGUI {
 		multishot_mod_text.setText("0.0");
 		multishot_mod_text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
 		formToolkit.adapt(multishot_mod_text, true, true);
+		
+		btnCheckButton4 = new Button(composite_3, SWT.CHECK);
+		formToolkit.adapt(btnCheckButton4, true, true);
+		btnCheckButton4.setText("");
 		new Label(composite_3, SWT.NONE);
 		
 		btnMagnetic = new Button(composite_3, SWT.CHECK);
@@ -1205,6 +1372,10 @@ public class MainGUI {
 		status_chance_mod_text.setText("0.0");
 		status_chance_mod_text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
 		formToolkit.adapt(status_chance_mod_text, true, true);
+		
+		btnCheckButton5 = new Button(composite_3, SWT.CHECK);
+		formToolkit.adapt(btnCheckButton5, true, true);
+		btnCheckButton5.setText("");
 		new Label(composite_3, SWT.NONE);
 		
 		btnGas = new Button(composite_3, SWT.CHECK);
@@ -1235,6 +1406,10 @@ public class MainGUI {
 		cold_mod_text.setText("0.0");
 		cold_mod_text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
 		formToolkit.adapt(cold_mod_text, true, true);
+		
+		btnCheckButton6 = new Button(composite_3, SWT.CHECK);
+		formToolkit.adapt(btnCheckButton6, true, true);
+		btnCheckButton6.setText("");
 		new Label(composite_3, SWT.NONE);
 		
 		btnBlast = new Button(composite_3, SWT.CHECK);
@@ -1266,6 +1441,10 @@ public class MainGUI {
 		toxin_mod_text.setText("0.0");
 		toxin_mod_text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
 		formToolkit.adapt(toxin_mod_text, true, true);
+		
+		btnCheckButton7 = new Button(composite_3, SWT.CHECK);
+		formToolkit.adapt(btnCheckButton7, true, true);
+		btnCheckButton7.setText("");
 		new Label(composite_3, SWT.NONE);
 		new Label(composite_3, SWT.NONE);
 		
@@ -1286,6 +1465,10 @@ public class MainGUI {
 		heat_mod_text.setText("0.0");
 		heat_mod_text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
 		formToolkit.adapt(heat_mod_text, true, true);
+		
+		btnCheckButton8 = new Button(composite_3, SWT.CHECK);
+		formToolkit.adapt(btnCheckButton8, true, true);
+		btnCheckButton8.setText("");
 		new Label(composite_3, SWT.NONE);
 		new Label(composite_3, SWT.NONE);
 		
@@ -1306,6 +1489,10 @@ public class MainGUI {
 		electricity_mod_text.setText("0.0");
 		electricity_mod_text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
 		formToolkit.adapt(electricity_mod_text, true, true);
+		
+		btnCheckButton9 = new Button(composite_3, SWT.CHECK);
+		formToolkit.adapt(btnCheckButton9, true, true);
+		btnCheckButton9.setText("");
 		new Label(composite_3, SWT.NONE);
 		new Label(composite_3, SWT.NONE);
 		
@@ -1326,6 +1513,10 @@ public class MainGUI {
 		fire_rate_mod_text.setText("0.0");
 		fire_rate_mod_text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
 		formToolkit.adapt(fire_rate_mod_text, true, true);
+		
+		btnCheckButton10 = new Button(composite_3, SWT.CHECK);
+		formToolkit.adapt(btnCheckButton10, true, true);
+		btnCheckButton10.setText("");
 		new Label(composite_3, SWT.NONE);
 		new Label(composite_3, SWT.NONE);
 		
@@ -1346,6 +1537,10 @@ public class MainGUI {
 		magazine_mod_text.setText("0.0");
 		magazine_mod_text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
 		formToolkit.adapt(magazine_mod_text, true, true);
+		
+		btnCheckButton11 = new Button(composite_3, SWT.CHECK);
+		formToolkit.adapt(btnCheckButton11, true, true);
+		btnCheckButton11.setText("");
 		new Label(composite_3, SWT.NONE);
 		new Label(composite_3, SWT.NONE);
 		
@@ -1366,6 +1561,10 @@ public class MainGUI {
 		reload_mod_text.setText("0.0");
 		reload_mod_text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
 		formToolkit.adapt(reload_mod_text, true, true);
+		
+		btnCheckButton12 = new Button(composite_3, SWT.CHECK);
+		formToolkit.adapt(btnCheckButton12, true, true);
+		btnCheckButton12.setText("");
 		new Label(composite_3, SWT.NONE);
 		new Label(composite_3, SWT.NONE);
 		
@@ -1386,6 +1585,10 @@ public class MainGUI {
 		impact_mod_text.setText("0.0");
 		impact_mod_text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
 		formToolkit.adapt(impact_mod_text, true, true);
+		
+		btnCheckButton13 = new Button(composite_3, SWT.CHECK);
+		formToolkit.adapt(btnCheckButton13, true, true);
+		btnCheckButton13.setText("");
 		new Label(composite_3, SWT.NONE);
 		new Label(composite_3, SWT.NONE);
 		
@@ -1408,6 +1611,10 @@ public class MainGUI {
 		puncture_mod_text.setText("0.0");
 		puncture_mod_text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
 		formToolkit.adapt(puncture_mod_text, true, true);
+		
+		btnCheckButton14 = new Button(composite_3, SWT.CHECK);
+		formToolkit.adapt(btnCheckButton14, true, true);
+		btnCheckButton14.setText("");
 		new Label(composite_3, SWT.NONE);
 		new Label(composite_3, SWT.NONE);
 		
@@ -1428,6 +1635,10 @@ public class MainGUI {
 		slash_mod_text.setText("0.0");
 		slash_mod_text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
 		formToolkit.adapt(slash_mod_text, true, true);
+		
+		btnCheckButton15 = new Button(composite_3, SWT.CHECK);
+		formToolkit.adapt(btnCheckButton15, true, true);
+		btnCheckButton15.setText("");
 		new Label(composite_3, SWT.NONE);
 		new Label(composite_3, SWT.NONE);
 		
@@ -1454,6 +1665,7 @@ public class MainGUI {
 		lblCriticalChance.setText("Critical Chance %");
 		
 		ccESpinner = new Spinner(composite_1, SWT.BORDER);
+		ccESpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		ccESpinner.setIncrement(10);
 		ccESpinner.setDigits(1);
 		ccESpinner.setMaximum(2000);
@@ -1467,6 +1679,7 @@ public class MainGUI {
 		lblCriticalMultiplier.setText("Critical Multiplier");
 		
 		cdESpinner = new Spinner(composite_1, SWT.BORDER);
+		cdESpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		cdESpinner.setIncrement(10);
 		cdESpinner.setDigits(1);
 		cdESpinner.setMaximum(1000);
@@ -1481,6 +1694,7 @@ public class MainGUI {
 		lblStatusChance.setText("Status Chance %");
 		
 		scESpinner = new Spinner(composite_1, SWT.BORDER);
+		scESpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		scESpinner.setMaximum(1000);
 		scESpinner.setDigits(1);
 		formToolkit.adapt(scESpinner);
@@ -1493,6 +1707,7 @@ public class MainGUI {
 		lblFireRate.setText("Fire Rate");
 		
 		frESpinner = new Spinner(composite_1, SWT.BORDER);
+		frESpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		frESpinner.setIncrement(1000);
 		frESpinner.setMaximum(10000);
 		frESpinner.setMinimum(100);
@@ -1507,6 +1722,7 @@ public class MainGUI {
 		lblPellets.setText("Pellets");
 		
 		pelletESpinner = new Spinner(composite_1, SWT.BORDER);
+		pelletESpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		pelletESpinner.setMaximum(50);
 		pelletESpinner.setMinimum(1);
 		formToolkit.adapt(pelletESpinner);
@@ -1519,6 +1735,7 @@ public class MainGUI {
 		lblReload.setText("Reload");
 		
 		reloadESpinner = new Spinner(composite_1, SWT.BORDER);
+		reloadESpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		reloadESpinner.setMaximum(10000);
 		reloadESpinner.setMinimum(100);
 		reloadESpinner.setIncrement(1000);
@@ -1533,6 +1750,7 @@ public class MainGUI {
 		lblMagazine.setText("Magazine");
 		
 		magESpinner = new Spinner(composite_1, SWT.BORDER);
+		magESpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		magESpinner.setMaximum(10000);
 		magESpinner.setMinimum(1);
 		formToolkit.adapt(magESpinner);
@@ -1545,6 +1763,7 @@ public class MainGUI {
 		lblImpact.setText("Impact");
 		
 		iESpinner = new Spinner(composite_1, SWT.BORDER);
+		iESpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		iESpinner.setIncrement(10);
 		iESpinner.setMaximum(100000);
 		iESpinner.setDigits(1);
@@ -1558,6 +1777,7 @@ public class MainGUI {
 		lblSlash.setText("Slash");
 		
 		sESpinner = new Spinner(composite_1, SWT.BORDER);
+		sESpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		sESpinner.setIncrement(10);
 		sESpinner.setMaximum(100000);
 		sESpinner.setDigits(1);
@@ -1571,6 +1791,7 @@ public class MainGUI {
 		lblPuncture.setText("Puncture");
 		
 		pESpinner = new Spinner(composite_1, SWT.BORDER);
+		pESpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		pESpinner.setIncrement(10);
 		pESpinner.setMaximum(100000);
 		pESpinner.setDigits(1);
@@ -1584,6 +1805,7 @@ public class MainGUI {
 		lblCold.setText("Cold");
 		
 		cESpinner = new Spinner(composite_1, SWT.BORDER);
+		cESpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		cESpinner.setIncrement(10);
 		cESpinner.setMaximum(100000);
 		cESpinner.setDigits(1);
@@ -1597,6 +1819,7 @@ public class MainGUI {
 		lblElectricity.setText("Electricity");
 		
 		eESpinner = new Spinner(composite_1, SWT.BORDER);
+		eESpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		eESpinner.setIncrement(10);
 		eESpinner.setMaximum(100000);
 		eESpinner.setDigits(1);
@@ -1610,6 +1833,7 @@ public class MainGUI {
 		lblHeat.setText("Heat");
 		
 		hESpinner = new Spinner(composite_1, SWT.BORDER);
+		hESpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		hESpinner.setMaximum(100000);
 		hESpinner.setIncrement(10);
 		hESpinner.setDigits(1);
@@ -1623,6 +1847,7 @@ public class MainGUI {
 		lblToxin.setText("Toxin");
 		
 		tESpinner = new Spinner(composite_1, SWT.BORDER);
+		tESpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		tESpinner.setMaximum(100000);
 		tESpinner.setIncrement(10);
 		tESpinner.setDigits(1);
@@ -1636,6 +1861,7 @@ public class MainGUI {
 		lblBlast.setText("Blast");
 		
 		bESpinner = new Spinner(composite_1, SWT.BORDER);
+		bESpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		bESpinner.setMaximum(100000);
 		bESpinner.setIncrement(10);
 		bESpinner.setDigits(1);
@@ -1649,6 +1875,7 @@ public class MainGUI {
 		lblCorrosive.setText("Corrosive");
 		
 		corESpinner = new Spinner(composite_1, SWT.BORDER);
+		corESpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		corESpinner.setMaximum(100000);
 		corESpinner.setIncrement(10);
 		corESpinner.setDigits(1);
@@ -1662,6 +1889,7 @@ public class MainGUI {
 		lblGas.setText("Gas");
 		
 		gESpinner = new Spinner(composite_1, SWT.BORDER);
+		gESpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		gESpinner.setMaximum(100000);
 		gESpinner.setIncrement(10);
 		gESpinner.setDigits(1);
@@ -1675,6 +1903,7 @@ public class MainGUI {
 		lblMagnetic.setText("Magnetic");
 		
 		mESpinner = new Spinner(composite_1, SWT.BORDER);
+		mESpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		mESpinner.setMaximum(100000);
 		mESpinner.setIncrement(10);
 		mESpinner.setDigits(1);
@@ -1688,6 +1917,7 @@ public class MainGUI {
 		lblRadiation.setText("Radiation");
 		
 		rESpinner = new Spinner(composite_1, SWT.BORDER);
+		rESpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		rESpinner.setMaximum(100000);
 		rESpinner.setIncrement(10);
 		rESpinner.setDigits(1);
@@ -1701,6 +1931,7 @@ public class MainGUI {
 		lblViral.setText("Viral");
 		
 		viralESpinner = new Spinner(composite_1, SWT.BORDER);
+		viralESpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		viralESpinner.setMaximum(100000);
 		viralESpinner.setIncrement(10);
 		viralESpinner.setDigits(1);
@@ -1713,19 +1944,14 @@ public class MainGUI {
 		formToolkit.adapt(lblvoid, true, true);
 		lblvoid.setText("Void");
 		
-		void1ESpinner = new Spinner(composite_1, SWT.BORDER);
-		void1ESpinner.setMaximum(100000);
-		void1ESpinner.setIncrement(10);
-		void1ESpinner.setDigits(1);
-		formToolkit.adapt(void1ESpinner);
-		formToolkit.paintBordersFor(void1ESpinner);
-		
-		void2ESpinner = new Spinner(composite_1, SWT.BORDER);
-		void2ESpinner.setMaximum(100000);
-		void2ESpinner.setIncrement(10);
-		void2ESpinner.setDigits(1);
-		formToolkit.adapt(void2ESpinner);
-		formToolkit.paintBordersFor(void2ESpinner);
+		voidSpinner = new Spinner(composite_1, SWT.BORDER);
+		voidSpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		voidSpinner.setMaximum(100000);
+		voidSpinner.setIncrement(10);
+		voidSpinner.setDigits(1);
+		formToolkit.adapt(voidSpinner);
+		formToolkit.paintBordersFor(voidSpinner);
+		new Label(composite_1, SWT.NONE);
 		
 		Button btnAdd_weapon = new Button(composite_1, SWT.NONE);
 		btnAdd_weapon.addSelectionListener(new SelectionAdapter() {
@@ -1770,6 +1996,7 @@ public class MainGUI {
 				dmg.add((double)mESpinner.getSelection()/Math.pow(10, mESpinner.getDigits()));
 				dmg.add((double)viralESpinner.getSelection()/Math.pow(10, viralESpinner.getDigits()));
 				dmg.add((double)corESpinner.getSelection()/Math.pow(10, corESpinner.getDigits()));
+				dmg.add((double)voidSpinner.getSelection()/Math.pow(10, voidSpinner.getDigits()));
 				
 				
 				double status = (double)scESpinner.getSelection()/Math.pow(10, 2+scESpinner.getDigits());
@@ -1816,8 +2043,11 @@ public class MainGUI {
 		btnAdd_weapon.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		formToolkit.adapt(btnAdd_weapon, true, true);
 		btnAdd_weapon.setText("Add");
+		new Label(composite_1, SWT.NONE);
+		new Label(composite_1, SWT.NONE);
 		
 		Button btnOpenFile_weapon = new Button(composite_1, SWT.NONE);
+		btnOpenFile_weapon.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		btnOpenFile_weapon.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -1831,6 +2061,7 @@ public class MainGUI {
 		});
 		formToolkit.adapt(btnOpenFile_weapon, true, true);
 		btnOpenFile_weapon.setText("Open file");
+		new Label(composite_1, SWT.NONE);
 		new Label(composite_1, SWT.NONE);
 		
 		CTabItem tbtmAddEnemy = new CTabItem(tabFolder, SWT.NONE);
@@ -1847,7 +2078,6 @@ public class MainGUI {
 		lblEnemyName.setText("Name");
 		
 		txtEnemyname = new Text(composite_2, SWT.BORDER);
-		txtEnemyname.setText("enemyName");
 		txtEnemyname.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		formToolkit.adapt(txtEnemyname, true, true);
 		
@@ -1881,7 +2111,7 @@ public class MainGUI {
 		lblShieldType.setText("Shield Type");
 		
 		Combo shield_combo = new Combo(composite_2, SWT.NONE);
-		shield_combo.setItems(new String[] {"Shield", "ProtoShield"});
+		shield_combo.setItems(new String[] {"Shield", "ProtoShield", "Eidolon Shield"});
 		shield_combo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		formToolkit.adapt(shield_combo);
 		formToolkit.paintBordersFor(shield_combo);
@@ -1893,6 +2123,7 @@ public class MainGUI {
 		lblBaseArmor.setText("Base Armor");
 		
 		Spinner bArmorSpinner = new Spinner(composite_2, SWT.BORDER);
+		bArmorSpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		bArmorSpinner.setMaximum(100000);
 		formToolkit.adapt(bArmorSpinner);
 		formToolkit.paintBordersFor(bArmorSpinner);
@@ -1903,6 +2134,7 @@ public class MainGUI {
 		lblBaseHealth.setText("Base Health");
 		
 		bHealthSpinner = new Spinner(composite_2, SWT.BORDER);
+		bHealthSpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		bHealthSpinner.setMaximum(100000);
 		bHealthSpinner.setMinimum(1);
 		formToolkit.adapt(bHealthSpinner);
@@ -1914,6 +2146,7 @@ public class MainGUI {
 		lblBaseShield.setText("Base Shield");
 		
 		bShieldSpinner = new Spinner(composite_2, SWT.BORDER);
+		bShieldSpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		bShieldSpinner.setMaximum(100000);
 		formToolkit.adapt(bShieldSpinner);
 		formToolkit.paintBordersFor(bShieldSpinner);
@@ -1924,15 +2157,11 @@ public class MainGUI {
 		lblBaseLevel.setText("Base Level");
 		
 		bLevelSpinner = new Spinner(composite_2, SWT.BORDER);
+		bLevelSpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		bLevelSpinner.setMaximum(500);
 		bLevelSpinner.setMinimum(1);
 		formToolkit.adapt(bLevelSpinner);
 		formToolkit.paintBordersFor(bLevelSpinner);
-		new Label(composite_2, SWT.NONE);
-		
-		btnEidolon = new Button(composite_2, SWT.CHECK);
-		formToolkit.adapt(btnEidolon, true, true);
-		btnEidolon.setText("Eidolon");
 		
 		Button btnAdd_enemy = new Button(composite_2, SWT.NONE);
 		btnAdd_enemy.addSelectionListener(new SelectionAdapter() {
@@ -1977,8 +2206,6 @@ public class MainGUI {
 		        stats.put("BaseHealth", bHealthSpinner.getSelection());
 		        stats.put("BaseShield", bShieldSpinner.getSelection());
 		        stats.put("BaseLevel", bLevelSpinner.getSelection());
-		        stats.put("Eidolon", btnEidolon.getSelection());
-		        stats.put("Eidolon", btnEidolon.getSelection());
 		        stats.put("DamageReduction", listlist);
 		        stats.put("ProcReduction", listlist);
 		        data.put(name, stats);
@@ -2020,6 +2247,16 @@ public class MainGUI {
 		
 		weaponCombo.select(0);
 		new Label(composite, SWT.NONE);
+		
+		txtSeriesName = new Text(composite, SWT.BORDER);
+		txtSeriesName.setText("Scaling Simulation Series Name");
+		GridData gd_txtSeriesName = new GridData(SWT.FILL, SWT.CENTER, true, false, 6, 1);
+		gd_txtSeriesName.widthHint = 81;
+		txtSeriesName.setLayoutData(gd_txtSeriesName);
+		formToolkit.adapt(txtSeriesName, true, true);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
@@ -2037,6 +2274,7 @@ public class MainGUI {
 		title_shots.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
 		formToolkit.adapt(title_shots, true, true);
 		title_shots.setText("Shots");
+		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
@@ -2059,10 +2297,11 @@ public class MainGUI {
 		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
 		
 		Label lblVariance = new Label(composite, SWT.NONE);
 		formToolkit.adapt(lblVariance, true, true);
-		lblVariance.setText("Variance");
+		lblVariance.setText("Stnd Dev");
 		
 		v_time_label = new Label(composite, SWT.NONE);
 		v_time_label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
@@ -2073,6 +2312,7 @@ public class MainGUI {
 		v_shots_label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		formToolkit.adapt(v_shots_label, true, true);
 		v_shots_label.setText("0");
+		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
@@ -2095,12 +2335,40 @@ public class MainGUI {
 		status_duration_mod_text.setText("0.0");
 		status_duration_mod_text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
 		formToolkit.adapt(status_duration_mod_text, true, true);
+		
+		btnCheckButton16 = new Button(composite_3, SWT.CHECK);
+		formToolkit.adapt(btnCheckButton16, true, true);
+		btnCheckButton16.setText("");
+		new Label(composite_3, SWT.NONE);
+		new Label(composite_3, SWT.NONE);
+		
+		lblMultiplicativeFireRate = new Label(composite_3, SWT.NONE);
+		formToolkit.adapt(lblMultiplicativeFireRate, true, true);
+		lblMultiplicativeFireRate.setText("Multiplicative Fire Rate");
+		
+		multiplicative_firerate_mod_text = new Text(composite_3, SWT.BORDER);
+		multiplicative_firerate_mod_text.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent arg0) {
+				if(combo_is_populated && gui_setup) {
+					
+					default_weapon.setupCustomBuild();
+					update_weapon_table(default_weapon);
+				}
+			}
+		});
+		multiplicative_firerate_mod_text.setText("0.0");
+		GridData gd_multiplicative_firerate_mod_text = new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1);
+		gd_multiplicative_firerate_mod_text.widthHint = 33;
+		multiplicative_firerate_mod_text.setLayoutData(gd_multiplicative_firerate_mod_text);
+		formToolkit.adapt(multiplicative_firerate_mod_text, true, true);
+		new Label(composite_3, SWT.NONE);
 		new Label(composite_3, SWT.NONE);
 		new Label(composite_3, SWT.NONE);
 		
 		btnHunterMunitions = new Button(composite_3, SWT.CHECK);
 		btnHunterMunitions.setText("Hunter Munitions");
 		formToolkit.adapt(btnHunterMunitions, true, true);
+		new Label(composite_3, SWT.NONE);
 		new Label(composite_3, SWT.NONE);
 		new Label(composite_3, SWT.NONE);
 		new Label(composite_3, SWT.NONE);
@@ -2117,6 +2385,7 @@ public class MainGUI {
 		new Label(composite_3, SWT.NONE);
 		new Label(composite_3, SWT.NONE);
 		new Label(composite_3, SWT.NONE);
+		new Label(composite_3, SWT.NONE);
 		
 		btnAmalgamShatImp = new Button(composite_3, SWT.CHECK);
 		btnAmalgamShatImp.setText("Amalgam Shat. Imp.");
@@ -2127,10 +2396,12 @@ public class MainGUI {
 		new Label(composite_3, SWT.NONE);
 		new Label(composite_3, SWT.NONE);
 		new Label(composite_3, SWT.NONE);
+		new Label(composite_3, SWT.NONE);
 		
 		btnPrimedchamber = new Button(composite_3, SWT.CHECK);
 		btnPrimedchamber.setText("Primed Chamber");
 		formToolkit.adapt(btnPrimedchamber, true, true);
+		new Label(composite_3, SWT.NONE);
 		new Label(composite_3, SWT.NONE);
 		new Label(composite_3, SWT.NONE);
 		new Label(composite_3, SWT.NONE);
@@ -2157,6 +2428,7 @@ public class MainGUI {
 		formToolkit.adapt(general_multiplier_mod_text, true, true);
 		new Label(composite_3, SWT.NONE);
 		new Label(composite_3, SWT.NONE);
+		new Label(composite_3, SWT.NONE);
 		
 		Label lblAdditiveCd = new Label(composite_3, SWT.NONE);
 		formToolkit.adapt(lblAdditiveCd, true, true);
@@ -2166,6 +2438,8 @@ public class MainGUI {
 		additive_crit_damage_text.setText("0.0");
 		additive_crit_damage_text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
 		formToolkit.adapt(additive_crit_damage_text, true, true);
+		new Label(composite_3, SWT.NONE);
+		new Label(composite_3, SWT.NONE);
 		new Label(composite_3, SWT.NONE);
 		new Label(composite_3, SWT.NONE);
 		new Label(composite_3, SWT.NONE);
@@ -2215,6 +2489,7 @@ public class MainGUI {
 		        mods.put("Heat", heat_mod_text.getText());
 		        mods.put("Electricity", electricity_mod_text.getText());
 		        mods.put("FireRate", fire_rate_mod_text.getText());
+		        mods.put("BerserkFireRate", multiplicative_firerate_mod_text.getText());
 		        mods.put("Magazine", magazine_mod_text.getText());
 		        mods.put("Reload", reload_mod_text.getText());
 		        mods.put("Impact", impact_mod_text.getText());
@@ -2271,6 +2546,7 @@ public class MainGUI {
 		formToolkit.adapt(txtBuildName, true, true);
 		new Label(composite_3, SWT.NONE);
 		new Label(composite_3, SWT.NONE);
+		new Label(composite_3, SWT.NONE);
 		
 		Button btnClearConfig = new Button(composite_3, SWT.NONE);
 		btnClearConfig.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
@@ -2291,10 +2567,44 @@ public class MainGUI {
 		new Label(composite_3, SWT.NONE);
 		new Label(composite_3, SWT.NONE);
 		new Label(composite_3, SWT.NONE);
+		new Label(composite_3, SWT.NONE);
+		
+		Button btnGetBestRiven = new Button(composite_3, SWT.NONE);
+		btnGetBestRiven.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		btnGetBestRiven.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				default_weapon.setupCustomBuild();
+				default_enemy = new Enemy((String)enemy_combo.getText(),lvl_spinner.getSelection(), armorReduct ,default_weapon);
+				find_best_riven_stat( default_weapon,  default_enemy, 3);
+			}
+		});
+		formToolkit.adapt(btnGetBestRiven, true, true);
+		btnGetBestRiven.setText("Get best riven");
+		
+		styledText = new StyledText(composite_3, SWT.BORDER);
+		GridData gd_styledText = new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1);
+		gd_styledText.heightHint = 50;
+		styledText.setLayoutData(gd_styledText);
+		formToolkit.adapt(styledText);
+		formToolkit.paintBordersFor(styledText);
+		new Label(composite_3, SWT.NONE);
+		new Label(composite_3, SWT.NONE);
+		
+		Button btnClearRiven = new Button(composite_3, SWT.NONE);
+		btnClearRiven.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				clear_riven_selection();
+			}
+		});
+		btnClearRiven.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		formToolkit.adapt(btnClearRiven, true, true);
+		btnClearRiven.setText("Clear Riven");
 		
 		weapon_table = new Table(shell, SWT.BORDER | SWT.FULL_SELECTION);
 		weapon_table.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
-		weapon_table.setBounds(486, 35, 305, 738);
+		weapon_table.setBounds(589, 35, 305, 788);
 		formToolkit.adapt(weapon_table);
 		formToolkit.paintBordersFor(weapon_table);
 		weapon_table.setHeaderVisible(true);
@@ -2315,7 +2625,7 @@ public class MainGUI {
 				update_weapon_table(default_weapon);
 			}
 		});
-		secondary_effects_combo.setBounds(643, 10, 148, 23);
+		secondary_effects_combo.setBounds(746, 10, 148, 23);
 		formToolkit.adapt(secondary_effects_combo);
 		formToolkit.paintBordersFor(secondary_effects_combo);
 		secondary_effects_combo.setText("Secondary Effects");
@@ -2323,6 +2633,74 @@ public class MainGUI {
 		default_weapon = new Weapon(weaponCombo.getText(), true);
 		default_enemy = new Enemy(enemy_combo.getText(),165, 1, default_weapon);
 		populate_build_combo(weaponCombo);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		
+		damage_list = new org.eclipse.swt.widgets.List(composite, SWT.BORDER | SWT.V_SCROLL);
+		GridData gd_damage_list = new GridData(SWT.LEFT, SWT.CENTER, false, false, 7, 5);
+		gd_damage_list.heightHint = 213;
+		gd_damage_list.widthHint = 348;
+		damage_list.setLayoutData(gd_damage_list);
+		formToolkit.adapt(damage_list, true, true);
+		damage_list.setVisible(false);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		
+		debug_checkbutton = new Button(composite, SWT.CHECK);
+		debug_checkbutton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if(debug_checkbutton.getSelection())
+					damage_list.setVisible(true);
+				else {
+					damage_list.setVisible(false);
+				}
+			}
+		});
+		formToolkit.adapt(debug_checkbutton, true, true);
+		debug_checkbutton.setText("Damage Debug");
+		
+
 		
 		tableItemName = new TableItem(weapon_table, SWT.NONE);
 		tableItem = new TableItem(weapon_table, SWT.NONE);
@@ -2350,6 +2728,9 @@ public class MainGUI {
 		tableItem22 = new TableItem(weapon_table, SWT.NONE);
 		tableItem23 = new TableItem(weapon_table, SWT.NONE);
 		tableItem24 = new TableItem(weapon_table, SWT.NONE);
+		
+		//weapon_table.getItem(24).setForeground(red);
+		tableItem24.setForeground(SWTResourceManager.getColor(SWT.COLOR_RED));
 		tableItem25 = new TableItem(weapon_table, SWT.NONE);
 		tableItem26 = new TableItem(weapon_table, SWT.NONE);
 		tableItem27 = new TableItem(weapon_table, SWT.NONE);
@@ -2359,10 +2740,13 @@ public class MainGUI {
 		tableItem31 = new TableItem(weapon_table, SWT.NONE);
 		tableItem32 = new TableItem(weapon_table, SWT.NONE);
 		tableItem33 = new TableItem(weapon_table, SWT.NONE);
+		tableItem34 = new TableItem(weapon_table, SWT.NONE);
+		tableItem35 = new TableItem(weapon_table, SWT.NONE);
+		tableItem36 = new TableItem(weapon_table, SWT.NONE);
 
 		
 		enemy_table = new Table(shell, SWT.BORDER | SWT.FULL_SELECTION);
-		enemy_table.setBounds(486, 779, 305, 122);
+		enemy_table.setBounds(589, 829, 305, 122);
 		formToolkit.adapt(enemy_table);
 		formToolkit.paintBordersFor(enemy_table);
 		enemy_table.setHeaderVisible(true);
@@ -2380,9 +2764,10 @@ public class MainGUI {
 		tblclmnValue.setWidth(81);
 		tblclmnValue.setText("Scaled Value");
 		
-		TableColumn tblclmnType = new TableColumn(enemy_table, SWT.NONE);
+		tblclmnType = new TableColumn(enemy_table, SWT.NONE);
 		tblclmnType.setWidth(70);
 		tblclmnType.setText("Type");
+		
 		
 		tableItem_1 = new TableItem(enemy_table, SWT.NONE);
 		tableItem_1.setText(new String[] {"Health", String.format("%,.0f", default_enemy.baseHealth), String.format("%,.0f", default_enemy.getHealthRemaining()), default_enemy.healthType});
@@ -2395,8 +2780,6 @@ public class MainGUI {
 		
 		tableItem_4 = new TableItem(enemy_table, SWT.NONE);
 		tableItem_4.setText(new String[] {"EHP","",String.format("%,.0f", default_enemy.ehp()),""});
-		
-
 
 		ui_set_up = true;
 		gui_setup = true;
@@ -2575,6 +2958,11 @@ public class MainGUI {
 	}
 	
 	private double[] simulate(Enemy enemy, Weapon weapon, int numSim) {
+		weapon.setupCustomBuild();
+		enemy = new Enemy((String)enemy_combo.getText(),enemy.level, armorReduct,default_weapon);
+		
+		damage_list.removeAll();
+		
 		double meanTime = 0;
 		double meanShots = 0;
 		double varTime = 0;
@@ -2595,7 +2983,7 @@ public class MainGUI {
 			
 		parseSettings(weapon, enemy); //this is only called once
 		//TODO
-		//May need to set virla, headshots etc for each sendary effect? or get those stats from the parent weapon
+		//May need to set viral, headshots etc for each sendary effect? or get those stats from the parent weapon
 		//weapon.set_secondary_effects();
 		
 		//System.out.printf("Simulating Weapon: "+weapon.name+"\n");
@@ -2606,7 +2994,12 @@ public class MainGUI {
 		int newCount=0;
 		int thresh = 20;
 		while(count<numSim) {
-			oneSim = simulate_once(enemy,weapon);
+			oneSim = simulate_once(enemy,weapon,count);
+			if(oneSim[0]>= STOP_COND) {
+				double q[] = {20,20,0,0};
+				return q;
+			}
+				
 			sum_t +=oneSim[0];
 			sum_t2 += Math.pow(oneSim[0], 2);
 			
@@ -2620,6 +3013,7 @@ public class MainGUI {
 			gas_proc_dmg += enemy.totGasDotDmg;
 
 			count++;
+			//progressBar.setSelection( count % (progressBar.getMaximum() + 1) );
 		}
 
 			
@@ -2639,7 +3033,9 @@ public class MainGUI {
 			}
 			count = 0;
 			while(count<(newCount-numSim)) {
-				oneSim = simulate_once(enemy,weapon);
+				oneSim = simulate_once(enemy,weapon,count);
+				if(oneSim[0]>= STOP_COND)
+					break;
 				sum_t +=oneSim[0];
 				sum_t2 += Math.pow(oneSim[0], 2);
 				
@@ -2653,7 +3049,9 @@ public class MainGUI {
 				gas_proc_dmg += enemy.totGasDotDmg;
 
 				count++;
+				//progressBar.setSelection( count % (progressBar.getMaximum() + 1) );
 			}
+			
 			meanTime = sum_t/newCount;
 			meanShots = sum_s/newCount;
 			varTime = sum_t2/newCount - Math.pow(meanTime, 2);
@@ -2667,15 +3065,16 @@ public class MainGUI {
 			//System.out.printf("Number of iterations: "+numSim+"\n");
 			
 		}
+		//progressBar.setSelection( 0 );
 		tox_proc_dmg = tox_proc_dmg/thresh;
 		sl_proc_dmg = sl_proc_dmg/thresh;
 		heat_proc_dmg = heat_proc_dmg/thresh;
 		electric_proc_dmg = electric_proc_dmg/thresh;
 		gas_proc_dmg = gas_proc_dmg/thresh;
 
-		enemy.reset(0);
+		enemy.reset(1);
 		tableItem25.setText(new String[] {"Ammo Efficiency",String.format("%,.1f", meanShots*weapon.ammoCost*100/(double)weapon.base_ammo)+"% of max ammo"});
-		tableItem24.setText(new String[] {"DPS",String.format("%,.0f", enemy.getHealthRemaining()/meanTime)});
+		tableItem24.setText(new String[] {"DPS",String.format("%,.0f", (enemy.getHealthRemaining() + enemy.getShieldRemaining())/meanTime)});
 		
 		tableItem27.setText(new String[] {"Slash Proc", String.format("%,.1f",sl_proc_dmg*100/(enemy.getHealthRemaining()+enemy.getShieldRemaining()))+"%"});
 		tableItem28.setText(new String[] {"Toxin Proc", String.format("%,.1f",tox_proc_dmg*100/enemy.getHealthRemaining())+"%"});
@@ -2683,13 +3082,13 @@ public class MainGUI {
 		tableItem30.setText(new String[] {"Electric Proc", String.format("%,.1f",electric_proc_dmg*100/(enemy.getHealthRemaining()+enemy.getShieldRemaining()))+"%"});
 		tableItem31.setText(new String[] {"Gas Proc", String.format("%,.1f",gas_proc_dmg*100/(enemy.getHealthRemaining()+enemy.getShieldRemaining()))+"%"});
 		
-		
-		double results[] = {meanTime,meanShots,varTime,varShots};
+		std_shots = Math.pow(varShots, 0.5);
+		std_time = Math.pow(varTime, 0.5);
+		double results[] = {meanTime,meanShots,std_time,std_shots};
 		return results;
 	}
-	private double[] simulate_once(Enemy enemy, Weapon weapon) {
+	private double[] simulate_once(Enemy enemy, Weapon weapon, int iteration) {
 		double result[] = new double[2];
-		int vigilanteCritLevel = 0;
 		int millis = 0;
 		int shots= 0;
 		double critMultiplier;
@@ -2699,8 +3098,10 @@ public class MainGUI {
 		weapon.fo.reset();
 		weapon.reset_secondary_effects();
 		
-		int prevHP = (int)(enemy.getHealthRemaining()+enemy.getShieldRemaining());
+		int prevHP = (int)enemy.getHealthRemaining();
 		int curHP = prevHP;
+		int cur_shield = (int)enemy.getShieldRemaining();
+		int prev_shield = (int)enemy.getShieldRemaining();
 		
 		int prev_armor = (int)(enemy.getArmorRemaining());
 		int cur_armor = prev_armor;
@@ -2710,11 +3111,12 @@ public class MainGUI {
 		int combo_count=0;
 		boolean force_slash = false;
 		
-		//weapon.damage_array = enemy.array_scale(weapon.damage_array,weapon.getMultiplier());
+		double crit_roll;
 		
 		if(graph) {
 			//series.add(millis/1000.0, ehp);
-			series.add(millis/1000.0, curHP);
+			health_series.add(millis/1000.0, curHP);
+			shield_series.add(millis/1000.0, cur_shield);
 			armor_series.add(millis/1000.0, enemy.getArmorRemaining());
 			//System.out.println(millis*1000);
 		}
@@ -2723,7 +3125,7 @@ public class MainGUI {
 		
 		while(enemy.getHealthRemaining() > 0){ 
 			
-			int[] event_index = new int[] {1000000,1000000,1000000,1000000, 1000000};
+			int[] event_index = new int[] {1000000,1000000,1000000,1000000,1000000};
 			
 			event_index[0] = (int)(next_event*1000);
 		
@@ -2772,6 +3174,7 @@ public class MainGUI {
 			int mindex = get_min_index(event_index);
 			//System.out.println(mindex);
 			
+			//Weapon damage event
 			if(mindex == 0) {
 				
 				//System.out.println(next_event);
@@ -2790,7 +3193,6 @@ public class MainGUI {
 					force_slash = false;
 				}
 				combo_count++;
-				///////////
 						
 				int numPellets;
 				
@@ -2809,63 +3211,28 @@ public class MainGUI {
 				
 				for(int i = 0; i < numPellets; i++){
 					
-					
-					if(rVig.nextDouble() <= vigilante)
-						vigilanteCritLevel = 1;
-					
-					if(rCrit.nextDouble() <= cur_effect.getHighCC()){ //highcrit?
-
-						if(weapon.headshot) {
-							critMultiplier = weapon.additive_crit_damage + ((2*cur_effect.critMultiplier-1)*(cur_effect.getCritTier()+vigilanteCritLevel)+1);								
-							enemy.damage_enemy(enemy.array_scale(cur_effect.damage_array, weapon.getMultiplier()) , critMultiplier, false);	//have to pass crit mul for toxin shield bypass
-							enemy.applyProc(cur_effect,true, critMultiplier, millis, rStatus.nextDouble(),force_slash);		
-																													
-						//no headshot
-						}else {
-							critMultiplier = weapon.additive_crit_damage + (cur_effect.critMultiplier-1)*(cur_effect.getCritTier()+vigilanteCritLevel)+1;																					
-							enemy.damage_enemy(enemy.array_scale(cur_effect.damage_array, weapon.getMultiplier()),critMultiplier, false);																					
-							enemy.applyProc(cur_effect,true, critMultiplier, millis, rStatus.nextDouble(),force_slash);	
-																											
-						}
-						
-					}else{
-						
-						//no crit
-						if(cur_effect.getCritTier() == 0){
-							
-							critMultiplier = 1 ;
-							//headshot
-							if(weapon.headshot) {
-								critMultiplier = 1 + weapon.additive_crit_damage;
-								enemy.damage_enemy(enemy.array_scale(cur_effect.damage_array, weapon.getMultiplier()), critMultiplier, false);
-								enemy.applyProc(cur_effect,false, critMultiplier, millis, rStatus.nextDouble(),force_slash);
-																					
-							//no headshot
-							}else {
-								enemy.damage_enemy(enemy.array_scale(cur_effect.damage_array, weapon.getMultiplier()), critMultiplier,false);										
-								enemy.applyProc(cur_effect,false, critMultiplier, millis, rStatus.nextDouble(),force_slash);														
-							}
-
-						//lower tier crit	
-						}else{
-							//ex if crit chance is 130%, this is the 70% chance to do a yellow crit
-							//headshot
-							if(weapon.headshot) {
-								critMultiplier = weapon.additive_crit_damage + ((2*cur_effect.critMultiplier-1)*(cur_effect.getCritTier()+vigilanteCritLevel-1)+1);
-								enemy.damage_enemy(enemy.array_scale(cur_effect.damage_array, weapon.getMultiplier()), critMultiplier,false);
-								enemy.applyProc(cur_effect,true, critMultiplier, millis, rStatus.nextDouble(),force_slash);		
-																			
-							//not headshot
-							}else {
-								critMultiplier = weapon.additive_crit_damage + ((cur_effect.critMultiplier-1)*(cur_effect.getCritTier()+vigilanteCritLevel-1)+1);
-								enemy.damage_enemy(enemy.array_scale(cur_effect.damage_array, weapon.getMultiplier()), critMultiplier, false);
-								enemy.applyProc(cur_effect,true, critMultiplier, millis, rStatus.nextDouble(),force_slash);
-
-							}
-						} 
+					crit_roll = rCrit.nextDouble();
+					critMultiplier = weapon.crit_inst.roll_crit(crit_roll, enemy, weapon.headshot);
+					enemy.damage_enemy(enemy.array_scale(cur_effect.damage_array, weapon.getMultiplier()), critMultiplier, false);
+					/*
+					if(debug_checkbutton.getSelection() && iteration == 0) {
+						damage_list.add(Double.toString(result_damage) + ", Crit tier: " + weapon.crit_inst.get_tier(crit_roll));
 					}
-					//clean up
-					vigilanteCritLevel = 0;
+					*/
+					//Crit
+					if(weapon.high_crit_tier>1) {
+						enemy.applyProc(cur_effect, true, critMultiplier, millis, rStatus.nextDouble(), force_slash);
+					}
+					//Crit
+					else if(crit_roll - weapon.high_crit_tier_chance <= 0){
+						enemy.applyProc(cur_effect, true, critMultiplier, millis, rStatus.nextDouble(), force_slash);
+					}
+					//No crit
+					else {
+						enemy.applyProc(cur_effect, false, critMultiplier, millis, rStatus.nextDouble(), force_slash);
+					}
+					
+					
 					if(enemy.shattering_impact) {
 						if(enemy.modifiedBaseArmor<=0) {
 							enemy.modifiedBaseArmor=0;
@@ -2887,58 +3254,53 @@ public class MainGUI {
 					}
 				}	
 				
-				/*
-				if(!cur_effect.is_secondary_effect) {
-					shots++;
-					weapon.primed_chamber_multiplier=1;
-				}
-				*/
 				shots++;
 				weapon.primed_chamber_multiplier=1;
-				//System.out.println(numPellets);
-				
-				
+
+				//Set the time of the next event for this effect
 				cur_effect.fo.increment();
-				
+				//find next scheduled effect to be completed
 				cur_effect = weapon.get_next_effect();
 				next_event = cur_effect.fo.get_event_time();
 				
 			}
+			//Proc event
 			else if(mindex == 1) {
 				millis = (int)next_dot.getOffset();
-				
 				next_dot.execute();
 			}
+			//Electric DOT event
 			else if(mindex == 2) {
 				millis = (int)Enemy.electricity_offset;
-				
 				enemy.elecQ.peekFirst().electric_trigger();
 			}
+			//Gas DOT event
 			else if(mindex == 3) {
 				millis = (int)Enemy.gas_offset;
-				
 				enemy.gasQ.peekFirst().gas_trigger();
 			}
+			//heat DOT event
 			else if(mindex == 4) {
 				millis = (int)Enemy.heat_offset;
-				
 				enemy.heatDot.heat_trigger();
 			}
-			
-			
-			
-			curHP = (int)(enemy.getHealthRemaining()+enemy.getShieldRemaining());
+				
+			curHP = (int)(enemy.getHealthRemaining());
 			cur_armor = (int)(enemy.getArmorRemaining());
+			cur_shield = (int)enemy.getShieldRemaining();
 			
 			//System.out.printf("Time: %d, Prev: %d, Cur: %d\n",millis, prevHP, curHP);
 			//System.out.printf("Millis: %d, Dmg: %d\n", millis, prevHP-curHP);
 			
 			if(graph) {
+				if(prev_shield != cur_shield) {
+					shield_series.add(millis/1000.0, prev_shield);
+					shield_series.add(millis/1000.0, cur_shield);
+					prev_shield = cur_shield;
+				}
 				if(prevHP != curHP) {
-					//series.add(millis/1000.0, ehp);
-					series.add(millis/1000.0, prevHP);
-					series.add(millis/1000.0, curHP);
-					//System.out.println(millis*1000);
+					health_series.add(millis/1000.0, prevHP);
+					health_series.add(millis/1000.0, curHP);
 					prevHP = curHP;
 				}
 				
@@ -2990,22 +3352,25 @@ public class MainGUI {
 		if(btnFullMagnetic.getSelection())
 			enemy.setMagneticMult(4.25);
 		
-		enemy.health_scale= spinner_to_double(health_scale_spinner);
-		enemy.armor_scale= spinner_to_double(armor_scale_spinner);
-		enemy.shield_scale= spinner_to_double(shield_scale_spinner);
+		enemy.health_scale = spinner_to_double(health_scale_spinner);
+		enemy.armor_scale = spinner_to_double(armor_scale_spinner);
+		enemy.shield_scale = spinner_to_double(shield_scale_spinner);
 		
 		
+		/*
 		enemy.setHealth(enemy.getHealthRemaining()*enemy.health_scale);
 		enemy.setArmor(enemy.getArmorRemaining()*enemy.armor_scale);
 		enemy.scaled_armor = enemy.getArmorRemaining();
 		enemy.setShield(enemy.getShieldRemaining()*enemy.shield_scale);
+		*/
+		enemy.reset(enemy.armorReduct);
+		enemy.scaled_armor = enemy.getArmorRemaining();
 		
 		enemy.resist(spinner_to_double(resist_spinner));
 		
 		boolean hunterMunitions = btnHunterMunitions.getSelection();
 		enemy.shattering_impact = btnShatteringImpact.getSelection();
 		enemy.amalgam_shattering_impact = btnAmalgamShatImp.getSelection();
-		enemy.demolyst = btnDemolyst.getSelection();
 
 		weapon.headshot = btnHeadshots.getSelection();
 		if(weapon.headshot) {
@@ -3014,8 +3379,9 @@ public class MainGUI {
 		
 		weapon.setHunter(hunterMunitions);
 		
+		//TODO remove cd manipulation
 		if(enemy.acolyte) {
-			weapon.critMultiplier = (weapon.critMultiplier-1)*0.5+1;
+			//weapon.critMultiplier = (weapon.critMultiplier-1)*0.5+1;
 			weapon.viralChance = 0;
 		}
 			
@@ -3038,9 +3404,71 @@ public class MainGUI {
 		tableItem_3.setText(new String[] {"Shield", String.format("%,.0f", enemy.baseShield), String.format("%,.0f", enemy.getShieldRemaining()), enemy.shieldType});
 		
 		tableItem_4.setText(new String[] {"EHP","",String.format("%,.0f", enemy.ehp()),""});
+		
+		tblclmnType.setToolTipText(get_weakness_string(enemy));
+		
+	}
+	
+	public String get_weakness_string(Enemy enemy) {
+		
+		String s = "";
+		s += "		Health		Armor		Shield\n";
+		for(int i =0; i< 13; i++) {
+			String elem = get_type(i);
+			s += elem;
+			if(elem.length() > 6) 
+				s += ":	";
+			else
+				s += ":		";
+			s += enemy.health_multipliers[i];
+			s += "		";
+			s += enemy.armor_multipliers[i];
+			s += "		";
+			s += enemy.shield_multipliers[i];
+			s += "\n";
+		}
+		
+		return s;
+	}
+	
+	public static String get_type(int s) {
+	    if (s == 0)
+	        return "impact";
+	    else if (s == 1)
+	        return "puncture";
+	    else if (s == 2)
+	        return "slash";
+	    else if (s == 3)
+	        return "heat";
+	    else if (s == 4)
+	        return "cold";
+	    else if (s == 5)
+	        return "electricity";
+	    else if (s == 6)
+	        return "toxin";
+	    else if (s == 7)
+	        return "blast";
+	    else if (s == 8)
+	        return "radiation";
+	    else if (s == 9)
+	        return "gas";
+	    else if (s == 10)
+	        return "magnetic";
+	    else if (s == 11)
+	        return "viral";
+	    else if (s == 12)
+	        return "corrosive";
+	    else if (s == 13)
+	        return "void";
+	    else if (s == 14)
+	        return "true";
+	    System.out.printf("Invalid damage type name," );
+	    return "true";
 	}
 	
 	public void update_weapon_table(Weapon wep) {
+		Display display = Display.getDefault();
+		Font damage_font = new Font( display, "Helvetica", 11, SWT.BOLD );
 		
 		Weapon w = wep;
 		for(int i = 0; i < wep.secondary_effects.size(); i++) {
@@ -3092,6 +3520,11 @@ public class MainGUI {
 		tableItem25.setText(new String[] {"Ammo Efficiency", "Run a simulation"});
 		tableItem24.setText(new String[] {"DPS", "Run a simulation"});
 		
+
+		//tableItem24.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
+		//tableItem24.setBackground(red);
+		//tableItem24.setForeground(red);
+		
 		tableItem26.setText(new String[] {"", ""});
 		
 		tableItem27.setText(new String[] {"Slash Procs", "Run a simulation"});
@@ -3102,13 +3535,89 @@ public class MainGUI {
 
 		tableItem32.setText(new String[] {"", ""});
 		
-		String s ="";
-		if(default_enemy.baseShield > 0) {
-			s = String.format("%,.2f",(default_enemy.display_damage(default_enemy.array_scale(w.damage_array, w.getMultiplier()),w)[1]));
-		}else {
-			s = String.format("%,.2f",(default_enemy.display_damage(default_enemy.array_scale(w.damage_array, w.getMultiplier()),w)[0]));
+		String l_shield ="";
+		String l_health ="";
+		String h_shield ="";
+		String h_health ="";
+		double shield_damage = (default_enemy.display_damage(default_enemy.array_scale(w.damage_array, w.getMultiplier()/w.beam_ramp_multiplier),w)[1]);
+		double health_damage = (default_enemy.display_damage(default_enemy.array_scale(w.damage_array, w.getMultiplier()/w.beam_ramp_multiplier),w)[0]);
+		
+
+		l_shield = String.format("%,.2f", shield_damage * wep.crit_inst.roll_crit(1, default_enemy, wep.headshot));
+		l_health = String.format("%,.2f", health_damage * wep.crit_inst.roll_crit(1, default_enemy, wep.headshot));
+		h_shield = String.format("%,.2f", shield_damage * wep.crit_inst.roll_crit(0, default_enemy, wep.headshot));
+		h_health = String.format("%,.2f", health_damage * wep.crit_inst.roll_crit(0, default_enemy, wep.headshot));
+		
+		int high_tier = wep.crit_inst.get_tier(0);
+		int low_tier= high_tier - 1;
+		
+		tableItem33.setText(new String[] {"Low Crit Health Damage", l_health });
+		tableItem33.setFont(1, damage_font);
+		tableItem33.setForeground(1, get_crit_color(low_tier, display) );
+		tableItem33.setBackground(1, get_crit_background_color(low_tier, display));
+		
+		tableItem34.setText(new String[] {"High Crit Health Damage", h_health });
+		tableItem34.setFont(1, damage_font);
+		tableItem34.setForeground(1, get_crit_color(high_tier, display) );
+		tableItem34.setBackground(1, get_crit_background_color(high_tier, display));
+		
+		tableItem35.setText(new String[] {"Low Crit Shield Damage", l_shield });
+		tableItem35.setFont(1, damage_font);
+		tableItem35.setForeground(1, get_crit_color(low_tier, display) );
+		tableItem35.setBackground(1, get_crit_background_color(low_tier, display));
+		
+		tableItem36.setText(new String[] {"High Crit Shield Damage", h_shield });
+		tableItem36.setFont(1, damage_font);
+		tableItem36.setForeground(1, get_crit_color(high_tier, display) );
+		tableItem36.setBackground(1, get_crit_background_color(high_tier, display));
+				
+	}
+	Color get_crit_color(int tier, Display display) {
+		
+		Color red = display.getSystemColor(SWT.COLOR_RED);
+		Color yellow = display.getSystemColor(SWT.COLOR_YELLOW);
+		Color white = display.getSystemColor(SWT.COLOR_WHITE);
+		Color orange = new Color( display, new RGB( 255, 102, 0 ) );
+		
+		Color result = white;
+		
+		if(tier == 0) {
+			result = white;
 		}
-		tableItem33.setText(new String[] {"Damage", s });
+		else if(tier == 1) {
+			result = yellow;
+		}
+		else if(tier == 2) {
+			result = orange;
+		}
+		else {
+			result = red;
+		}
+		
+		return result;
+		
+	}
+	
+	Color get_crit_background_color(int tier, Display display) {
+		Color black = display.getSystemColor(SWT.COLOR_BLACK);
+		Color white = display.getSystemColor(SWT.COLOR_WHITE);
+		
+		Color result = white;
+		
+		if(tier == 0) {
+			result = black;
+		}
+		else if(tier == 1) {
+			result = black;
+		}
+		else if(tier == 2) {
+			result = white;
+		}
+		else {
+			result = white;
+		}
+		
+		return result;
 	}
 	
 	String [][] get_table_string(Weapon w) {
@@ -3168,6 +3677,10 @@ public class MainGUI {
 			table_string[index] = new String[] { "corrosive", format_double( w.beam_multishot * w.damage_array[index("corrosive")] , 3 ) };
 			index++;
 		}
+		if( w.damage_array[index("void")] != 0) {
+			table_string[index] = new String[] { "void", format_double( w.beam_multishot * w.damage_array[index("void")] , 3 ) };
+			index++;
+		}
 		table_string[index] = new String[] {"", ""};
 		index++;
 		
@@ -3215,7 +3728,7 @@ public class MainGUI {
 			
 		
 	}
-	String format_double(double d, int sig_fig) {
+	static String format_double(double d, int sig_fig) {
 		
 		BigDecimal bd = new BigDecimal(d);
 		sig_fig = integerDigits(bd) + 2;
@@ -3224,7 +3737,7 @@ public class MainGUI {
 		return Double.toString(rounded);
 	}
 	
-	
+	/*
 	static double parse_double_textbox(String s) {
 	    String[] arrSplit = s.split("\\s");
 	    double tot = 0;
@@ -3234,6 +3747,25 @@ public class MainGUI {
 	    	  tot += string_to_double(arrSplit[i]);
 	      }
 	    }
+	    return tot;
+		
+	}
+	*/
+	static double parse_double_textbox(String r) {
+
+		String[] s = r.split("\\$");
+		double tot = 0;
+		for(int i =0; i<s.length;i++) {
+		    String[] arrSplit = s[i].split("\\s");
+		    
+		    for (int j=0; j < arrSplit.length; j++)
+		    {
+		      if( isNumeric(arrSplit[j]) ) {
+		    	  tot += string_to_double(arrSplit[j]);
+		      }
+		    }
+		}
+
 	    return tot;
 		
 	}
@@ -3257,7 +3789,11 @@ public class MainGUI {
 		  }  
 		}
 	public static double percent_to_double(double percent, int base) {
-		return percent/100.0 + base;
+		double res = percent/100.0 + base;
+		if(res < 0) {
+			res =0;
+		}
+		return res;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -3368,6 +3904,526 @@ public class MainGUI {
 	        return 14;
 	    System.out.printf("Invalid damage type name," );
 	    return 0;
+	}
+	private void find_best_riven_stat(Weapon wep, Enemy enem, int iter) {
+		
+		String[] neg_stats = simulate_riven_stats( wep,  enem, wep.negative_riven_stats, 1, wep.riven_curse_possibility);
+		String[] stats = simulate_riven_stats( wep,  enem, wep.riven_stats, 3,  wep.riven_buff_possibility);
+				
+		
+		System.out.println(stats[0]);
+		System.out.println(stats[1]);
+		System.out.println(stats[2]);
+		System.out.printf("\n");
+		//styledText.setText("Best stats (higher = longer TTK)\n" + stats[0]+"\n"+stats[1]+"\n"+stats[2]);
+		
+		
+		System.out.println(neg_stats[0]);
+		
+		styledText.setText("Best stats (higher = longer TTK)\n" + stats[0]+"\n"+stats[1]+"\n"+stats[2]+"\nNegative: "+neg_stats[0]);
+
+	}
+	
+	private String[] simulate_riven_stats(Weapon wep, Enemy enem, double[] riven_stats, int iter, boolean[] possibilities) {
+		int stat_a = -1;
+		int stat_b = -1;
+		int stat_c = -1;
+		int cur_index =0;
+
+		String[] stats = {"Stat A: ", "Stat B: ", "Stat C: "};
+		int[] ignore_arr = new int[18];
+		boolean[] check = get_riven_enable_check() ;
+		
+		for(int i = 0; i<iter; i++) {
+			double[] times = new double[18];
+			int best_index = 0;
+			double min_time = 100;
+			double[] res = new double[4];
+			
+			//for each text box, try max riven value and keep lowest time
+			String prev_text = "";
+			
+			//No buff/negative
+			res = simulate(enem, wep, 100);
+			if(res[0] <= min_time) {
+				min_time = res[0];
+				best_index = 17;
+			}
+			times[17] = res[0];
+	
+			
+			cur_index = 0;
+			if(possibilities[cur_index]) {
+				prev_text = damage_mod_text.getText();
+				damage_mod_text.setText( damage_mod_text.getText() + " $" +Double.toString(riven_stats[0]) );
+				res = simulate(enem, wep, 100);
+				if(res[0] <= min_time) {
+	
+					if(stat_a != 0 && stat_b != 0 && ignore_arr[cur_index] != 1 && check[cur_index] != true) {
+						min_time = res[0];
+						best_index = 0;
+					}
+				}
+				times[0] = res[0];
+				damage_mod_text.setText(prev_text);
+			}
+			
+			cur_index = 1;
+			if(possibilities[cur_index]) {
+				prev_text = bane_mod_text.getText();
+		        bane_mod_text.setText( bane_mod_text.getText() + " $" +Double.toString(riven_stats[1]) );
+		        res = simulate(enem, wep, 100);
+		        if(res[0] <= min_time) {
+		        	if(stat_a != 1 && stat_b != 1 && ignore_arr[cur_index] != 1&& check[cur_index] != true) {
+						min_time = res[0];
+						best_index = 1;
+		        	}
+				}
+		        times[1] = res[0];
+		        bane_mod_text.setText(prev_text);
+			}
+			
+	        cur_index = 2;
+	        if(possibilities[cur_index]) {
+				prev_text = crit_chance_mod_text.getText();
+		        crit_chance_mod_text.setText( crit_chance_mod_text.getText() + " $" +Double.toString(riven_stats[2]) );
+		        res = simulate(enem, wep, 100);
+		        if(res[0] <= min_time) {
+		        	if(stat_a != 2 && stat_b != 2 && ignore_arr[cur_index] != 1&& check[cur_index] != true) {
+						min_time = res[0];
+						best_index = 2;
+		        	}
+				}
+		        times[2] = res[0];
+		        crit_chance_mod_text.setText(prev_text);
+	        }
+			
+	        cur_index = 3;
+	        if(possibilities[cur_index]) {
+				prev_text = crit_damage_mod_text.getText();
+		        crit_damage_mod_text.setText( crit_damage_mod_text.getText() + " $" +Double.toString(riven_stats[3]) );
+		        res = simulate(enem, wep, 100);
+		        if(res[0] <= min_time) {
+		        	if(stat_a != 3 && stat_b != 3&& ignore_arr[cur_index] != 1&& check[cur_index] != true) {
+						min_time = res[0];
+						best_index = 3;
+		        	}
+				}
+		        times[3] = res[0];
+		        crit_damage_mod_text.setText(prev_text);
+	        }
+			
+	        cur_index = 4;
+	        if(possibilities[cur_index]) {
+				prev_text = multishot_mod_text.getText();
+		        multishot_mod_text.setText( multishot_mod_text.getText() + " $" +Double.toString(riven_stats[4]) );
+		        res = simulate(enem, wep, 100);
+		        if(res[0] <= min_time) {
+		        	if(stat_a != 4 && stat_b != 4&& ignore_arr[cur_index] != 1&& check[cur_index] != true) {
+						min_time = res[0];
+						best_index = 4;
+		        	}
+				}
+		        times[4] = res[0];
+		        multishot_mod_text.setText(prev_text);
+	        }
+			
+	        cur_index = 5;
+	        if(possibilities[cur_index]) {
+				prev_text = status_chance_mod_text.getText();
+		        status_chance_mod_text.setText( status_chance_mod_text.getText() + " $" +Double.toString(riven_stats[5]) );
+		        res = simulate(enem, wep, 100);
+		        if(res[0] <= min_time) {
+		        	if(stat_a != 5 && stat_b != 5&& ignore_arr[cur_index] != 1&& check[cur_index] != true) {
+						min_time = res[0];
+						best_index = 5;
+		        	}
+				}
+		        times[5] = res[0];
+		        status_chance_mod_text.setText(prev_text);
+	        }
+			
+	        cur_index = 6;
+	        if(possibilities[cur_index]) {
+				prev_text = cold_mod_text.getText();
+		        cold_mod_text.setText( cold_mod_text.getText() + " $" +Double.toString(riven_stats[6]) );
+		        res = simulate(enem, wep, 100);
+		        if(res[0] <= min_time) {
+		        	if(stat_a != 6 && stat_b != 6&& ignore_arr[cur_index] != 1&& check[cur_index] != true) {
+						min_time = res[0];
+						best_index = 6;
+		        	}
+				}
+		        times[6] = res[0];
+		        cold_mod_text.setText(prev_text);
+	        }
+			
+	        cur_index = 7;
+	        if(possibilities[cur_index]) {
+				prev_text = toxin_mod_text.getText();
+		        toxin_mod_text.setText( toxin_mod_text.getText() + " $" +Double.toString(riven_stats[7]) );
+		        res = simulate(enem, wep, 100);
+		        if(res[0] <= min_time) {
+		        	if(stat_a != 7 && stat_b != 7&& ignore_arr[cur_index] != 1&& check[cur_index] != true) {
+						min_time = res[0];
+						best_index = 7;
+		        	}
+				}
+		        times[7] = res[0];
+		        toxin_mod_text.setText(prev_text);
+	        }
+			
+	        cur_index = 8;
+	        if(possibilities[cur_index]) {
+				prev_text = heat_mod_text.getText();
+		        heat_mod_text.setText( heat_mod_text.getText() + " $" +Double.toString(riven_stats[8]) );
+		        res = simulate(enem, wep, 100);
+		        if(res[0] <= min_time) {
+		        	if(stat_a != 8 && stat_b != 8&& ignore_arr[cur_index] != 1&& check[cur_index] != true) {
+						min_time = res[0];
+						best_index = 8;
+		        	}
+				}
+		        times[8] = res[0];
+		        heat_mod_text.setText(prev_text);
+	        }
+			
+	        cur_index = 9;
+	        if(possibilities[cur_index]) {
+				prev_text = electricity_mod_text.getText();
+		        electricity_mod_text.setText( electricity_mod_text.getText() + " $" +Double.toString(riven_stats[9]) );
+		        res = simulate(enem, wep, 100);
+		        if(res[0] <= min_time) {
+		        	if(stat_a != 9 && stat_b != 9&& ignore_arr[cur_index] != 1&& check[cur_index] != true) {
+						min_time = res[0];
+						best_index = 9;
+		        	}
+				}
+		        times[9] = res[0];
+		        electricity_mod_text.setText(prev_text);
+	        }
+			
+	        cur_index = 10;
+	        if(possibilities[cur_index]) {
+				prev_text = fire_rate_mod_text.getText();
+		        fire_rate_mod_text.setText( fire_rate_mod_text.getText() + " $" +Double.toString(riven_stats[10]) );
+		        res = simulate(enem, wep, 100);
+		        if(res[0] <= min_time) {
+		        	if(stat_a != 10 && stat_b != 10&& ignore_arr[cur_index] != 1&& check[cur_index] != true) {
+						min_time = res[0];
+						best_index = 10;
+		        	}
+				}
+		        times[10] = res[0];
+		        fire_rate_mod_text.setText(prev_text);
+	        }
+			
+	        cur_index = 11;
+	        if(possibilities[cur_index]) {
+				prev_text = magazine_mod_text.getText();
+		        magazine_mod_text.setText( magazine_mod_text.getText() + " $" +Double.toString(riven_stats[11]) );
+		        res = simulate(enem, wep, 100);
+		        if(res[0] <= min_time) {
+		        	if(stat_a != 11 && stat_b != 11&& ignore_arr[cur_index] != 1&& check[cur_index] != true) {
+						min_time = res[0];
+						best_index = 11;
+		        	}
+				}
+		        times[11] = res[0];
+		        magazine_mod_text.setText(prev_text);
+	        }
+			
+	        cur_index = 12;
+	        if(possibilities[cur_index]) {
+				prev_text = reload_mod_text.getText();
+		        reload_mod_text.setText( reload_mod_text.getText() + " $" +Double.toString(riven_stats[12]) );
+		        res = simulate(enem, wep, 100);
+		        if(res[0] <= min_time) {
+		        	if(stat_a != 12 && stat_b != 12&& ignore_arr[cur_index] != 1&& check[cur_index] != true) {
+						min_time = res[0];
+						best_index = 12;
+		        	}
+				}
+		        times[12] = res[0];
+		        reload_mod_text.setText(prev_text);
+	        }
+			
+	        cur_index = 13;
+	        if(possibilities[cur_index]) {
+				prev_text = impact_mod_text.getText();
+		        impact_mod_text.setText( impact_mod_text.getText() + " $" +Double.toString(riven_stats[13]) );
+		        res = simulate(enem, wep, 100);
+		        if(res[0] <= min_time) {
+		        	if(stat_a != 13 && stat_b != 13&& ignore_arr[cur_index] != 1&& check[cur_index] != true) {
+						min_time = res[0];
+						best_index = 13;
+		        	}
+				}
+		        times[13] = res[0];
+		        impact_mod_text.setText(prev_text);
+	        }
+			
+	        cur_index = 14;
+	        if(possibilities[cur_index]) {
+				prev_text = puncture_mod_text.getText();
+		        puncture_mod_text.setText( puncture_mod_text.getText() + " $" +Double.toString(riven_stats[14]) );
+		        res = simulate(enem, wep, 100);
+		        if(res[0] <= min_time) {
+		        	if(stat_a != 14 && stat_b != 14&& ignore_arr[cur_index] != 1&& check[cur_index] != true) {
+						min_time = res[0];
+						best_index = 14;
+		        	}
+				}	
+		        times[14] = res[0];
+		        puncture_mod_text.setText(prev_text);
+	        }
+			
+	        cur_index = 15;
+	        if(possibilities[cur_index]) {
+				prev_text = slash_mod_text.getText();
+		        slash_mod_text.setText( slash_mod_text.getText() + " $" +Double.toString(riven_stats[15]) );
+		        res = simulate(enem, wep, 100);
+		        if(res[0] <= min_time) {
+		        	if(stat_a != 15 && stat_b != 15&& ignore_arr[cur_index] != 1&& check[cur_index] != true) {
+						min_time = res[0];
+						best_index = 15;
+		        	}
+				}
+		        times[15] = res[0];
+		        slash_mod_text.setText(prev_text);
+	        }
+			
+	        cur_index = 16;
+	        if(possibilities[cur_index]) {
+				prev_text = status_duration_mod_text.getText();
+		        status_duration_mod_text.setText( status_duration_mod_text.getText() + " $" +Double.toString(riven_stats[16]) );
+		        res = simulate(enem, wep, 100);
+		        if(res[0] <= min_time) {
+		        	if(stat_a != 16 && stat_b != 16&& ignore_arr[cur_index] != 1&& check[cur_index] != true) {
+						min_time = res[0];
+						best_index = 16;
+		        	}
+				}
+		        times[16] = res[0];
+		        status_duration_mod_text.setText(prev_text);
+	        }
+	        
+	        set_textbox_riven(wep, best_index, riven_stats);
+	        if(i == 0) {
+	        	stat_a = best_index;
+	        }
+	        else if (i == 1) {
+	        	stat_b = best_index;
+	        }
+	        else if (i == 2) {
+	        	stat_c = best_index;
+	        }
+	        
+	        for(int j = 0; j< times.length; j++) {
+	        	if( possibilities[j] && ignore_arr[j] != 1 && (times[j]-min_time)/min_time < 0.05 ) {
+	        		stats[i] += (get_riv_stat_name(j) + ": " + Double.toString((int)(100 * (times[j]-min_time)/min_time)) +  "%, ");
+	        		
+	        	}
+	        }
+	        ignore_arr[best_index] = 1;
+		}
+		
+		return stats;
+	}
+	private boolean[] get_riven_enable_check() {
+		boolean[] check = new boolean[17];
+		
+		check[0] = btnCheckButton0.getSelection();
+		check[1] = btnCheckButton1.getSelection();
+		check[2] = btnCheckButton2.getSelection();
+		check[3] = btnCheckButton3.getSelection();
+		check[4] = btnCheckButton4.getSelection();
+		check[5] = btnCheckButton5.getSelection();
+		check[6] = btnCheckButton6.getSelection();
+		check[7] = btnCheckButton7.getSelection();
+		check[8] = btnCheckButton8.getSelection();
+		check[9] = btnCheckButton9.getSelection();
+		check[10] = btnCheckButton10.getSelection();
+		check[11] = btnCheckButton11.getSelection();
+		check[12] = btnCheckButton12.getSelection();
+		check[13] = btnCheckButton13.getSelection();
+		check[14] = btnCheckButton14.getSelection();
+		check[15] = btnCheckButton15.getSelection();
+		check[16] = btnCheckButton16.getSelection();
+		
+		return check;
+
+	}
+	private String get_riv_stat_name(int index) {
+		String name = "Damage";
+		if(index == 17) {
+			name = "Harmless Negative";
+		}
+		else if(index == 0) {
+			name = "Damage";
+		}
+		else if(index == 1) {
+			name = "Bane";
+		}
+		else if(index == 2) {
+			name = "Critical Chance";
+		}
+		else if(index == 3) {
+			name = "Critical Damage";
+		}
+		else if(index == 4) {
+			name = "Multishot";
+		}
+		else if(index == 5) {
+			name = "Status Chance";
+		}
+		else if(index == 6) {
+			name = "Cold";
+		}
+		else if(index == 7) {
+			name = "Toxin";
+		}
+		else if(index == 8) {
+			name = "Heat";
+		}
+		else if(index == 9) {
+			name = "Electricity";
+		}
+		else if(index == 10) {
+			name = "Fire Rate";
+		}
+		else if(index == 11) {
+			name = "Magazine";
+		}
+		else if(index == 12) {
+			name = "Reload";
+		}
+		else if(index == 13) {
+			name = "Impact";
+		}
+		else if(index == 14) {
+			name = "Puncture";
+		}
+		else if(index == 15) {
+			name = "Slash";
+		}
+		else if(index == 16) {
+			name = "Status Duration";
+		}
+		return name;
+	}
+	private void set_textbox_riven(Weapon wep, int index, double[] riven_stats) {
+
+		if(index == 0) {
+			damage_mod_text.setText( damage_mod_text.getText() + " $" +Integer.toString((int)riven_stats[0]) );
+		}
+		else if(index == 1) {
+			bane_mod_text.setText( bane_mod_text.getText() +" $" + Integer.toString((int)riven_stats[1]) );
+		}
+		else if(index == 2) {
+			crit_chance_mod_text.setText( crit_chance_mod_text.getText() +" $" + Integer.toString((int)riven_stats[2]) );
+		}
+		else if(index == 3) {
+			crit_damage_mod_text.setText( crit_damage_mod_text.getText() +" $" + Integer.toString((int)riven_stats[3]) );
+		}
+		else if(index == 4) {
+			multishot_mod_text.setText( multishot_mod_text.getText() +" $" + Integer.toString((int)riven_stats[4]) );
+		}
+		else if(index == 5) {
+			status_chance_mod_text.setText( status_chance_mod_text.getText() +" $" + Integer.toString((int)riven_stats[5]) );
+		}
+		else if(index == 6) {
+			cold_mod_text.setText( cold_mod_text.getText() +" $" + Integer.toString((int)riven_stats[6]) );
+		}
+		else if(index == 7) {
+			toxin_mod_text.setText( toxin_mod_text.getText() +" $" + Integer.toString((int)riven_stats[7]) );
+		}
+		else if(index == 8) {
+			heat_mod_text.setText( heat_mod_text.getText() +" $" + Integer.toString((int)riven_stats[8]) );
+		}
+		else if(index == 9) {
+			electricity_mod_text.setText( electricity_mod_text.getText() +" $" + Integer.toString((int)riven_stats[9]) );
+		}
+		else if(index == 10) {
+			fire_rate_mod_text.setText( fire_rate_mod_text.getText() +" $" + Integer.toString((int)riven_stats[10]) );
+		}
+		else if(index == 11) {
+			magazine_mod_text.setText( magazine_mod_text.getText() +" $" + Integer.toString((int)riven_stats[11]) );
+		}
+		else if(index == 12) {
+			reload_mod_text.setText( reload_mod_text.getText() +" $" + Integer.toString((int)riven_stats[12]) );
+		}
+		else if(index == 13) {
+			impact_mod_text.setText( impact_mod_text.getText() +" $" + Integer.toString((int)riven_stats[13]) );
+		}
+		else if(index == 14) {
+			puncture_mod_text.setText( puncture_mod_text.getText() +" $" + Integer.toString((int)riven_stats[14]) );
+		}
+		else if(index == 15) {
+			slash_mod_text.setText( slash_mod_text.getText() +" $" + Integer.toString((int)riven_stats[15]) );
+		}
+		else if(index == 16) {
+			status_duration_mod_text.setText( status_duration_mod_text.getText() +" $" + Integer.toString((int)riven_stats[16]) );
+		}
+		
+
+	}
+	public void clear_riven_selection() {
+
+		damage_mod_text.setText( delete_identified_word(damage_mod_text.getText()) );
+
+		bane_mod_text.setText( delete_identified_word(bane_mod_text.getText()) );
+
+		crit_chance_mod_text.setText( delete_identified_word(crit_chance_mod_text.getText()) );
+
+		crit_damage_mod_text.setText( delete_identified_word(crit_damage_mod_text.getText()) );
+
+		multishot_mod_text.setText( delete_identified_word(multishot_mod_text.getText()) );
+
+		status_chance_mod_text.setText( delete_identified_word(status_chance_mod_text.getText()) );
+
+		cold_mod_text.setText( delete_identified_word(cold_mod_text.getText()) );
+	
+		toxin_mod_text.setText( delete_identified_word(toxin_mod_text.getText()) );
+	
+		heat_mod_text.setText( delete_identified_word(heat_mod_text.getText()));
+	
+		electricity_mod_text.setText( delete_identified_word(electricity_mod_text.getText()) );
+	
+		fire_rate_mod_text.setText( delete_identified_word(fire_rate_mod_text.getText()) );
+	
+		magazine_mod_text.setText( delete_identified_word( magazine_mod_text.getText()) );
+	
+		reload_mod_text.setText( delete_identified_word(reload_mod_text.getText()));
+	
+		impact_mod_text.setText( delete_identified_word(impact_mod_text.getText()) );
+	
+		puncture_mod_text.setText( delete_identified_word(puncture_mod_text.getText()) );
+	
+		slash_mod_text.setText( delete_identified_word( slash_mod_text.getText()) );
+	
+		status_duration_mod_text.setText( delete_identified_word(status_duration_mod_text.getText()) );
+		
+	}
+	public String delete_identified_word(String s) {
+		String res = "";
+		String[] spl = s.split("\\s");
+		
+		for(int i =0;i<spl.length;i++) {
+			if(!spl[i].contains("$") && !spl[i].equals("")) {
+				res += (" " +spl[i]);
+			}
+		}
+		return res;
+		
+	}
+	public static void add_non_duplicate_string_to_list(String s, org.eclipse.swt.widgets.List l) {
+		for(int i =0; i<l.getItemCount();i++) {
+			if(l.getItem(i).equals(s)) {
+				return;
+			}
+		}
+		damage_list.add(s);
 	}
 	
 	public static double string_to_double(String s) {

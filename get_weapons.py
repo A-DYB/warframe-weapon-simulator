@@ -4,6 +4,7 @@ import requests
 import lzma
 from lzma import FORMAT_AUTO, LZMAError, LZMADecompressor
 import re
+import string
 
 def main():
     melee_data = get_wfcd_melee()
@@ -15,11 +16,10 @@ def main():
 
     conc = ''
     with urllib.request.urlopen("http://content.warframe.com/PublicExport/Manifest/"+endpoint) as url:
-        d = url.read().decode().replace('\r', ',')
-        for line in d:
-            line = line.rstrip()
-            conc += line
-        data = json.loads(conc)
+        text = url.read().decode()
+        regex = re.compile(r'[\n\r\t]')
+        text = regex.sub(" ", text)
+        data = json.loads(text)
 
     weapon_list = data["ExportWeapons"]
     data = {}
@@ -27,12 +27,13 @@ def main():
         if wep['totalDamage'] == 0:
             #weapon does 0 damage, skip
             continue
-        data[wep['name']] = wep
-        data[wep['name']]['OtherFireModes'] = {}
-        data[wep['name']]['SecondaryEffects'] = {}
+        wepname = string.capwords(wep['name'])
+        data[wepname] = wep
+        data[wepname]['OtherFireModes'] = {}
+        data[wepname]['SecondaryEffects'] = {}
         try:
             if "HELD" in wep["trigger"]:
-                data[wep['name']]["ammoCost"] = 0.5
+                data[wepname]["ammoCost"] = 0.5
         except:
             pass
         '''
@@ -45,14 +46,15 @@ def main():
 
     for melee in melee_data:
         name = melee['name']
-        name = name.replace(" ", "").upper()
+        name = name.strip()
+        #name = name.upper()
         try:
             data[name]['type'] = melee['type']
         except:
             print("Melee item key error: ~", name,"~")
     for primary in primary_data:
         name = primary['name']
-        name = name.replace(" ", "").upper()
+        #name = name.upper()
         name = name.strip()
         try:
             data[name]['ammo'] = primary['ammo']
@@ -62,7 +64,7 @@ def main():
 
     for secondary in secondary_data:
         name = secondary['name']
-        name = name.replace(" ", "").upper()
+        #name = name.upper()
         name = name.strip()
         try:
             data[name]['ammo'] = secondary['ammo']
@@ -70,8 +72,23 @@ def main():
             #print("Secondary item key error: ~", name,"~")
             pass
     
+    user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7'
+    rivurl = "https://10o.io/rivens/rivencalc.json"
+    rivheaders={'User-Agent':user_agent,} 
+    rivrequest=urllib.request.Request(rivurl,None,rivheaders) #The assembled request
+    rivresponse = urllib.request.urlopen(rivrequest)
+    rivdata = rivresponse.read().decode()
+    rivdata = json.loads(rivdata)
+
+    for rivelem in rivdata["weapons"]:
+        try:
+            data[string.capwords(rivelem['name'])]["rivenType"] = rivelem['riventype']
+        except:
+            print("No key for ", string.capwords(rivelem['name']))
 
     fill_in_the_blanks(data)
+
+
 
     json_stuff = json.dumps(data)
     f = open('weapons.json',"w")
@@ -105,355 +122,366 @@ def fill_in_the_blanks(data):
     ###BEAM WEAPONS
 
     #AMPREX
-    data["AMPREX"]["damageRamp"] = {'min':0.3}
+    data[string.capwords("AMPREX")]["damageRamp"] = {'min':0.3}
     #ATOMOS
-    data["ATOMOS"]["damageRamp"] = {'min':0.35}
+    data[string.capwords("ATOMOS")]["damageRamp"] = {'min':0.35}
     #ARTAX
-    data["ATOMOS"]["damageRamp"] = {'min':0.2}
+    data[string.capwords("ATOMOS")]["damageRamp"] = {'min':0.2}
     #BASMU
-    data["BASMU"]["damageRamp"] = {'min':0.2}
+    data[string.capwords("BASMU")]["damageRamp"] = {'min':0.2}
     #CATABOLYST
-    data["CATABOLYST"]["damageRamp"] = {'min':0.2}
+    data[string.capwords("CATABOLYST")]["damageRamp"] = {'min':0.2}
     #CONVECTRIX
-    data["CONVECTRIX"]["damageRamp"] = {'min':0.6}
+    data[string.capwords("CONVECTRIX")]["damageRamp"] = {'min':0.6}
     new_damage = [0] * 20
     new_damage[0] = 1.8
     new_damage[1] = 1.8
     new_damage[2] = 14.4
-    data["CONVECTRIX"]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'fireRate': 4, 'ammoCost': 0.5}
-    data["CONVECTRIX"]['OtherFireModes']['AltFire']["damageRamp"] = {'min':0.8}
-    data["CONVECTRIX"]['OtherFireModes']['AltFire']['SecondaryEffects'] = {}
+    data[string.capwords("CONVECTRIX")]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'fireRate': 4, 'ammoCost': 0.5}
+    data[string.capwords("CONVECTRIX")]['OtherFireModes']['AltFire']["damageRamp"] = {'min':0.8}
+    data[string.capwords("CONVECTRIX")]['OtherFireModes']['AltFire']['SecondaryEffects'] = {}
     #ARTAX
-    data["ARTAX"]["damageRamp"] = {'min':0.2}
+    data[string.capwords("ARTAX")]["damageRamp"] = {'min':0.2}
     #CORTEGE
-    data["CORTEGE"]["damageRamp"] = {'min':0.2}
+    data[string.capwords("CORTEGE")]["damageRamp"] = {'min':0.2}
     #CRYOTRA
-    data["CRYOTRA"]["damageRamp"] = {'min':0.2}
+    data[string.capwords("CRYOTRA")]["damageRamp"] = {'min':0.2}
     #CYCRON
-    data["CYCRON"]["damageRamp"] = {'min':0.3}
+    data[string.capwords("CYCRON")]["damageRamp"] = {'min':0.3}
     #EMBOLYST
-    data["EMBOLIST"]["damageRamp"] = {'min':0.45}
-    #FLUXRIFLE
-    data["FLUXRIFLE"]["damageRamp"] = {'min':0.25}
+    data[string.capwords("EMBOLIST")]["damageRamp"] = {'min':0.45}
+    #FLUX RIFLE
+    data[string.capwords("FLUX RIFLE")]["damageRamp"] = {'min':0.25}
     #GAMMACOR
-    data["GAMMACOR"]["damageRamp"] = {'min':0.25}
+    data[string.capwords("GAMMACOR")]["damageRamp"] = {'min':0.25}
     #GLAXION
-    data["GLAXION"]["damageRamp"] = {'min':0.2}
+    data[string.capwords("GLAXION")]["damageRamp"] = {'min':0.2}
     #GLAXIONVANDAL
-    data["GLAXIONVANDAL"]["damageRamp"] = {'min':0.3}
+    data[string.capwords("GLAXION VANDAL")]["damageRamp"] = {'min':0.3}
     #IGNIS
-    data["IGNIS"]["damageRamp"] = {'min':0.35}
-    #IGNISWRAITH
-    data["IGNISWRAITH"]["damageRamp"] = {'min':0.35}
+    data[string.capwords("IGNIS")]["damageRamp"] = {'min':0.35}
+    #IGNIS WRAITH
+    data[string.capwords("IGNIS WRAITH")]["damageRamp"] = {'min':0.35}
     #KUVANUKOR
-    data["KUVANUKOR"]["damageRamp"] = {'min':0.3}
+    data[string.capwords("KUVA NUKOR")]["damageRamp"] = {'min':0.3}
     #LARKSPUR
-    data["LARKSPUR"]["damageRamp"] = {'min':0.2}
+    data[string.capwords("LARKSPUR")]["damageRamp"] = {'min':0.2}
     #NUKOR
-    data["NUKOR"]["damageRamp"] = {'min':0.3}
+    data[string.capwords("NUKOR")]["damageRamp"] = {'min':0.3}
     #OCUCOR
-    data["OCUCOR"]["damageRamp"] = {'min':0.2}
+    data[string.capwords("OCUCOR")]["damageRamp"] = {'min':0.2}
     #PHAGE
-    data["PHAGE"]["damageRamp"] = {'min':0.7}
+    data[string.capwords("PHAGE")]["damageRamp"] = {'min':0.7}
     #PHANTASMA
-    data["PHANTASMA"]["damageRamp"] = {'min':0.15}
+    data[string.capwords("PHANTASMA")]["damageRamp"] = {'min':0.15}
     #QUANTA
-    data["QUANTA"]["damageRamp"] = {'min':0.3}
+    data[string.capwords("QUANTA")]["damageRamp"] = {'min':0.3}
     #QUANTAVANDAL
-    data["QUANTAVANDAL"]["damageRamp"] = {'min':0.3}
+    data[string.capwords("QUANTA VANDAL")]["damageRamp"] = {'min':0.3}
     #SPECTRA
-    data["SPECTRA"]["damageRamp"] = {'min':0.25}
+    data[string.capwords("SPECTRA")]["damageRamp"] = {'min':0.25}
     #SPECTRAVANDAL
-    data["SPECTRAVANDAL"]["damageRamp"] = {'min':0.25}
+    data[string.capwords("SPECTRA VANDAL")]["damageRamp"] = {'min':0.25}
     #SYNAPSE
-    data["SYNAPSE"]["damageRamp"] = {'min':0.2}
+    data[string.capwords("SYNAPSE")]["damageRamp"] = {'min':0.2}
     #SYNOIDGAMMACOR
-    data["SYNOIDGAMMACOR"]["damageRamp"] = {'min':0.3}
+    data[string.capwords("SYNOID GAMMACOR")]["damageRamp"] = {'min':0.3}
     #VERGLAS
-    data["VERGLAS"]["damageRamp"] = {'min':0.2}
+    data[string.capwords("VERGLAS")]["damageRamp"] = {'min':0.2}
 
     ### CHARGE WEAPONS
-    data["BALLISTICAPRIME"]["chargeTime"] = 0.8
-    data["BALLISTICA"]["chargeTime"] = 1
-    data["DREAD"]["chargeTime"] = 0.5
-    data["PARISPRIME"]["chargeTime"] = 0.5
-    data["PARIS"]["chargeTime"] = 0.5     
-    data["PROBOSCISCERNOS"]["chargeTime"] = 0.7
-    data["CERNOSPRIME"]["chargeTime"] = 0.5
-    data["DAIKYU"]["chargeTime"] = 1
-    data["CERNOS"]["chargeTime"] = 0.5
-    data["VELOCITUS"]["chargeTime"] = 1
-    data["CORVAS"]["chargeTime"] = 0.5
-    data["RAKTABALLISTICA"]["chargeTime"] = 1
-    data["RAKTACERNOS"]["chargeTime"] = 0.25
-    data["MK1-PARIS"]["chargeTime"] = 0.5
-    data["MUTALISTCERNOS"]["chargeTime"] = 0.5
-    data["JAVLOK"]["chargeTime"] = 0.3
-    data["MITER"]["chargeTime"] = 0.75
-    data["DRAKGOON"]["chargeTime"] = 0.5
-    data["KUVADRAKGOON"]["chargeTime"] = 0.3
-    data["KUVABRAMMA"]["chargeTime"] = 0.4
-    data["PRISMAANGSTRUM"]["chargeTime"] = 0.2
-    data["ANGSTRUM"]["chargeTime"] = 0.5
-    data["STATICOR"]["chargeTime"] = 1
-    data["FERROX"]["chargeTime"] = 0.5
-    data["OPTICOR"]["chargeTime"] = 2
-    data["OPTICORVANDAL"]["chargeTime"] = 0.6
-    data["LENZ"]["chargeTime"] = 1.2
-    data["LANKA"]["chargeTime"] = 1
-    data["OGRIS"]["chargeTime"] = 0.3
-    data["VULCAX"]["chargeTime"] = 1
-    #data["ArtemisBow"]["chargeTime"] = 1
-    #data["ARTEMISBOWPRIME"]["chargeTime"] = 1
-    #data["BALEFIRECHARGER"]["chargeTime"] = 2
-    data["EPITAPH"]["chargeTime"] = 0.36
+    data[string.capwords("BALLISTICA PRIME")]["chargeTime"] = 0.8
+    data[string.capwords("BALLISTICA")]["chargeTime"] = 1
+    data[string.capwords("DREAD")]["chargeTime"] = 0.5
+    data[string.capwords("PARIS PRIME")]["chargeTime"] = 0.5
+    data[string.capwords("PARIS")]["chargeTime"] = 0.5     
+    data[string.capwords("PROBOSCIS CERNOS")]["chargeTime"] = 0.7
+    data[string.capwords("CERNOS PRIME")]["chargeTime"] = 0.5
+    data[string.capwords("DAIKYU")]["chargeTime"] = 1
+    data[string.capwords("CERNOS")]["chargeTime"] = 0.5
+    data[string.capwords("VELOCITUS")]["chargeTime"] = 1
+    data[string.capwords("CORVAS")]["chargeTime"] = 0.5
+    data[string.capwords("RAKTA BALLISTICA")]["chargeTime"] = 1
+    data[string.capwords("RAKTA CERNOS")]["chargeTime"] = 0.25
+    data[string.capwords("MK1-PARIS")]["chargeTime"] = 0.5
+    data[string.capwords("MUTALIST CERNOS")]["chargeTime"] = 0.5
+    data[string.capwords("JAVLOK")]["chargeTime"] = 0.3
+    data[string.capwords("MITER")]["chargeTime"] = 0.75
+    data[string.capwords("DRAKGOON")]["chargeTime"] = 0.5
+    data[string.capwords("KUVA DRAKGOON")]["chargeTime"] = 0.3
+    data[string.capwords("KUVA BRAMMA")]["chargeTime"] = 0.4
+    data[string.capwords("PRISMA ANGSTRUM")]["chargeTime"] = 0.2
+    data[string.capwords("ANGSTRUM")]["chargeTime"] = 0.5
+    data[string.capwords("STATICOR")]["chargeTime"] = 1
+    data[string.capwords("FERROX")]["chargeTime"] = 0.5
+    data[string.capwords("OPTICOR")]["chargeTime"] = 2
+    data[string.capwords("OPTICOR VANDAL")]["chargeTime"] = 0.6
+    data[string.capwords("LENZ")]["chargeTime"] = 1.2
+    data[string.capwords("LANKA")]["chargeTime"] = 1
+    data[string.capwords("OGRIS")]["chargeTime"] = 0.3
+    data[string.capwords("VULCAX")]["chargeTime"] = 1
+    #data[string.capwords("ArtemisBow")]["chargeTime"] = 1
+    #data[string.capwords("ARTEMISBOWPRIME")]["chargeTime"] = 1
+    #data[string.capwords("BALEFIRECHARGER")]["chargeTime"] = 2
+    data[string.capwords("EPITAPH")]["chargeTime"] = 0.36
+    data[string.capwords("PROBOSCIS CERNOS")]["chargeTime"] = 0.7
     
+    #PROBOSCISCERNOS
+    new_damage = [0] * 20
+    new_damage[index('viral')] = 1003
+    data[string.capwords("PROBOSCIS CERNOS")]["SecondaryEffects"]["AOE"] = {'damagePerShot': new_damage, 'radius': 7, 'falloff': 0.5, 'embedDelay': 1.7}
+    new_damage = [0] * 20
+    new_damage[index('slash')] = 50.625
+    new_damage[index('viral')] = 39.375
+    data[string.capwords("PROBOSCIS CERNOS")]["SecondaryEffects"]["Appendages"] = {'damagePerShot': new_damage, 'radius': 9, 'falloff': 0, 'multishot': 2, 'embedDelay': 0.85}
+
     #EPITAPH
     new_damage = [0] * 20
     new_damage[index('impact')] = 40
     new_damage[index('puncture')] = 30
     new_damage[index('slash')] = 30
-    data["EPITAPH"]['OtherFireModes']['QuickShot'] = {'damagePerShot': new_damage, 'fireRate': 1.5, 'ammoCost': 1, 'trigger': 'SEMI'}
-    data["EPITAPH"]['OtherFireModes']['QuickShot']['SecondaryEffects'] = {}
+    data[string.capwords("EPITAPH")]['OtherFireModes']['QuickShot'] = {'damagePerShot': new_damage, 'fireRate': 1.5, 'ammoCost': 1, 'trigger': 'SEMI'}
+    data[string.capwords("EPITAPH")]['OtherFireModes']['QuickShot']['SecondaryEffects'] = {}
     new_damage = [0] * 20
     new_damage[index('blast')] = 20
-    data["EPITAPH"]['OtherFireModes']['QuickShot']['SecondaryEffects']['AOE'] = {'damagePerShot': new_damage, 'radius': 8, 'falloff': 0.8}
+    data[string.capwords("EPITAPH")]['OtherFireModes']['QuickShot']['SecondaryEffects']['AOE'] = {'damagePerShot': new_damage, 'radius': 8, 'falloff': 0.8}
 
     #QUANTA
     new_damage = [0] * 20
     new_damage[5] = 100
-    data["QUANTA"]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'criticalChance': 0.05, 'criticalMultiplier': 1.5, 'procChance': 0.26, 'fireRate': 4, 'ammoCost': 10, 'trigger': 'SEMI'}
-    data["QUANTA"]['OtherFireModes']['AltFire']['SecondaryEffects'] = {}
+    data[string.capwords("QUANTA")]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'criticalChance': 0.05, 'criticalMultiplier': 1.5, 'procChance': 0.26, 'fireRate': 4, 'ammoCost': 10, 'trigger': 'SEMI'}
+    data[string.capwords("QUANTA")]['OtherFireModes']['AltFire']['SecondaryEffects'] = {}
     new_damage = [0] * 20
     new_damage[7] = 150
-    data["QUANTA"]['OtherFireModes']['AltFire']['SecondaryEffects']['CubeExplosion'] = {'damagePerShot': new_damage, 'radius': 0.5}
+    data[string.capwords("QUANTA")]['OtherFireModes']['AltFire']['SecondaryEffects']['CubeExplosion'] = {'damagePerShot': new_damage, 'radius': 0.5}
     new_damage = [0] * 20
     new_damage[7] = 600
-    data["QUANTA"]['OtherFireModes']['AltFire']['SecondaryEffects']['CubeShot'] = {'damagePerShot': new_damage, 'radius': 6}
+    data[string.capwords("QUANTA")]['OtherFireModes']['AltFire']['SecondaryEffects']['CubeShot'] = {'damagePerShot': new_damage, 'radius': 6}
 
     #QUANTAVANDAL
     new_damage = [0] * 20
     new_damage[5] = 100
-    data["QUANTAVANDAL"]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'criticalChance': 0.05, 'criticalMultiplier': 1.5, 'procChance': 0.26, 'fireRate': 4, 'ammoCost': 10, 'trigger': 'SEMI'}
-    data["QUANTAVANDAL"]['OtherFireModes']['AltFire']['SecondaryEffects'] = {}
+    data[string.capwords("QUANTA VANDAL")]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'criticalChance': 0.05, 'criticalMultiplier': 1.5, 'procChance': 0.26, 'fireRate': 4, 'ammoCost': 10, 'trigger': 'SEMI'}
+    data[string.capwords("QUANTA VANDAL")]['OtherFireModes']['AltFire']['SecondaryEffects'] = {}
     new_damage = [0] * 20
     new_damage[7] = 150
-    data["QUANTAVANDAL"]['OtherFireModes']['AltFire']['SecondaryEffects']['CubeExplosion'] = {'damagePerShot': new_damage, 'radius': 0.5}
+    data[string.capwords("QUANTA VANDAL")]['OtherFireModes']['AltFire']['SecondaryEffects']['CubeExplosion'] = {'damagePerShot': new_damage, 'radius': 0.5}
     new_damage = [0] * 20
     new_damage[7] = 600
-    data["QUANTAVANDAL"]['OtherFireModes']['AltFire']['SecondaryEffects']['CubeShot'] = {'damagePerShot': new_damage, 'radius': 6}
+    data[string.capwords("QUANTA VANDAL")]['OtherFireModes']['AltFire']['SecondaryEffects']['CubeShot'] = {'damagePerShot': new_damage, 'radius': 6}
 
     #KUVABRAMMA
     new_damage = [0] * 20
     new_damage[index('impact')] = 49
     
-    data["KUVABRAMMA"]['SecondaryEffects']['BombletImpact'] = {'damagePerShot': new_damage, 'multishot': 3}
+    data[string.capwords("KUVA BRAMMA")]['SecondaryEffects']['BombletImpact'] = {'damagePerShot': new_damage, 'multishot': 3}
     new_damage = [0] * 20
     new_damage[index('blast')] = 57
-    data["KUVABRAMMA"]['SecondaryEffects']['BombletExplosion'] = {'damagePerShot': new_damage, 'multishot': 3, 'radius': 3.5, 'falloff': 0.5}
+    data[string.capwords("KUVA BRAMMA")]['SecondaryEffects']['BombletExplosion'] = {'damagePerShot': new_damage, 'multishot': 3, 'radius': 3.5, 'falloff': 0.5}
 
     #ARGONAK
     new_damage = [0] * 20
     new_damage[0] = 24.5
     new_damage[1] = 6.3
     new_damage[2] = 26.2
-    data["ARGONAK"]['OtherFireModes']['FullAuto'] = {'damagePerShot': new_damage, 'criticalChance': 0.09, 'criticalMultiplier': 1.5, 'procChance': 0.27, 'fireRate': 6, 'trigger': 'AUTO'}
+    data[string.capwords("ARGONAK")]['OtherFireModes']['FullAuto'] = {'damagePerShot': new_damage, 'criticalChance': 0.09, 'criticalMultiplier': 1.5, 'procChance': 0.27, 'fireRate': 6, 'trigger': 'AUTO'}
 
     #BATTACOR
     new_damage = [0] * 20
     new_damage[8] = 208
-    data["BATTACOR"]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'criticalChance': 0.34, 'criticalMultiplier': 3, 'procChance': 0.08, 'fireRate': 5, 'chargeTime': 0.4, 'trigger': 'CHARGE'}
-    data["BATTACOR"]['OtherFireModes']['AltFire']['SecondaryEffects'] = {}
-    data["BATTACOR"]['OtherFireModes']['AltFire']['SecondaryEffects']['AOE'] = {'damagePerShot': new_damage, 'falloff': 0.4}
+    data[string.capwords("BATTACOR")]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'criticalChance': 0.34, 'criticalMultiplier': 3, 'procChance': 0.08, 'fireRate': 5, 'chargeTime': 0.4, 'trigger': 'CHARGE'}
+    data[string.capwords("BATTACOR")]['OtherFireModes']['AltFire']['SecondaryEffects'] = {}
+    data[string.capwords("BATTACOR")]['OtherFireModes']['AltFire']['SecondaryEffects']['AOE'] = {'damagePerShot': new_damage, 'falloff': 0.4}
 
     #BASMU
     new_damage = [0] * 20
     new_damage[5] = 12
-    data["BASMU"]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'criticalChance': 0.02, 'criticalMultiplier': 4.8, 'procChance': 0.3, 'fireRate': 12, 'multishot': 2, 'trigger': 'HELD'}
-    data["BASMU"]['OtherFireModes']['AltFire']["damageRamp"] = {'min':0.2}
+    data[string.capwords("BASMU")]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'criticalChance': 0.02, 'criticalMultiplier': 4.8, 'procChance': 0.3, 'fireRate': 12, 'multishot': 2, 'trigger': 'HELD'}
+    data[string.capwords("BASMU")]['OtherFireModes']['AltFire']["damageRamp"] = {'min':0.2}
     
     #BUBONICO
     new_damage = [0] * 20
     new_damage[0] = 9
-    data["BUBONICO"]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'criticalChance': 0.03, 'criticalMultiplier': 3.5, 'procChance': 0.57, 'fireRate': 3.37, 'multishot': 1, 'trigger': 'BURST'}
-    data["BUBONICO"]['OtherFireModes']['AltFire']['SecondaryEffects'] = {}
+    data[string.capwords("BUBONICO")]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'criticalChance': 0.03, 'criticalMultiplier': 3.5, 'procChance': 0.57, 'fireRate': 3.37, 'multishot': 1, 'trigger': 'BURST'}
+    data[string.capwords("BUBONICO")]['OtherFireModes']['AltFire']['SecondaryEffects'] = {}
     new_damage = [0] * 20
     new_damage[11] = 143
-    data["BUBONICO"]['OtherFireModes']['AltFire']['SecondaryEffects']['AOE'] = {'damagePerShot': new_damage, 'falloff': 0.5, 'radius': 7}
+    data[string.capwords("BUBONICO")]['OtherFireModes']['AltFire']['SecondaryEffects']['AOE'] = {'damagePerShot': new_damage, 'falloff': 0.5, 'radius': 7}
 
     #CORINTH
     new_damage = [0] * 20
     new_damage[0] = 100
-    data["CORINTH"]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'criticalChance': 0.04, 'criticalMultiplier': 1.6, 'procChance': 0.28, 'fireRate': 1.17, 'multishot': 1, 'trigger': 'SEMI'}
-    data["CORINTH"]['OtherFireModes']['AltFire']['SecondaryEffects'] = {}
+    data[string.capwords("CORINTH")]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'criticalChance': 0.04, 'criticalMultiplier': 1.6, 'procChance': 0.28, 'fireRate': 1.17, 'multishot': 1, 'trigger': 'SEMI'}
+    data[string.capwords("CORINTH")]['OtherFireModes']['AltFire']['SecondaryEffects'] = {}
     new_damage = [0] * 20
     new_damage[index('blast')] = 404
-    data["CORINTH"]['OtherFireModes']['AltFire']['SecondaryEffects']['AOE'] = {'damagePerShot': new_damage, 'falloff': 0.9, 'radius': 9.4}
+    data[string.capwords("CORINTH")]['OtherFireModes']['AltFire']['SecondaryEffects']['AOE'] = {'damagePerShot': new_damage, 'falloff': 0.9, 'radius': 9.4}
 
     #CORINTHPRIME
     new_damage = [0] * 20
     new_damage[0] = 100
-    data["CORINTHPRIME"]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'criticalChance': 0.04, 'criticalMultiplier': 1.6, 'procChance': 0.5, 'fireRate': 0.667, 'multishot': 1, 'ammoCost': 4, 'trigger': 'SEMI'}
-    data["CORINTHPRIME"]['OtherFireModes']['AltFire']['SecondaryEffects'] = {}
+    data[string.capwords("CORINTH PRIME")]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'criticalChance': 0.04, 'criticalMultiplier': 1.6, 'procChance': 0.5, 'fireRate': 0.667, 'multishot': 1, 'ammoCost': 4, 'trigger': 'SEMI'}
+    data[string.capwords("CORINTH PRIME")]['OtherFireModes']['AltFire']['SecondaryEffects'] = {}
     new_damage = [0] * 20
     new_damage[index('blast')] = 2200
-    data["CORINTHPRIME"]['OtherFireModes']['AltFire']['SecondaryEffects']['AOE'] = {'damagePerShot': new_damage, 'falloff': 0.9, 'radius': 9.8}
+    data[string.capwords("CORINTH PRIME")]['OtherFireModes']['AltFire']['SecondaryEffects']['AOE'] = {'damagePerShot': new_damage, 'falloff': 0.9, 'radius': 9.8}
 
     #FULMIN
-    data["FULMIN"]['ammoCost'] = 10
+    data[string.capwords("FULMIN")]['ammoCost'] = 10
     new_damage = [0] * 20
     new_damage[index('puncture')] = 8
     new_damage[index('electric')] = 25
-    data["FULMIN"]['OtherFireModes']['FullAuto'] = {'damagePerShot': new_damage, 'criticalChance': 0.28, 'criticalMultiplier': 2.4, 'procChance': 0.1, 'fireRate': 9.33, 'multishot': 1, 'ammoCost': 1, 'trigger': 'AUTO'}
+    data[string.capwords("FULMIN")]['OtherFireModes']['FullAuto'] = {'damagePerShot': new_damage, 'criticalChance': 0.28, 'criticalMultiplier': 2.4, 'procChance': 0.1, 'fireRate': 9.33, 'multishot': 1, 'ammoCost': 1, 'trigger': 'AUTO'}
     
     #HIND
     new_damage = [0] * 20
     new_damage[index('impact')] = 12
     new_damage[index('puncture')] = 12
     new_damage[index('slash')] = 36
-    data["HIND"]['OtherFireModes']['SemiAuto'] = {'damagePerShot': new_damage, 'criticalChance': 0.15, 'criticalMultiplier': 2, 'procChance': 0.1, 'fireRate': 2.5, 'multishot': 1, 'trigger': 'SEMI'}
+    data[string.capwords("HIND")]['OtherFireModes']['SemiAuto'] = {'damagePerShot': new_damage, 'criticalChance': 0.15, 'criticalMultiplier': 2, 'procChance': 0.1, 'fireRate': 2.5, 'multishot': 1, 'trigger': 'SEMI'}
     
     #KUVAHIND
     new_damage = [0] * 20
     new_damage[index('impact')] = 18
     new_damage[index('puncture')] = 18
     new_damage[index('slash')] = 54
-    data["KUVAHIND"]['OtherFireModes']['SemiAuto'] = {'damagePerShot': new_damage, 'criticalChance': 0.37, 'criticalMultiplier': 2.9, 'procChance': 0.21, 'fireRate': 2.5, 'multishot': 1, 'trigger': 'SEMI', 'ammoCost': 3}
+    data[string.capwords("KUVA HIND")]['OtherFireModes']['SemiAuto'] = {'damagePerShot': new_damage, 'criticalChance': 0.37, 'criticalMultiplier': 2.9, 'procChance': 0.21, 'fireRate': 2.5, 'multishot': 1, 'trigger': 'SEMI', 'ammoCost': 3}
     
     new_damage = [0] * 20
     new_damage[index('impact')] = 6
     new_damage[index('puncture')] = 6
     new_damage[index('slash')] = 18
-    data["KUVAHIND"]['OtherFireModes']['Auto'] = {'damagePerShot': new_damage, 'criticalChance': 0.21, 'criticalMultiplier': 1.9, 'procChance': 0.33, 'fireRate': 10, 'multishot': 1, 'trigger': 'AUTO', 'ammoCost': 3}
+    data[string.capwords("KUVA HIND")]['OtherFireModes']['Auto'] = {'damagePerShot': new_damage, 'criticalChance': 0.21, 'criticalMultiplier': 1.9, 'procChance': 0.33, 'fireRate': 10, 'multishot': 1, 'trigger': 'AUTO', 'ammoCost': 3}
     
     #KOMOREX
     new_damage = [0] * 20
     new_damage[index('impact')] = 17.4
     new_damage[index('puncture')] = 73
     new_damage[index('slash')] = 83.6
-    data["KOMOREX"]['OtherFireModes']['Zoom'] = {'damagePerShot': new_damage, 'criticalChance': 0.16, 'criticalMultiplier': 2.1, 'procChance': 0.35, 'fireRate': 1.5, 'multishot': 1, 'trigger': 'SEMI', 'ammoCost': 1}
-    data["KOMOREX"]['OtherFireModes']['Zoom']['SecondaryEffects'] = {}
+    data[string.capwords("KOMOREX")]['OtherFireModes']['Zoom'] = {'damagePerShot': new_damage, 'criticalChance': 0.16, 'criticalMultiplier': 2.1, 'procChance': 0.35, 'fireRate': 1.5, 'multishot': 1, 'trigger': 'SEMI', 'ammoCost': 1}
+    data[string.capwords("KOMOREX")]['OtherFireModes']['Zoom']['SecondaryEffects'] = {}
     new_damage = [0] * 20
     new_damage[index('viral')] = 66
-    data["KOMOREX"]['OtherFireModes']['Zoom']['SecondaryEffects']['AOE'] = {'damagePerShot': new_damage, 'criticalChance': 0.16, 'criticalMultiplier': 2.1, 'procChance': 0.35, 'fireRate': 1.5, 'multishot': 1, 'trigger': 'SEMI', 'ammoCost': 1, 'radius': 3.5, 'falloff': 0.4}
+    data[string.capwords("KOMOREX")]['OtherFireModes']['Zoom']['SecondaryEffects']['AOE'] = {'damagePerShot': new_damage, 'criticalChance': 0.16, 'criticalMultiplier': 2.1, 'procChance': 0.35, 'fireRate': 1.5, 'multishot': 1, 'trigger': 'SEMI', 'ammoCost': 1, 'radius': 3.5, 'falloff': 0.4}
     
     #NAGANTAKA
-    data["NAGANTAKA"]['OtherFireModes']['AltFire'] = {'fireRate': 5.81}
+    data[string.capwords("NAGANTAKA")]['OtherFireModes']['AltFire'] = {'fireRate': 5.81}
     
     #PANTHERA
     new_damage = [0] * 20
     new_damage[index('impact')] = 10
     new_damage[index('puncture')] = 10
     new_damage[index('slash')] = 80
-    data["PANTHERA"]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'criticalChance': 0.25, 'criticalMultiplier': 2, 'procChance': 0.35, 'fireRate': 2, 'multishot': 1, 'trigger': 'AUTO', 'ammoCost': 1}
-    data["PANTHERA"]['OtherFireModes']['AltFire']["damageRamp"] = {'min':0.2}
+    data[string.capwords("PANTHERA")]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'criticalChance': 0.25, 'criticalMultiplier': 2, 'procChance': 0.35, 'fireRate': 2, 'multishot': 1, 'trigger': 'AUTO', 'ammoCost': 1}
+    data[string.capwords("PANTHERA")]['OtherFireModes']['AltFire']["damageRamp"] = {'min':0.2}
 
     #PANTHERAPRIME
     new_damage = [0] * 20
     new_damage[index('slash')] = 100
-    data["PANTHERAPRIME"]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'criticalChance': 0.26, 'criticalMultiplier': 2, 'procChance': 0.38, 'fireRate': 2, 'multishot': 1, 'trigger': 'AUTO', 'ammoCost': 1}
-    data["PANTHERAPRIME"]['OtherFireModes']['AltFire']['SecondaryEffects'] = {}
+    data[string.capwords("PANTHERA PRIME")]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'criticalChance': 0.26, 'criticalMultiplier': 2, 'procChance': 0.38, 'fireRate': 2, 'multishot': 1, 'trigger': 'AUTO', 'ammoCost': 1}
+    data[string.capwords("PANTHERA PRIME")]['OtherFireModes']['AltFire']['SecondaryEffects'] = {}
     new_damage = [0] * 20
     new_damage[index('slash')] = 20
-    data["PANTHERAPRIME"]['OtherFireModes']['AltFire']['SecondaryEffects']['AOE'] = {'damagePerShot': new_damage, 'criticalChance': 0.18, 'criticalMultiplier': 2, 'procChance': 0.30, 'fireRate': 3.67, 'multishot': 1, 'trigger': 'AUTO', 'ammoCost': 0, 'radius': 1.6, 'falloff': 0.2}
-    data["PANTHERAPRIME"]['OtherFireModes']['AltFire']["damageRamp"] = {'min':0.2}
+    data[string.capwords("PANTHERA PRIME")]['OtherFireModes']['AltFire']['SecondaryEffects']['AOE'] = {'damagePerShot': new_damage, 'criticalChance': 0.18, 'criticalMultiplier': 2, 'procChance': 0.30, 'fireRate': 3.67, 'multishot': 1, 'trigger': 'AUTO', 'ammoCost': 0, 'radius': 1.6, 'falloff': 0.2}
+    data[string.capwords("PANTHERA PRIME")]['OtherFireModes']['AltFire']["damageRamp"] = {'min':0.2}
 
     #PHANTASMA
     new_damage = [0] * 20
     new_damage[index('impact')] = 15
-    data["PHANTASMA"]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'chargeTime': 1, 'criticalChance': 0.03, 'criticalMultiplier': 1.5, 'procChance': 0.37, 'fireRate': 2, 'multishot': 1, 'trigger': 'CHARGE', 'ammoCost': 1}
-    data["PHANTASMA"]['OtherFireModes']['AltFire']['SecondaryEffects'] = {}
+    data[string.capwords("PHANTASMA")]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'chargeTime': 1, 'criticalChance': 0.03, 'criticalMultiplier': 1.5, 'procChance': 0.37, 'fireRate': 2, 'multishot': 1, 'trigger': 'CHARGE', 'ammoCost': 1}
+    data[string.capwords("PHANTASMA")]['OtherFireModes']['AltFire']['SecondaryEffects'] = {}
     new_damage = [0] * 20
     new_damage[index('radiation')] = 73
-    data["PHANTASMA"]['OtherFireModes']['AltFire']['SecondaryEffects']['AOE'] = {'damagePerShot': new_damage, 'procChance': 0.222, 'multishot': 1, 'ammoCost': 1, 'radius': 4.8, 'falloff': 0.5}
+    data[string.capwords("PHANTASMA")]['OtherFireModes']['AltFire']['SecondaryEffects']['AOE'] = {'damagePerShot': new_damage, 'procChance': 0.222, 'multishot': 1, 'ammoCost': 1, 'radius': 4.8, 'falloff': 0.5}
     new_damage = [0] * 20
     new_damage[index('impact')] = 75
-    data["PHANTASMA"]['OtherFireModes']['AltFire']['SecondaryEffects']['Cluster'] = {'damagePerShot': new_damage, 'procChance': 0.37, 'multishot': 5, 'ammoCost': 1, 'radius': 4.8, 'falloff': 0.5}
+    data[string.capwords("PHANTASMA")]['OtherFireModes']['AltFire']['SecondaryEffects']['Cluster'] = {'damagePerShot': new_damage, 'procChance': 0.37, 'multishot': 5, 'ammoCost': 1, 'radius': 4.8, 'falloff': 0.5}
     
     #QUELLOR
     new_damage = [0] * 20
     new_damage[index('impact')] = 600
     new_damage[index('cold')] = 800
-    data["QUELLOR"]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'chargeTime': 1.2, 'criticalChance': 0.4, 'criticalMultiplier': 2.2, 'procChance': 0.1, 'fireRate': 1, 'multishot': 1, 'trigger': 'CHARGE', 'ammoCost': 50}
+    data[string.capwords("QUELLOR")]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'chargeTime': 1.2, 'criticalChance': 0.4, 'criticalMultiplier': 2.2, 'procChance': 0.1, 'fireRate': 1, 'multishot': 1, 'trigger': 'CHARGE', 'ammoCost': 50}
     
     #STAHLTA
     new_damage = [0] * 20
     new_damage[index('impact')] = 120
     new_damage[index('puncture')] = 180
     new_damage[index('slash')] = 300
-    data["STAHLTA"]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'chargeTime': 1.6, 'criticalChance': 0.4, 'criticalMultiplier': 3, 'procChance': 0.32, 'fireRate': 0.666666, 'multishot': 1, 'trigger': 'CHARGE','ammoCost': 20}
+    data[string.capwords("STAHLTA")]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'chargeTime': 1.6, 'criticalChance': 0.4, 'criticalMultiplier': 3, 'procChance': 0.32, 'fireRate': 0.666666, 'multishot': 1, 'trigger': 'CHARGE','ammoCost': 20}
     
     new_damage = [0] * 20
     new_damage[index('radiation')] = 1200
-    data["STAHLTA"]['OtherFireModes']['AltFire']['SecondaryEffects'] = {}
-    data["STAHLTA"]['OtherFireModes']['AltFire']['SecondaryEffects']['AOE'] = {'damagePerShot': new_damage, 'radius': 7.2, 'falloff': 0.7, 'embedDelay': 0.4}
+    data[string.capwords("STAHLTA")]['OtherFireModes']['AltFire']['SecondaryEffects'] = {}
+    data[string.capwords("STAHLTA")]['OtherFireModes']['AltFire']['SecondaryEffects']['AOE'] = {'damagePerShot': new_damage, 'radius': 7.2, 'falloff': 0.7, 'embedDelay': 0.4}
 
     #STRADAVAR
     new_damage = [0] * 20
     new_damage[index('impact')] = 7.5
     new_damage[index('puncture')] = 30
     new_damage[index('slash')] = 12.5
-    data["STRADAVAR"]['OtherFireModes']['SemiAuto'] = {'damagePerShot': new_damage, 'criticalChance': 0.28, 'criticalMultiplier': 2.0, 'procChance': 0.16, 'fireRate': 5, 'multishot': 1, 'trigger': 'SEMI', 'ammoCost': 1}
+    data[string.capwords("STRADAVAR")]['OtherFireModes']['SemiAuto'] = {'damagePerShot': new_damage, 'criticalChance': 0.28, 'criticalMultiplier': 2.0, 'procChance': 0.16, 'fireRate': 5, 'multishot': 1, 'trigger': 'SEMI', 'ammoCost': 1}
     
     #STRADAVARPRIME
     new_damage = [0] * 20
     new_damage[index('impact')] = 8
     new_damage[index('puncture')] = 24
     new_damage[index('slash')] = 48
-    data["STRADAVARPRIME"]['OtherFireModes']['SemiAuto'] = {'damagePerShot': new_damage, 'criticalChance': 0.3, 'criticalMultiplier': 2.8, 'procChance': 0.22, 'fireRate': 3.333333, 'multishot': 1, 'trigger': 'SEMI', 'ammoCost': 1}
+    data[string.capwords("STRADAVAR PRIME")]['OtherFireModes']['SemiAuto'] = {'damagePerShot': new_damage, 'criticalChance': 0.3, 'criticalMultiplier': 2.8, 'procChance': 0.22, 'fireRate': 3.333333, 'multishot': 1, 'trigger': 'SEMI', 'ammoCost': 1}
     
     #TENORA
     new_damage = [0] * 20
     new_damage[index('impact')] = 48
     new_damage[index('puncture')] = 144
     new_damage[index('slash')] = 48
-    data["TENORA"]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'criticalChance': 0.34, 'criticalMultiplier': 3, 'procChance': 0.11,'chargeTime': 0.8, 'fireRate': 2, 'multishot': 1, 'trigger': 'CHARGE', 'ammoCost': 10}
+    data[string.capwords("TENORA")]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'criticalChance': 0.34, 'criticalMultiplier': 3, 'procChance': 0.11,'chargeTime': 0.8, 'fireRate': 2, 'multishot': 1, 'trigger': 'CHARGE', 'ammoCost': 10}
     
     #TENORAPRIME
     new_damage = [0] * 20
     new_damage[index('impact')] = 56
     new_damage[index('puncture')] = 168
     new_damage[index('slash')] = 56
-    data["TENORAPRIME"]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'criticalChance': 0.4, 'criticalMultiplier': 3, 'procChance': 0.2,'chargeTime': 0.8, 'fireRate': 2, 'multishot': 1, 'trigger': 'CHARGE', 'ammoCost': 10}
+    data[string.capwords("TENORA PRIME")]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'criticalChance': 0.4, 'criticalMultiplier': 3, 'procChance': 0.2,'chargeTime': 0.8, 'fireRate': 2, 'multishot': 1, 'trigger': 'CHARGE', 'ammoCost': 10}
     
     #TIBERONPRIME
     new_damage = [0] * 20
     new_damage[index('impact')] = 13.8
     new_damage[index('puncture')] = 18.4
     new_damage[index('slash')] = 13.8
-    data["TIBERONPRIME"]['OtherFireModes']['SemiAuto'] = {'damagePerShot': new_damage, 'criticalChance': 0.3, 'criticalMultiplier': 3.4, 'procChance': 0.18, 'fireRate': 6, 'multishot': 1, 'trigger': 'SEMI', 'ammoCost': 1}
+    data[string.capwords("TIBERON PRIME")]['OtherFireModes']['SemiAuto'] = {'damagePerShot': new_damage, 'criticalChance': 0.3, 'criticalMultiplier': 3.4, 'procChance': 0.18, 'fireRate': 6, 'multishot': 1, 'trigger': 'SEMI', 'ammoCost': 1}
     new_damage = [0] * 20
     new_damage[index('impact')] = 13.8
     new_damage[index('puncture')] = 18.4
     new_damage[index('slash')] = 13.8
-    data["TIBERONPRIME"]['OtherFireModes']['Auto'] = {'damagePerShot': new_damage, 'criticalChance': 0.16, 'criticalMultiplier': 2.8, 'procChance': 0.32, 'fireRate': 8.333333, 'multishot': 1, 'trigger': 'AUTO', 'ammoCost': 1}
+    data[string.capwords("TIBERON PRIME")]['OtherFireModes']['Auto'] = {'damagePerShot': new_damage, 'criticalChance': 0.16, 'criticalMultiplier': 2.8, 'procChance': 0.32, 'fireRate': 8.333333, 'multishot': 1, 'trigger': 'AUTO', 'ammoCost': 1}
     
     #TRUMNA
     new_damage = [0] * 20
     new_damage[index('heat')] = 50
-    data["TRUMNA"]['SecondaryEffects']['AOE'] = {'damagePerShot': new_damage, 'criticalChance': 0.24, 'criticalMultiplier': 2.2, 'procChance': 0.30, 'radius': 1.6, 'falloff': 0.15}
+    data[string.capwords("TRUMNA")]['SecondaryEffects']['AOE'] = {'damagePerShot': new_damage, 'criticalChance': 0.24, 'criticalMultiplier': 2.2, 'procChance': 0.30, 'radius': 1.6, 'falloff': 0.15}
     new_damage = [0] * 20
     new_damage[index('impact')] = 100
     new_damage[index('heat')] = 1000
-    data["TRUMNA"]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'criticalChance': 0.38, 'criticalMultiplier': 2.4, 'procChance': 0.5, 'fireRate': 1.333333, 'multishot': 7, 'radius': 6, 'falloff': 0.4, 'trigger': 'SEMI', 'ammoCost': 1}
+    data[string.capwords("TRUMNA")]['OtherFireModes']['AltFire'] = {'damagePerShot': new_damage, 'criticalChance': 0.38, 'criticalMultiplier': 2.4, 'procChance': 0.5, 'fireRate': 1.333333, 'multishot': 7, 'radius': 6, 'falloff': 0.4, 'trigger': 'SEMI', 'ammoCost': 1}
     
     #ZARR
     new_damage = [0] * 20
     new_damage[index('blast')] = 50
-    data["ZARR"]['SecondaryEffects']['AOE'] = {'damagePerShot': new_damage, 'procChance': 0.048, 'multishot': 6}
+    data[string.capwords("ZARR")]['SecondaryEffects']['AOE'] = {'damagePerShot': new_damage, 'procChance': 0.048, 'multishot': 6}
     new_damage = [0] * 20
     new_damage[index('impact')] = 24
     new_damage[index('puncture')] = 40
     new_damage[index('slash')] = 16
-    data["ZARR"]['OtherFireModes']['Barrage'] = {'damagePerShot': new_damage, 'criticalChance': 0.17, 'criticalMultiplier': 2.5, 'procChance': 0.87, 'fireRate': 3, 'multishot': 10, 'trigger': 'SEMI', 'ammoCost': 1}
+    data[string.capwords("ZARR")]['OtherFireModes']['Barrage'] = {'damagePerShot': new_damage, 'criticalChance': 0.17, 'criticalMultiplier': 2.5, 'procChance': 0.87, 'fireRate': 3, 'multishot': 10, 'trigger': 'SEMI', 'ammoCost': 1}
     
     #ZENITH
     new_damage = [0] * 20
     new_damage[index('impact')] = 15
     new_damage[index('puncture')] = 120
     new_damage[index('slash')] = 15
-    data["ZENITH"]['OtherFireModes']['Semi'] = {'damagePerShot': new_damage, 'criticalChance': 0.35, 'criticalMultiplier': 2.5, 'procChance': 0.08, 'fireRate': 3, 'multishot': 1, 'trigger': 'SEMI', 'ammoCost': 3}
+    data[string.capwords("ZENITH")]['OtherFireModes']['Semi'] = {'damagePerShot': new_damage, 'criticalChance': 0.35, 'criticalMultiplier': 2.5, 'procChance': 0.08, 'fireRate': 3, 'multishot': 1, 'trigger': 'SEMI', 'ammoCost': 3}
     
+    data["Volnus Prime"]["rivenType"] = "Melee"
     #print(data["SPECTRA"])
 
 def fix():
