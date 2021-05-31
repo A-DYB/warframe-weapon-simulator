@@ -1,7 +1,13 @@
 # Pocket Simulacrum
 Using random sampling, many simulations are averaged to get the result. 
 
-Simulations are only allowed to run until 20 seconds for performance reasons.
+- Compare builds
+
+- Calculate the best riven
+
+- Accurately simulate enemies with special DR.
+
+Note: Simulations are only allowed to run until 20 seconds for performance reasons (until I add separate threads).
 
 ![](images/simulation.png)
 
@@ -9,24 +15,6 @@ Simulations are only allowed to run until 20 seconds for performance reasons.
 
 ![](images/scale.png)
 
-## Todo
-~~Major optimizations~~ ~2x faster
-
-~~-Get weapon info directly from mobile export~~
-
-~~-Make some functionality to display individual damage numbers (for easier bug finding)~~
-
--Get build information from Warframe's API
-
-~~Release JAR for easy execution (I have to figure out licensing)~~
-
--Add enemy specific DR functionality
-
-
-## Things that may not be added (too weapon specific)
--Spool up weapon functionality
-
-~~-Beam weapon damage ramp up~~
 
 ## Download
 
