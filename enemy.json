@@ -1,1802 +1,307 @@
 {
 	"Eidolon Hydrolyst Shield": {
-		"ShieldType":"Eidolon Shield",
-		"ProcReduction": [
-			[
-				0,
-				0,
-				1,
-				0
-			]
-		],
+		"ShieldType": "Eidolon Shield",
 		"HealthType": "Robotic",
 		"BaseArmor": 0,
 		"BaseLevel": 1,
 		"ArmorType": "Alloy",
 		"BaseShield": 2000,
-		"Eidolon": false,
-		"BaseHealth": 1,
-		"DamageReduction": [
-			[
-				0,
-				0,
-				1,
-				0
-			]
-		]
+		"BaseHealth": 1
 	},
 	"Grineer Demolisher Nox": {
 		"ShieldType": "Shield",
-		"ProcReduction": [
-			[
-				0,
-				1562.5,
-				0.64,
-				0
-			],
-			[
-				1562.5,
-				3906.25,
-				0.512,
-				200
-			],
-			[
-				3906.25,
-				7812.5,
-				0.448,
-				450
-			],
-			[
-				7812.5,
-				15625,
-				0.256,
-				1950
-			],
-			[
-				15625,
-				31250,
-				0.128,
-				3950
-			],
-			[
-				31250,
-				2147483648,
-				0.064,
-				5950
-			]
-		],
 		"HealthType": "ClonedFlesh",
 		"BaseArmor": 250,
 		"BaseLevel": 1,
 		"ArmorType": "Alloy",
 		"BaseShield": 0,
-		"Eidolon": false,
-		"BaseHealth": 2500,
-		"DamageReduction": [
-			[
-				0,
-				1250,
-				0.8,
-				0
-			],
-			[
-				1250,
-				3125,
-				0.64,
-				200
-			],
-			[
-				3125,
-				6250,
-				0.56,
-				450
-			],
-			[
-				6250,
-				12500,
-				0.32,
-				1950
-			],
-			[
-				12500,
-				25000,
-				0.16,
-				3950
-			],
-			[
-				25000,
-				2147483648,
-				0.08,
-				5950
-			]
-		]
+		"BaseHealth": 2500
 	},
 	"Eidolon Teralyst Shield": {
-		"ShieldType":"Eidolon Shield",
-		"ProcReduction": [
-			[
-				0,
-				0,
-				1,
-				0
-			]
-		],
+		"ShieldType": "Eidolon Shield",
 		"HealthType": "Robotic",
 		"BaseArmor": 0,
 		"BaseLevel": 1,
 		"ArmorType": "Alloy",
 		"BaseShield": 1500,
-		"Eidolon": false,
-		"BaseHealth": 1,
-		"DamageReduction": [
-			[
-				0,
-				0,
-				1,
-				0
-			]
-		]
+		"BaseHealth": 1
 	},
 	"Gokstad Officer": {
 		"ShieldType": "Shield",
-		"ProcReduction": [
-			[
-				0,
-				0,
-				1,
-				0
-			]
-		],
 		"HealthType": "ClonedFlesh",
 		"BaseArmor": 1000,
 		"BaseLevel": 8,
 		"ArmorType": "Ferrite",
 		"BaseShield": 0,
-		"Eidolon": false,
-		"BaseHealth": 1000,
-		"DamageReduction": [
-			[
-				0,
-				0,
-				1,
-				0
-			]
-		]
+		"BaseHealth": 1000
 	},
 	"Drekar Heavy Gunner Eximus": {
 		"ShieldType": "Shield",
-		"ProcReduction": [
-			[
-				0,
-				0,
-				1,
-				0
-			]
-		],
 		"HealthType": "ClonedFlesh",
 		"BaseArmor": 500,
 		"BaseLevel": 8,
 		"ArmorType": "Ferrite",
 		"BaseShield": 0,
-		"Eidolon": false,
-		"BaseHealth": 350,
-		"DamageReduction": [
-			[
-				0,
-				0,
-				1,
-				0
-			]
-		]
+		"BaseHealth": 350
 	},
 	"Eidolon Hydrolyst": {
-		"ProcReduction": [
-			[
-				0,
-				0,
-				1,
-				0
-			]
-		],
 		"HealthType": "Robotic",
-		"ShieldType":"Eidolon Shield",
+		"ShieldType": "Eidolon Shield",
 		"BaseArmor": 150,
 		"ArmorType": "Alloy",
-		"Eidolon": true,
-		"BaseHealth": 12000,
-		"DamageReduction": [
-			[
-				0,
-				0,
-				1,
-				0
-			]
-		]
+		"BaseHealth": 12000
 	},
 	"Drekar Elite Lancer Eximus": {
 		"ShieldType": "Shield",
-		"ProcReduction": [
-			[
-				0,
-				0,
-				1,
-				0
-			]
-		],
 		"HealthType": "ClonedFlesh",
 		"BaseArmor": 200,
 		"BaseLevel": 1,
 		"ArmorType": "Alloy",
 		"BaseShield": 0,
-		"Eidolon": false,
-		"BaseHealth": 150,
-		"DamageReduction": [
-			[
-				0,
-				0,
-				1,
-				0
-			]
-		]
+		"BaseHealth": 150
 	},
 	"Eidolon Gantulyst Shield": {
-		"ShieldType":"Eidolon Shield",
-		"ProcReduction": [
-			[
-				0,
-				0,
-				1,
-				0
-			]
-		],
+		"ShieldType": "Eidolon Shield",
 		"HealthType": "Robotic",
 		"BaseArmor": 0,
 		"BaseLevel": 1,
 		"ArmorType": "Alloy",
 		"BaseShield": 1800,
-		"Eidolon": false,
-		"BaseHealth": 1,
-		"DamageReduction": [
-			[
-				0,
-				0,
-				1,
-				0
-			]
-		]
+		"BaseHealth": 1
 	},
 	"Grineer Demolisher Guardian": {
 		"ShieldType": "Shield",
-		"ProcReduction": [
-			[
-				0,
-				1562.5,
-				0.64,
-				0
-			],
-			[
-				1562.5,
-				3906.25,
-				0.512,
-				200
-			],
-			[
-				3906.25,
-				7812.5,
-				0.448,
-				450
-			],
-			[
-				7812.5,
-				15625,
-				0.256,
-				1950
-			],
-			[
-				15625,
-				31250,
-				0.128,
-				3950
-			],
-			[
-				31250,
-				2147483648,
-				0.064,
-				5950
-			]
-		],
 		"HealthType": "ClonedFlesh",
 		"BaseArmor": 150,
 		"BaseLevel": 1,
 		"ArmorType": "Alloy",
 		"BaseShield": 0,
-		"Eidolon": false,
-		"BaseHealth": 2500,
-		"DamageReduction": [
-			[
-				0,
-				1250,
-				0.8,
-				0
-			],
-			[
-				1250,
-				3125,
-				0.64,
-				200
-			],
-			[
-				3125,
-				6250,
-				0.56,
-				450
-			],
-			[
-				6250,
-				12500,
-				0.32,
-				1950
-			],
-			[
-				12500,
-				25000,
-				0.16,
-				3950
-			],
-			[
-				25000,
-				2147483648,
-				0.08,
-				5950
-			]
-		]
+		"BaseHealth": 2500
 	},
 	"Drekar Eviscerator Eximus": {
 		"ShieldType": "Shield",
-		"ProcReduction": [
-			[
-				0,
-				0,
-				1,
-				0
-			]
-		],
 		"HealthType": "ClonedFlesh",
 		"BaseArmor": 200,
 		"BaseLevel": 15,
 		"ArmorType": "Alloy",
 		"BaseShield": 0,
-		"Eidolon": false,
-		"BaseHealth": 150,
-		"DamageReduction": [
-			[
-				0,
-				0,
-				1,
-				0
-			]
-		]
+		"BaseHealth": 150
 	},
 	"Eidolon Gantulyst": {
-		"ProcReduction": [
-			[
-				0,
-				0,
-				1,
-				0
-			]
-		],
 		"HealthType": "Robotic",
 		"BaseArmor": 130,
-		"ShieldType":"Eidolon Shield",
+		"ShieldType": "Eidolon Shield",
 		"ArmorType": "Alloy",
-		"Eidolon": true,
-		"BaseHealth": 10000,
-		"DamageReduction": [
-			[
-				0,
-				0,
-				1,
-				0
-			]
-		]
+		"BaseHealth": 10000
 	},
 	"Drekar Scorpion Eximus": {
 		"ShieldType": "Shield",
-		"ProcReduction": [
-			[
-				0,
-				0,
-				1,
-				0
-			]
-		],
 		"HealthType": "ClonedFlesh",
 		"BaseArmor": 150,
 		"BaseLevel": 10,
 		"ArmorType": "Ferrite",
 		"BaseShield": 0,
-		"Eidolon": false,
-		"BaseHealth": 350,
-		"DamageReduction": [
-			[
-				0,
-				0,
-				1,
-				0
-			]
-		]
+		"BaseHealth": 350
 	},
 	"Corrupted Heavy Gunner": {
-		"ProcReduction": [
-			[
-				0,
-				0,
-				1,
-				0
-			]
-		],
 		"HealthType": "ClonedFlesh",
 		"BaseArmor": 500,
 		"BaseLevel": 8,
 		"ArmorType": "Ferrite",
-		"Eidolon": false,
-		"BaseHealth": 700,
-		"DamageReduction": [
-			[
-				0,
-				0,
-				1,
-				0
-			]
-		]
+		"BaseHealth": 700
 	},
 	"Corpus Demolyst Heqet": {
 		"ShieldType": "Shield",
-		"ProcReduction": [
-			[
-				0,
-				1562.5,
-				0.64,
-				0
-			],
-			[
-				1562.5,
-				3906.25,
-				0.512,
-				200
-			],
-			[
-				3906.25,
-				7812.5,
-				0.448,
-				450
-			],
-			[
-				7812.5,
-				15625,
-				0.256,
-				1950
-			],
-			[
-				15625,
-				31250,
-				0.128,
-				3950
-			],
-			[
-				31250,
-				2147483648,
-				0.064,
-				5950
-			]
-		],
 		"HealthType": "Flesh",
 		"BaseArmor": 0,
 		"BaseLevel": 1,
 		"ArmorType": "Ferrite",
 		"BaseShield": 800,
-		"Eidolon": false,
-		"BaseHealth": 2000,
-		"DamageReduction": [
-			[
-				0,
-				1250,
-				0.8,
-				0
-			],
-			[
-				1250,
-				3125,
-				0.64,
-				200
-			],
-			[
-				3125,
-				6250,
-				0.56,
-				450
-			],
-			[
-				6250,
-				12500,
-				0.32,
-				1950
-			],
-			[
-				12500,
-				25000,
-				0.16,
-				3950
-			],
-			[
-				25000,
-				2147483648,
-				0.08,
-				5950
-			]
-		]
+		"BaseHealth": 2000
 	},
 	"Acolyte": {
 		"ShieldType": "Shield",
-		"ProcReduction": [
-			[
-				0,
-				0,
-				1,
-				0
-			]
-		],
 		"HealthType": "Flesh",
 		"BaseArmor": 50,
 		"BaseLevel": 1,
 		"ArmorType": "Ferrite",
 		"BaseShield": 200,
-		"Eidolon": false,
-		"BaseHealth": 350,
-		"DamageReduction": [
-			[
-				0,
-				0,
-				1,
-				0
-			]
-		]
+		"BaseHealth": 350
 	},
 	"Charger": {
 		"ShieldType": "Shield",
-		"ProcReduction": [
-			[
-				0,
-				0,
-				1,
-				0
-			]
-		],
 		"HealthType": "Infested",
 		"BaseArmor": 0,
 		"BaseLevel": 1,
 		"ArmorType": "Ferrite",
 		"BaseShield": 0,
-		"Eidolon": false,
-		"BaseHealth": 80,
-		"DamageReduction": [
-			[
-				0,
-				0,
-				1,
-				0
-			]
-		]
+		"BaseHealth": 80
 	},
 	"Infested Demolisher Boiler": {
 		"ShieldType": "Shield",
-		"ProcReduction": [
-			[
-				0,
-				1562.5,
-				0.64,
-				0
-			],
-			[
-				1562.5,
-				3906.25,
-				0.512,
-				200
-			],
-			[
-				3906.25,
-				7812.5,
-				0.448,
-				450
-			],
-			[
-				7812.5,
-				15625,
-				0.256,
-				1950
-			],
-			[
-				15625,
-				31250,
-				0.128,
-				3950
-			],
-			[
-				31250,
-				2147483648,
-				0.064,
-				5950
-			]
-		],
 		"HealthType": "Infested",
 		"BaseArmor": 0,
 		"BaseLevel": 1,
 		"ArmorType": "Ferrite",
 		"BaseShield": 0,
-		"Eidolon": false,
-		"BaseHealth": 3000,
-		"DamageReduction": [
-			[
-				0,
-				1250,
-				0.8,
-				0
-			],
-			[
-				1250,
-				3125,
-				0.64,
-				200
-			],
-			[
-				3125,
-				6250,
-				0.56,
-				450
-			],
-			[
-				6250,
-				12500,
-				0.32,
-				1950
-			],
-			[
-				12500,
-				25000,
-				0.16,
-				3950
-			],
-			[
-				25000,
-				2147483648,
-				0.08,
-				5950
-			]
-		]
+		"BaseHealth": 3000
 	},
 	"Grineer Demolisher Baliff": {
 		"ShieldType": "Shield",
-		"ProcReduction": [
-			[
-				0,
-				1562.5,
-				0.64,
-				0
-			],
-			[
-				1562.5,
-				3906.25,
-				0.512,
-				200
-			],
-			[
-				3906.25,
-				7812.5,
-				0.448,
-				450
-			],
-			[
-				7812.5,
-				15625,
-				0.256,
-				1950
-			],
-			[
-				15625,
-				31250,
-				0.128,
-				3950
-			],
-			[
-				31250,
-				2147483648,
-				0.064,
-				5950
-			]
-		],
 		"HealthType": "ClonedFlesh",
 		"BaseArmor": 200,
 		"BaseLevel": 1,
 		"ArmorType": "Ferrite",
 		"BaseShield": 0,
-		"Eidolon": false,
-		"BaseHealth": 2000,
-		"DamageReduction": [
-			[
-				0,
-				1250,
-				0.8,
-				0
-			],
-			[
-				1250,
-				3125,
-				0.64,
-				200
-			],
-			[
-				3125,
-				6250,
-				0.56,
-				450
-			],
-			[
-				6250,
-				12500,
-				0.32,
-				1950
-			],
-			[
-				12500,
-				25000,
-				0.16,
-				3950
-			],
-			[
-				25000,
-				2147483648,
-				0.08,
-				5950
-			]
-		]
+		"BaseHealth": 2000
 	},
 	"CorruptedBombard": {
-		"ProcReduction": [
-			[
-				0,
-				0,
-				1,
-				0
-			]
-		],
 		"HealthType": "ClonedFlesh",
 		"BaseLevel": 4,
 		"BaseArmor": 500,
 		"ArmorType": "Alloy",
-		"Eidolon": false,
-		"BaseHealth": 300,
-		"DamageReduction": [
-			[
-				0,
-				0,
-				1,
-				0
-			]
-		]
+		"BaseHealth": 300
 	},
 	"Grineer Demolisher Expired": {
 		"ShieldType": "Shield",
-		"ProcReduction": [
-			[
-				0,
-				1562.5,
-				0.64,
-				0
-			],
-			[
-				1562.5,
-				3906.25,
-				0.512,
-				200
-			],
-			[
-				3906.25,
-				7812.5,
-				0.448,
-				450
-			],
-			[
-				7812.5,
-				15625,
-				0.256,
-				1950
-			],
-			[
-				15625,
-				31250,
-				0.128,
-				3950
-			],
-			[
-				31250,
-				2147483648,
-				0.064,
-				5950
-			]
-		],
 		"HealthType": "ClonedFlesh",
 		"BaseArmor": 100,
 		"BaseLevel": 1,
 		"ArmorType": "Ferrite",
 		"BaseShield": 0,
-		"Eidolon": false,
-		"BaseHealth": 1500,
-		"DamageReduction": [
-			[
-				0,
-				1250,
-				0.8,
-				0
-			],
-			[
-				1250,
-				3125,
-				0.64,
-				200
-			],
-			[
-				3125,
-				6250,
-				0.56,
-				450
-			],
-			[
-				6250,
-				12500,
-				0.32,
-				1950
-			],
-			[
-				12500,
-				25000,
-				0.16,
-				3950
-			],
-			[
-				25000,
-				2147483648,
-				0.08,
-				5950
-			]
-		]
+		"BaseHealth": 1500
 	},
 	"testEnemy": {
 		"ShieldType": "Shield",
-		"ProcReduction": [
-			[
-				0,
-				0,
-				1,
-				0
-			]
-		],
 		"HealthType": "ClonedFlesh",
 		"BaseArmor": 500,
 		"BaseLevel": 1,
 		"ArmorType": "Ferrite",
 		"BaseShield": 500,
-		"Eidolon": false,
-		"BaseHealth": 500,
-		"DamageReduction": [
-			[
-				0,
-				0,
-				1,
-				0
-			]
-		]
+		"BaseHealth": 500
 	},
 	"Treasurer": {
 		"ShieldType": "Shield",
-		"ProcReduction": [
-			[
-				0,
-				0,
-				1,
-				0
-			]
-		],
 		"HealthType": "Flesh",
 		"BaseArmor": 0,
 		"BaseLevel": 1,
 		"ArmorType": "Ferrite",
 		"BaseShield": 300,
-		"Eidolon": false,
-		"BaseHealth": 100,
-		"DamageReduction": [
-			[
-				0,
-				0,
-				1,
-				0
-			]
-		]
+		"BaseHealth": 100
 	},
 	"Infested Demolisher Charger": {
 		"ShieldType": "Shield",
-		"ProcReduction": [
-			[
-				0,
-				1562.5,
-				0.64,
-				0
-			],
-			[
-				1562.5,
-				3906.25,
-				0.512,
-				200
-			],
-			[
-				3906.25,
-				7812.5,
-				0.448,
-				450
-			],
-			[
-				7812.5,
-				15625,
-				0.256,
-				1950
-			],
-			[
-				15625,
-				31250,
-				0.128,
-				3950
-			],
-			[
-				31250,
-				2147483648,
-				0.064,
-				5950
-			]
-		],
 		"HealthType": "Infested",
 		"BaseArmor": 0,
 		"BaseLevel": 1,
 		"ArmorType": "Ferrite",
 		"BaseShield": 0,
-		"Eidolon": false,
-		"BaseHealth": 2500,
-		"DamageReduction": [
-			[
-				0,
-				1250,
-				0.8,
-				0
-			],
-			[
-				1250,
-				3125,
-				0.64,
-				200
-			],
-			[
-				3125,
-				6250,
-				0.56,
-				450
-			],
-			[
-				6250,
-				12500,
-				0.32,
-				1950
-			],
-			[
-				12500,
-				25000,
-				0.16,
-				3950
-			],
-			[
-				25000,
-				2147483648,
-				0.08,
-				5950
-			]
-		]
+		"BaseHealth": 2500
 	},
 	"Corpus Demolisher Hyena": {
 		"ShieldType": "Shield",
-		"ProcReduction": [
-			[
-				0,
-				1562.5,
-				0.64,
-				0
-			],
-			[
-				1562.5,
-				3906.25,
-				0.512,
-				200
-			],
-			[
-				3906.25,
-				7812.5,
-				0.448,
-				450
-			],
-			[
-				7812.5,
-				15625,
-				0.256,
-				1950
-			],
-			[
-				15625,
-				31250,
-				0.128,
-				3950
-			],
-			[
-				31250,
-				2147483648,
-				0.064,
-				5950
-			]
-		],
 		"HealthType": "Robotic",
 		"BaseArmor": 0,
 		"BaseLevel": 1,
 		"ArmorType": "Alloy",
 		"BaseShield": 700,
-		"Eidolon": false,
-		"BaseHealth": 1500,
-		"DamageReduction": [
-			[
-				0,
-				1250,
-				0.8,
-				0
-			],
-			[
-				1250,
-				3125,
-				0.64,
-				200
-			],
-			[
-				3125,
-				6250,
-				0.56,
-				450
-			],
-			[
-				6250,
-				12500,
-				0.32,
-				1950
-			],
-			[
-				12500,
-				25000,
-				0.16,
-				3950
-			],
-			[
-				25000,
-				2147483648,
-				0.08,
-				5950
-			]
-		]
+		"BaseHealth": 1500
 	},
 	"Infested Demolisher Thrasher": {
 		"ShieldType": "Shield",
-		"ProcReduction": [
-			[
-				0,
-				1562.5,
-				0.64,
-				0
-			],
-			[
-				1562.5,
-				3906.25,
-				0.512,
-				200
-			],
-			[
-				3906.25,
-				7812.5,
-				0.448,
-				450
-			],
-			[
-				7812.5,
-				15625,
-				0.256,
-				1950
-			],
-			[
-				15625,
-				31250,
-				0.128,
-				3950
-			],
-			[
-				31250,
-				2147483648,
-				0.064,
-				5950
-			]
-		],
 		"HealthType": "Infested",
 		"BaseArmor": 0,
 		"BaseLevel": 1,
 		"ArmorType": "Ferrite",
 		"BaseShield": 0,
-		"Eidolon": false,
-		"BaseHealth": 3250,
-		"DamageReduction": [
-			[
-				0,
-				1250,
-				0.8,
-				0
-			],
-			[
-				1250,
-				3125,
-				0.64,
-				200
-			],
-			[
-				3125,
-				6250,
-				0.56,
-				450
-			],
-			[
-				6250,
-				12500,
-				0.32,
-				1950
-			],
-			[
-				12500,
-				25000,
-				0.16,
-				3950
-			],
-			[
-				25000,
-				2147483648,
-				0.08,
-				5950
-			]
-		]
+		"BaseHealth": 3250
 	},
 	"Corpus Demolisher Bursa": {
 		"ShieldType": "Shield",
-		"ProcReduction": [
-			[
-				0,
-				1562.5,
-				0.64,
-				0
-			],
-			[
-				1562.5,
-				3906.25,
-				0.512,
-				200
-			],
-			[
-				3906.25,
-				7812.5,
-				0.448,
-				450
-			],
-			[
-				7812.5,
-				15625,
-				0.256,
-				1950
-			],
-			[
-				15625,
-				31250,
-				0.128,
-				3950
-			],
-			[
-				31250,
-				2147483648,
-				0.064,
-				5950
-			]
-		],
 		"HealthType": "Robotic",
 		"BaseArmor": 100,
 		"BaseLevel": 1,
 		"ArmorType": "Alloy",
 		"BaseShield": 800,
-		"Eidolon": false,
-		"BaseHealth": 2000,
-		"DamageReduction": [
-			[
-				0,
-				1250,
-				0.8,
-				0
-			],
-			[
-				1250,
-				3125,
-				0.64,
-				200
-			],
-			[
-				3125,
-				6250,
-				0.56,
-				450
-			],
-			[
-				6250,
-				12500,
-				0.32,
-				1950
-			],
-			[
-				12500,
-				25000,
-				0.16,
-				3950
-			],
-			[
-				25000,
-				2147483648,
-				0.08,
-				5950
-			]
-		]
+		"BaseHealth": 2000
 	},
 	"Grineer Demolisher Devourer": {
 		"ShieldType": "Shield",
-		"ProcReduction": [
-			[
-				0,
-				1562.5,
-				0.64,
-				0
-			],
-			[
-				1562.5,
-				3906.25,
-				0.512,
-				200
-			],
-			[
-				3906.25,
-				7812.5,
-				0.448,
-				450
-			],
-			[
-				7812.5,
-				15625,
-				0.256,
-				1950
-			],
-			[
-				15625,
-				31250,
-				0.128,
-				3950
-			],
-			[
-				31250,
-				2147483648,
-				0.064,
-				5950
-			]
-		],
 		"HealthType": "ClonedFlesh",
 		"BaseArmor": 50,
 		"BaseLevel": 1,
 		"ArmorType": "Ferrite",
 		"BaseShield": 0,
-		"Eidolon": false,
-		"BaseHealth": 2500,
-		"DamageReduction": [
-			[
-				0,
-				1250,
-				0.8,
-				0
-			],
-			[
-				1250,
-				3125,
-				0.64,
-				200
-			],
-			[
-				3125,
-				6250,
-				0.56,
-				450
-			],
-			[
-				6250,
-				12500,
-				0.32,
-				1950
-			],
-			[
-				12500,
-				25000,
-				0.16,
-				3950
-			],
-			[
-				25000,
-				2147483648,
-				0.08,
-				5950
-			]
-		]
+		"BaseHealth": 2500
 	},
 	"Wolf of Saturn Six": {
 		"ShieldType": "Shield",
-		"ProcReduction": [
-			[
-				0,
-				0,
-				1,
-				0
-			]
-		],
 		"HealthType": "Machinery",
 		"BaseArmor": 200,
 		"BaseLevel": 1,
 		"ArmorType": "Alloy",
 		"BaseShield": 0,
-		"Eidolon": false,
-		"BaseHealth": 1500,
-		"DamageReduction": [
-			[
-				0,
-				0,
-				1,
-				0
-			]
-		]
+		"BaseHealth": 1500
 	},
 	"Eidolon Teralyst": {
-		"ProcReduction": [
-			[
-				0,
-				0,
-				1,
-				0
-			]
-		],
 		"HealthType": "Robotic",
 		"BaseArmor": 125,
 		"ArmorType": "Alloy",
-		"ShieldType":"Eidolon Shield",
-		"Eidolon": true,
-		"BaseHealth": 9000,
-		"DamageReduction": [
-			[
-				0,
-				0,
-				1,
-				0
-			]
-		]
+		"ShieldType": "Eidolon Shield",
+		"BaseHealth": 9000
 	},
 	"Grineer Demolisher Heavy Gunner": {
 		"ShieldType": "Shield",
-		"ProcReduction": [
-			[
-				0,
-				1562.5,
-				0.64,
-				0
-			],
-			[
-				1562.5,
-				3906.25,
-				0.512,
-				200
-			],
-			[
-				3906.25,
-				7812.5,
-				0.448,
-				450
-			],
-			[
-				7812.5,
-				15625,
-				0.256,
-				1950
-			],
-			[
-				15625,
-				31250,
-				0.128,
-				3950
-			],
-			[
-				31250,
-				2147483648,
-				0.064,
-				5950
-			]
-		],
 		"HealthType": "ClonedFlesh",
 		"BaseArmor": 200,
 		"BaseLevel": 1,
 		"ArmorType": "Ferrite",
 		"BaseShield": 0,
-		"Eidolon": false,
-		"BaseHealth": 2000,
-		"DamageReduction": [
-			[
-				0,
-				1250,
-				0.8,
-				0
-			],
-			[
-				1250,
-				3125,
-				0.64,
-				200
-			],
-			[
-				3125,
-				6250,
-				0.56,
-				450
-			],
-			[
-				6250,
-				12500,
-				0.32,
-				1950
-			],
-			[
-				12500,
-				25000,
-				0.16,
-				3950
-			],
-			[
-				25000,
-				2147483648,
-				0.08,
-				5950
-			]
-		]
+		"BaseHealth": 2000
 	},
 	"Corpus Demolisher Machinist": {
 		"ShieldType": "Shield",
-		"ProcReduction": [
-			[
-				0,
-				1562.5,
-				0.64,
-				0
-			],
-			[
-				1562.5,
-				3906.25,
-				0.512,
-				200
-			],
-			[
-				3906.25,
-				7812.5,
-				0.448,
-				450
-			],
-			[
-				7812.5,
-				15625,
-				0.256,
-				1950
-			],
-			[
-				15625,
-				31250,
-				0.128,
-				3950
-			],
-			[
-				31250,
-				2147483648,
-				0.064,
-				5950
-			]
-		],
 		"HealthType": "Flesh",
 		"BaseArmor": 0,
 		"BaseLevel": 1,
 		"ArmorType": "Alloy",
 		"BaseShield": 700,
-		"Eidolon": false,
-		"BaseHealth": 2000,
-		"DamageReduction": [
-			[
-				0,
-				1250,
-				0.8,
-				0
-			],
-			[
-				1250,
-				3125,
-				0.64,
-				200
-			],
-			[
-				3125,
-				6250,
-				0.56,
-				450
-			],
-			[
-				6250,
-				12500,
-				0.32,
-				1950
-			],
-			[
-				12500,
-				25000,
-				0.16,
-				3950
-			],
-			[
-				25000,
-				2147483648,
-				0.08,
-				5950
-			]
-		]
+		"BaseHealth": 2000
 	},
 	"Infested Demolisher Juggernaut": {
 		"ShieldType": "Shield",
-		"ProcReduction": [
-			[
-				0,
-				1562.5,
-				0.64,
-				0
-			],
-			[
-				1562.5,
-				3906.25,
-				0.512,
-				200
-			],
-			[
-				3906.25,
-				7812.5,
-				0.448,
-				450
-			],
-			[
-				7812.5,
-				15625,
-				0.256,
-				1950
-			],
-			[
-				15625,
-				31250,
-				0.128,
-				3950
-			],
-			[
-				31250,
-				2147483648,
-				0.064,
-				5950
-			]
-		],
 		"HealthType": "Infested",
 		"BaseArmor": 50,
 		"BaseLevel": 1,
 		"ArmorType": "Ferrite",
 		"BaseShield": 0,
-		"Eidolon": false,
-		"BaseHealth": 3000,
-		"DamageReduction": [
-			[
-				0,
-				1250,
-				0.8,
-				0
-			],
-			[
-				1250,
-				3125,
-				0.64,
-				200
-			],
-			[
-				3125,
-				6250,
-				0.56,
-				450
-			],
-			[
-				6250,
-				12500,
-				0.32,
-				1950
-			],
-			[
-				12500,
-				25000,
-				0.16,
-				3950
-			],
-			[
-				25000,
-				2147483648,
-				0.08,
-				5950
-			]
-		]
+		"BaseHealth": 3000
 	},
 	"basic": {
 		"ShieldType": "Shield",
-		"ProcReduction": [
-			[
-				0,
-				0,
-				1,
-				0
-			]
-		],
 		"HealthType": "ClonedFlesh",
 		"BaseArmor": 300,
 		"BaseLevel": 1,
 		"ArmorType": "Ferrite",
 		"BaseShield": 0,
-		"Eidolon": false,
-		"BaseHealth": 500,
-		"DamageReduction": [
-			[
-				0,
-				0,
-				1,
-				0
-			]
-		]
+		"BaseHealth": 500
 	},
 	"ferrite guy": {
 		"ShieldType": "Shield",
-		"ProcReduction": [
-			[
-				0,
-				0,
-				1,
-				0
-			]
-		],
 		"HealthType": "ClonedFlesh",
 		"BaseArmor": 200,
 		"BaseLevel": 1,
 		"ArmorType": "Ferrite",
 		"BaseShield": 0,
-		"Eidolon": false,
-		"BaseHealth": 150,
-		"DamageReduction": [
-			[
-				0,
-				0,
-				1,
-				0
-			]
-		]
+		"BaseHealth": 150
 	},
 	"Corpus Demolisher Anti MOA": {
 		"ShieldType": "Shield",
-		"ProcReduction": [
-			[
-				0,
-				1562.5,
-				0.64,
-				0
-			],
-			[
-				1562.5,
-				3906.25,
-				0.512,
-				200
-			],
-			[
-				3906.25,
-				7812.5,
-				0.448,
-				450
-			],
-			[
-				7812.5,
-				15625,
-				0.256,
-				1950
-			],
-			[
-				15625,
-				31250,
-				0.128,
-				3950
-			],
-			[
-				31250,
-				2147483648,
-				0.064,
-				5950
-			]
-		],
 		"HealthType": "Robotic",
 		"BaseArmor": 100,
 		"BaseLevel": 1,
 		"ArmorType": "Alloy",
 		"BaseShield": 800,
-		"Eidolon": false,
-		"BaseHealth": 2000,
-		"DamageReduction": [
-			[
-				0,
-				1250,
-				0.8,
-				0
-			],
-			[
-				1250,
-				3125,
-				0.64,
-				200
-			],
-			[
-				3125,
-				6250,
-				0.56,
-				450
-			],
-			[
-				6250,
-				12500,
-				0.32,
-				1950
-			],
-			[
-				12500,
-				25000,
-				0.16,
-				3950
-			],
-			[
-				25000,
-				2147483648,
-				0.08,
-				5950
-			]
-		]
+		"BaseHealth": 2000
 	}
 }

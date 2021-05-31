@@ -74,12 +74,6 @@ public class MainGUI {
 	private Label v_time_label;
 	private Label v_shots_label;
 	
-	/*
-	private ChartFrame frame;
-	private ChartFrame frameB;
-	private ChartFrame armor_frame;
-	*/
-	
 	private static NumberFormat format = NumberFormat.getInstance(Locale.getDefault());
 
 	private XYSeries health_series;
@@ -300,11 +294,6 @@ public class MainGUI {
 				display.sleep();
 			}
 		}
-		/*
-		frameB.dispose();
-		frame.dispose();
-		armor_frame.dispose();
-		*/
 	}
 
 	/**
@@ -352,13 +341,6 @@ public class MainGUI {
 		ch_composite_1.setBounds(920, 35, 974, 438);
 		formToolkit.adapt(ch_composite_1);
 		formToolkit.paintBordersFor(ch_composite_1);
-		
-		/*
-		ch_composite_2 = new Composite(shell, SWT.NONE);
-		ch_composite_2.setBounds(900, 381, 974, 271);
-		formToolkit.adapt(ch_composite_2);
-		formToolkit.paintBordersFor(ch_composite_2);
-		*/
 		
 		ch_composite_3 = new Composite(shell, SWT.NONE);
 		ch_composite_3.setBounds(920, 479, 974, 472);
@@ -754,24 +736,10 @@ public class MainGUI {
 		dataset.addSeries(shield_series);
 		dataset.addSeries(armor_series);
 		chart = ChartFactory.createXYLineChart("Single Simulation", "Time", "", dataset);
-		/*
-		frame = new ChartFrame("chart",chart);
-		frame.setAlwaysOnTop(false);
-		frame.setBounds(930, 0, 135, 240);
-		*/
-		
-		//armor graph
-		/*
-		XYSeriesCollection armor_dataset = new XYSeriesCollection(armor_series);
-		JFreeChart armor_chart = ChartFactory.createXYLineChart("Armor Tracker", "Time", "Armor", armor_dataset);
-		*/
 		
 		XYSeriesCollection datasetB = new XYSeriesCollection(scaleSeries);
 		JFreeChart chartB = ChartFactory.createXYLineChart("Scale Enemy", "Level", "TTK", datasetB);
-		/*
-		frameB = new ChartFrame("chart",chartB);
-		frameB.setBounds(930, 0, 135, 240);
-		*/
+
 		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
@@ -780,13 +748,6 @@ public class MainGUI {
 		chcomp_1.setBounds(10, 10, 954, 418);
 		formToolkit.adapt(chcomp_1);
 		formToolkit.paintBordersFor(chcomp_1);
-		
-		/*
-		ChartComposite chcomp_2 = new ChartComposite(ch_composite_2, SWT.NONE, armor_chart, true);
-		chcomp_2.setBounds(0, 0, 974, 271);
-		formToolkit.adapt(chcomp_2);
-		formToolkit.paintBordersFor(chcomp_2);
-		*/
 		
 		ChartComposite chcomp_3 = new ChartComposite(ch_composite_3, SWT.NONE, chartB, true);
 		
@@ -900,13 +861,8 @@ public class MainGUI {
 				shield_series.clear();
 				
 				XYPlot plot = (XYPlot) chart.getPlot();
-				//XYPlot armor_plot = (XYPlot) armor_chart.getPlot();
-				
+
 				plot.clearDomainMarkers();
-				//armor_plot.clearDomainMarkers();
-				
-				
-				
 				
 				default_weapon.setupCustomBuild();
 				default_enemy = new Enemy((String)enemy_combo.getText(),lvl_spinner.getSelection(), armorReduct, default_weapon);
@@ -914,17 +870,6 @@ public class MainGUI {
 				graph = true;
 				double results[] = simulate(default_enemy,default_weapon,1);
 				graph = false;
-				
-				
-				/*
-				frame.setVisible(true);
-				frame.setSize(1000, 450);
-				
-				if(default_enemy.baseArmor > 0) {
-					armor_frame.setVisible(true);
-					armor_frame.setSize(1000, 450);
-				}
-				*/
 
 				time_label.setText(String.format("%.2f", results[0]) );
 				shots_label.setText(String.format("%.2f", results[1]) );
@@ -972,10 +917,7 @@ public class MainGUI {
 					
 						
 				}
-				/*
-				frameB.setVisible(true);
-				frameB.setSize(1000, 450);
-				*/
+
 				numSeries++;
 			}
 		});
@@ -2167,17 +2109,7 @@ public class MainGUI {
 		btnAdd_enemy.addSelectionListener(new SelectionAdapter() {
 			@SuppressWarnings("unchecked")
 			@Override
-			public void widgetSelected(SelectionEvent e) {
-				//int dr_arr[] = {0,0,1,0};
-				//int [][]a = {dr_arr};
-				JSONArray list = new JSONArray();
-		        list.add(0);
-		        list.add(0);
-		        list.add(1);
-		        list.add(0);
-		        JSONArray listlist = new JSONArray();
-		        listlist.add(list);
-		        
+			public void widgetSelected(SelectionEvent e) {        
 
 		        // parsing file 
 		        Object eobj = null;
@@ -2206,8 +2138,6 @@ public class MainGUI {
 		        stats.put("BaseHealth", bHealthSpinner.getSelection());
 		        stats.put("BaseShield", bShieldSpinner.getSelection());
 		        stats.put("BaseLevel", bLevelSpinner.getSelection());
-		        stats.put("DamageReduction", listlist);
-		        stats.put("ProcReduction", listlist);
 		        data.put(name, stats);
 		        
 		        try (FileWriter file = new FileWriter("enemy.json")) { 
@@ -3214,11 +3144,7 @@ public class MainGUI {
 					crit_roll = rCrit.nextDouble();
 					critMultiplier = weapon.crit_inst.roll_crit(crit_roll, enemy, weapon.headshot);
 					enemy.damage_enemy(enemy.array_scale(cur_effect.damage_array, weapon.getMultiplier()), critMultiplier, false);
-					/*
-					if(debug_checkbutton.getSelection() && iteration == 0) {
-						damage_list.add(Double.toString(result_damage) + ", Crit tier: " + weapon.crit_inst.get_tier(crit_roll));
-					}
-					*/
+
 					//Crit
 					if(weapon.high_crit_tier>1) {
 						enemy.applyProc(cur_effect, true, critMultiplier, millis, rStatus.nextDouble(), force_slash);
@@ -3737,20 +3663,6 @@ public class MainGUI {
 		return Double.toString(rounded);
 	}
 	
-	/*
-	static double parse_double_textbox(String s) {
-	    String[] arrSplit = s.split("\\s");
-	    double tot = 0;
-	    for (int i=0; i < arrSplit.length; i++)
-	    {
-	      if( isNumeric(arrSplit[i]) ) {
-	    	  tot += string_to_double(arrSplit[i]);
-	      }
-	    }
-	    return tot;
-		
-	}
-	*/
 	static double parse_double_textbox(String r) {
 
 		String[] s = r.split("\\$");
