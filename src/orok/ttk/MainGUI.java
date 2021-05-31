@@ -314,7 +314,7 @@ public class MainGUI {
 		shell = new Shell();
 		shell.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
 		shell.setSize(1920, 1080);
-		shell.setText("Pocket Simulacrum v0.3.2");
+		shell.setText("Pocket Simulacrum v0.4");
 		shell.setLayout(null);
 		shell.setLocation(0, 0);
 		shell.setMaximized(true);
